@@ -1,0 +1,29 @@
+#!/bin/bash
+# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+
+# Copies music to the phone and moves pictures and audio notes to a given
+# folder on the computer. The music is shrinked to 128 kBit/s to save space on
+# the phone using the mp3_packer.
+
+~/Branches/mp3_packer/trunk/mp3_packer.py ~/Musik/Musik/
+
+TARGET=/media/THETA
+DROPFOLDER=~/TODO/
+
+if [ -d "$TARGET" ]
+then
+	time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
+		--force --exclude-from ~/.syncscripts/handy_musik.txt /\
+		home/mu/.mp3_packer/128/home/mu/Musik/Musik "$TARGET/MP3/"
+
+	# move pictures
+	find "$TARGET/DCIM/" -type f -exec mv '{}' "$DROPFOLDER" \;
+
+	# move audio notes
+	find "$TARGET/MSSEMC/Media Files/audio/" -name "*.amr" -type f \
+		-exec mv '{}' "$DROPFOLDER" \;
+
+else
+	echo -e "ERROR: $TARGET is not mounted"
+fi
+
