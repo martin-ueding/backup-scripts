@@ -1,0 +1,26 @@
+#!/bin/bash
+# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+
+#echo Opening Vault
+#sudo cryptsetup luksOpen /dev/$1 $1
+#echo Mounting Vault
+#sudo mount /dev/mapper/$1 /media/usb-crypt
+echo Copying Files
+TARGET1=/media/3145afae-33c5-468f-9aba-d7275ae6487f/
+TARGET2=/media/USB-Zwei/
+for TARGET in "$TARGET1" "$TARGET2"
+do
+	if [ -d "$TARGET" ]
+	then
+		rsync -avhE --delete \
+			--exclude-from ~/.syncscripts/usbklon_exclude.txt \
+			/home/mu/ "$TARGET"
+	else
+		echo -e "ERROR: $TARGET is not mounted"
+	fi
+done
+#echo Unmounting Vault
+#sudo umount /media/usb-crypt
+#echo Closing Vault
+#sudo cryptsetup luksClose $1
+
