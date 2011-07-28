@@ -13,8 +13,8 @@ DROPFOLDER=~/TODO/
 if [ -d "$TARGET" ]
 then
 	time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
-		--force --exclude-from ~/.syncscripts/handy_musik.txt /\
-		home/mu/.mp3_packer/128/home/mu/Musik/Musik "$TARGET/MP3/"
+		--force --exclude-from "/home/mu/.syncscripts/handy_musik.txt" \
+		"/home/mu/.mp3_packer/128/home/mu/Musik/Musik" "$TARGET/MP3/"
 
 	# move pictures
 	find "$TARGET/DCIM/" -type f -exec mv '{}' "$DROPFOLDER" \;
