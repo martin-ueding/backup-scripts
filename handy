@@ -7,23 +7,23 @@
 
 ~/Branches/mp3_packer/trunk/mp3_packer.py ~/Musik/Musik/
 
-TARGET=/media/THETA
-DROPFOLDER=~/TODO/
+target=/media/THETA
+dropfolder=~/TODO/
 
-if [ -d "$TARGET" ]
+if [ -d "$target" ]
 then
 	time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
 		--force --exclude-from "/home/mu/.syncscripts/handy_musik.txt" \
-		"/home/mu/.mp3_packer/128/home/mu/Musik/Musik" "$TARGET/MP3/"
+		"/home/mu/.mp3_packer/128/home/mu/Musik/Musik" "$target/MP3/"
 
 	# move pictures
-	find "$TARGET/DCIM/" -type f -exec mv '{}' "$DROPFOLDER" \;
+	find "$target/DCIM/" -type f -exec mv '{}' "$dropfolder" \;
 
 	# move audio notes
-	find "$TARGET/MSSEMC/Media Files/audio/" -name "*.amr" -type f \
-		-exec mv '{}' "$DROPFOLDER" \;
+	find "$target/MSSEMC/Media Files/audio/" -name "*.amr" -type f \
+		-exec mv '{}' "$dropfolder" \;
 
 else
-	echo -e "ERROR: $TARGET is not mounted"
+	echo -e "ERROR: $target is not mounted"
 fi
 
