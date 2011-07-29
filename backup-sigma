@@ -9,4 +9,3 @@ then
 else
 	echo -e "ERROR: $TARGET is not mounted"
 fi
-

@@ -23,4 +23,3 @@ done
 #sudo umount /media/usb-crypt
 #echo Closing Vault
 #sudo cryptsetup luksClose $1
-
