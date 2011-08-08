@@ -4,14 +4,14 @@
 set -u
 set -e
 
-TARGET=/media/Sigma/Backup/
+target=/media/Sigma/Backup/
 
 # Check whether the target directory is actually available.
-if [ ! -d "$TARGET" ]
+if [ ! -d "$target" ]
 then
-	echo -e "ERROR: $TARGET is not mounted"
+	echo -e "ERROR: $target is not mounted"
 	exit 1
 fi
 
 time rsync -avhE --delete \
-	--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu/ "$TARGET"
+	--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu/ "$target"
