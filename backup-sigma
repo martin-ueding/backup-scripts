@@ -5,6 +5,8 @@ set -u
 set -e
 
 TARGET=/media/Sigma/Backup/
+
+# Check whether the target directory is actually available.
 if [ ! -d "$TARGET" ]
 then
 	echo -e "ERROR: $TARGET is not mounted"
