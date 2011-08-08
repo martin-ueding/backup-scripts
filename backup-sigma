@@ -4,7 +4,7 @@
 set -u
 set -e
 
-target=/media/Sigma/Backup/
+target=/media/Sigma
 
 # Check whether the target directory is actually available.
 if [ ! -d "$target" ]
@@ -13,5 +13,26 @@ then
 	exit 1
 fi
 
-time rsync -avhE --delete \
-	--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu/ "$target"
+# Find the latest backup folder.
+for backupfolder in "$target/Backup-*"
+do
+	lastbackupfolder="$backupfolder"
+done
+
+# Create a new folder for the current backup.
+currentbackupfolder="$target/Backup-$(date +%y%m%d)"
+echo "Using $currentbackupfolder as new target."
+
+if [[ -d "$currentbackupfolder" ]]
+then
+	read -r -p "It seems like there was a backup done today. Do you want to re-run it? [Y/n] " answer
+	if [[ ! "$answer" = [yYjJ] && ! -z "$answer" ]]
+	then
+		exit 0
+	fi
+else
+	mkdir "$currentbackupfolder"
+fi
+
+time rsync -avhE --delete --link-dest "$lastbackupfolder" \
+	--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu/ "$currentbackupfolder"
