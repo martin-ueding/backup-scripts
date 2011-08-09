@@ -23,6 +23,9 @@ then
 	find "$target/MSSEMC/Media Files/audio/" -name "*.amr" -type f \
 		-exec mv '{}' "$dropfolder" \;
 
+	# save my password list
+	cp -u ~/Dokumente/Listen/Hauptliste.kdb "$target/"
+
 else
 	echo -e "ERROR: $target is not mounted"
 fi
