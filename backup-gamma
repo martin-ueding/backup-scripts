@@ -1,11 +1,13 @@
 #!/bin/bash
 # Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
 
-target=/media/Gamma/Backup/
+target=/media/Gamma/Backup
 if [ -d "$target" ]
 then
 	time rsync -avhE --delete \
-		--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu/ "$target"
+		--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu "$target/home/"
+	time rsync -avhE --delete \
+		--exclude-from ~/.syncscripts/gamma_exclude.txt /etc "$target/"
 else
 	echo -e "ERROR: $target is not mounted"
 fi
