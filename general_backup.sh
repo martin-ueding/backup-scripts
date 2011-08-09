@@ -3,6 +3,7 @@
 
 set -e
 set -u
+set -x
 
 subfolder=
 
@@ -54,7 +55,7 @@ chmod 700 "$tempdir"
 curlftpfs "$server" "$tempdir"
 
 # Copy all the new data into the current directory
-rsync -aE --delete "$tempdir/$subfolder" "$current"
+rsync -avE --delete "$tempdir/$subfolder" "$current"
 
 # Release the mounted FTP
 fusermount -u "$tempdir"
