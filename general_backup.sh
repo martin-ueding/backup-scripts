@@ -4,7 +4,9 @@
 set -e
 set -u
 
-while getopts "h" OPTION
+subfolder=
+
+while getopts "hu:p:b:n:s:d:f:" OPTION
 do
 	case $OPTION in
 		h)
@@ -29,13 +31,15 @@ do
 		d)
 			dumpsite="$OPTARG"
 			;;
+		f)
+			subfolder="$OPTARG"
+			;;
 	esac
 done
 
-exit 1
-
 
 # Create a current folder if it does not exist yet.
+current="$backupdir/$name"
 if [[ ! -d "$current" ]]
 then
 	mkdir -p "$current"
@@ -43,14 +47,14 @@ fi
 
 # Create a mountpoint for the FTP.
 tempdir=$(mktemp -d)
-chgrp use "$tempdir"
+chgrp fuse "$tempdir"
 chmod 700 "$tempdir"
 
 # Mount the FTP
 curlftpfs "$server" "$tempdir"
 
 # Copy all the new data into the current directory
-rsync -avE --delete "$tempdir/" "$current"
+rsync -aE --delete "$tempdir/$subfolder" "$current"
 
 # Release the mounted FTP
 fusermount -u "$tempdir"
@@ -60,8 +64,7 @@ rmdir "$tempdir"
 sqlfile="$current/dump.sql"
 if [ ! -f $sqlfile ]
 then
-	wget --user $usr --password $passwd -O $sqlfile \
-		"$dumpsite"
+	wget --user $user --password $passwd -O $sqlfile "$dumpsite"
 fi
 
 # Create an archive which contains the current snapshot.
