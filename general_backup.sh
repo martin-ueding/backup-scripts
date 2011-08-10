@@ -6,6 +6,9 @@ set -u
 set -x
 
 subfolder=
+user=
+passwd=
+dumpsite=
 
 while getopts "hu:p:b:n:s:d:f:" OPTION
 do
@@ -62,7 +65,7 @@ fusermount -u "$tempdir"
 rmdir "$tempdir"
 
 # Dump the MySQL database.
-if [[ -n "$user" && -n "$passwd" && -n "$dumpsite"]]
+if [[ -n "$user" && -n "$passwd" && -n "$dumpsite" ]]
 then
 	sqlfile="$current/dump.sql"
 	if [ ! -f $sqlfile ]
