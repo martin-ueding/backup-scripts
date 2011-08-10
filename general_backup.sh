@@ -62,10 +62,13 @@ fusermount -u "$tempdir"
 rmdir "$tempdir"
 
 # Dump the MySQL database.
-sqlfile="$current/dump.sql"
-if [ ! -f $sqlfile ]
+if [[ -n "$user" && -n "$passwd" && -n "$dumpsite"]]
 then
-	wget --user $user --password $passwd -O $sqlfile "$dumpsite"
+	sqlfile="$current/dump.sql"
+	if [ ! -f $sqlfile ]
+	then
+		wget --user $user --password $passwd -O $sqlfile "$dumpsite"
+	fi
 fi
 
 # Create an archive which contains the current snapshot.
