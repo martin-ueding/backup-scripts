@@ -50,11 +50,12 @@ then
 fi
 
 # Test whether this needs to be backuped already
-if [[ $(( $(date +%s) - $(stat "$current/performed") )) -gt $(( 3600 * 24 * 3)) ]]
+if [[ -f "$current/performed" ]]
 then
-	echo "This needs a backup"
-else
-	exit 0
+	if [[ $(( $(date +%s) - $(stat -c %Y "$current/performed") )) -lt $(( 3600 * 24 * 3)) ]]
+	then
+		exit 0
+	fi
 fi
 
 # Create a mountpoint for the FTP.
