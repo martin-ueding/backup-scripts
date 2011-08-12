@@ -49,6 +49,14 @@ then
 	mkdir -p "$current"
 fi
 
+# Test whether this needs to be backuped already
+if [[ $(( $(date +%s) - $(stat "$current/performed") )) -gt $(( 3600 * 24 * 3)) ]]
+then
+	echo "This needs a backup"
+else
+	exit 0
+fi
+
 # Create a mountpoint for the FTP.
 tempdir=$(mktemp -d)
 chgrp fuse "$tempdir"
@@ -76,3 +84,6 @@ fi
 
 # Create an archive which contains the current snapshot.
 tar -czf "$backupdir/$name-$(date +%y%m%d).tar.gz" -C "$backupdir" "$name"
+
+# Mark the current execution of the backup.
+touch "$current/performed"
