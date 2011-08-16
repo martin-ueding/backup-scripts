@@ -3,7 +3,6 @@
 
 set -e
 set -u
-set -x
 
 subfolder=
 user=
@@ -48,6 +47,9 @@ if [[ ! -d "$current" ]]
 then
 	mkdir -p "$current"
 fi
+
+# write everything to a log file
+exec > "$backupdir/$name.log" 2>&1
 
 # Test whether this needs to be backuped already
 if [[ -f "$current/performed" ]]
