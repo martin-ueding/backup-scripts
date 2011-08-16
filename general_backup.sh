@@ -90,3 +90,8 @@ tar -czf "$backupdir/$name-$(date +%y%m%d).tar.gz" -C "$backupdir" "$name"
 
 # Mark the current execution of the backup.
 touch "$current/performed"
+
+if [[ -d "$HOME/.nag"]]
+then
+	touch "$HOME/.nag/Backup of $name"
+fi
