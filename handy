@@ -30,7 +30,7 @@ then
 		-exec mv '{}' "$dropfolder" \;
 
 	# save my password list
-	cp -vu ~/Dokumente/Listen/Hauptliste.kdb "$target/"
+	cp -v ~/Dokumente/Listen/Hauptliste.kdb "$target/"
 
 	if [[ -d "$HOME/.nag" ]]
 	then
