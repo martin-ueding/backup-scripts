@@ -4,6 +4,12 @@
 set -u
 set -e
 
+logfile="$HOME/log/$(uuidgen).log"
+if [[ ! -d "$(dirname "$logfile")" ]]
+then
+	mkdir -p "$(dirname "$logfile")"
+fi
+
 target=/media/Sigma
 
 # Check whether the target directory is actually available.
@@ -21,21 +27,16 @@ done
 
 # Create a new folder for the current backup.
 currentbackupfolder="$target/Backup-$(date +%y%m%d)"
-echo "Using $currentbackupfolder as new target."
+echo "Using $currentbackupfolder as new target." >> "$logfile" 2>&1
 
-if [[ -d "$currentbackupfolder" ]]
+if [[ ! -d "$currentbackupfolder" ]]
 then
-	read -r -p "It seems like there was a backup done today. Do you want to re-run it? [Y/n] " answer
-	if [[ ! "$answer" = [yYjJ] && ! -z "$answer" ]]
-	then
-		exit 0
-	fi
-else
 	mkdir "$currentbackupfolder"
 fi
 
 time rsync -avhE --delete --link-dest "$lastbackupfolder" \
-	--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu/ "$currentbackupfolder"
+	--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu/ \
+	"$currentbackupfolder" >> "$logfile" 2>&1
 
 if [[ -d "$HOME/.nag"]]
 then
