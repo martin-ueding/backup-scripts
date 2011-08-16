@@ -38,7 +38,7 @@ time rsync -avhE --delete --link-dest "$lastbackupfolder" \
 	--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu/ \
 	"$currentbackupfolder" >> "$logfile" 2>&1
 
-if [[ -d "$HOME/.nag"]]
+if [[ -d "$HOME/.nag" ]]
 then
 	touch "$HOME/.nag/Backup to Sigma"
 fi

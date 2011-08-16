@@ -4,15 +4,23 @@
 set -u
 set -e
 
+logfile="$HOME/log/$(uuidgen).log"
+if [[ ! -d "$(dirname "$logfile")" ]]
+then
+	mkdir -p "$(dirname "$logfile")"
+fi
+
 target=/media/Gamma/Backup
 if [ -d "$target" ]
 then
 	time rsync -avhE --delete \
-		--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu "$target/home/"
+		--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu "$target/home/" \
+		>> "$logfile" 2>&1
 	time rsync -avhE --delete \
-		--exclude-from ~/.syncscripts/gamma_exclude.txt /etc "$target/"
+		--exclude-from ~/.syncscripts/gamma_exclude.txt /etc "$target/" \
+		>> "$logfile" 2>&1
 
-	if [[ -d "$HOME/.nag"]]
+	if [[ -d "$HOME/.nag" ]]
 	then
 		touch "$HOME/.nag/Backup to Gamma"
 	fi
