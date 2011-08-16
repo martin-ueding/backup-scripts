@@ -5,7 +5,13 @@
 # folder on the computer. The music is shrinked to 128 kBit/s to save space on
 # the phone using the mp3_packer.
 
-~/Branches/mp3_packer/trunk/mp3_packer.py ~/Musik/Musik/
+set -u
+set -e
+
+if which ffmpeg > /dev/null
+then
+	~/Branches/mp3_packer/trunk/mp3_packer.py ~/Musik/Musik/
+fi
 
 target=/media/THETA
 dropfolder=~/TODO/
