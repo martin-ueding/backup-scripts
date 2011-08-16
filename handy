@@ -32,7 +32,7 @@ then
 	# save my password list
 	cp -vu ~/Dokumente/Listen/Hauptliste.kdb "$target/"
 
-	if [[ -d "$HOME/.nag"]]
+	if [[ -d "$HOME/.nag" ]]
 	then
 		touch "$HOME/.nag/Sync with Cell"
 	fi
