@@ -95,3 +95,8 @@ if [[ -d "$HOME/.nag"]]
 then
 	touch "$HOME/.nag/Backup of $name"
 fi
+
+if which kdialog > /dev/null
+then
+	kdialog --passivepopup "Backup $name is done." 3
+fi
