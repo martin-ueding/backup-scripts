@@ -36,3 +36,8 @@ done
 #sudo umount /media/usb-crypt
 #echo Closing Vault
 #sudo cryptsetup luksClose $1
+
+if which kdialog > /dev/null
+then
+	kdialog --passivepopup 'Backup USB done.' 3
+fi

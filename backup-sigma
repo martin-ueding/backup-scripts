@@ -42,3 +42,8 @@ if [[ -d "$HOME/.nag" ]]
 then
 	touch "$HOME/.nag/Backup to Sigma"
 fi
+
+if which kdialog > /dev/null
+then
+	kdialog --passivepopup 'Backup Sigma done.' 3
+fi
