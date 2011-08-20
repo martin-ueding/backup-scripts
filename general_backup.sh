@@ -49,7 +49,8 @@ then
 fi
 
 # write everything to a log file
-exec > "$backupdir/$name.log" 2>&1
+exec > "$HOME/log/$(uuidgen).log" 2>&1
+echo "Backup of $name"
 
 # Test whether this needs to be backuped already
 if [[ -f "$current/performed" ]]
