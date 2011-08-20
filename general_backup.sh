@@ -86,7 +86,12 @@ then
 fi
 
 # Create an archive which contains the current snapshot.
-tar -czf "$backupdir/$(date +%y%m)/$name-$(date +%y%m%d).tar.gz" -C "$backupdir" "$name"
+destdir="$backupdir/$(date +%y%m)"
+if [[ ! -d "$destdir" ]]
+then
+	mkdir -p "$destdir"
+fi
+tar -czf "$destdir/$name-$(date +%y%m%d).tar.gz" -C "$backupdir" "$name"
 
 # Mark the current execution of the backup.
 touch "$current/performed"
