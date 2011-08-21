@@ -33,8 +33,10 @@ time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
 find "$target/DCIM/" -type f -exec mv '{}' "$dropfolder" \;
 
 # move audio notes
-find "$target/MSSEMC/Media Files/audio/" -name "*.amr" -type f \
-	-exec mv '{}' "$dropfolder" \;
+for i in "$target/MSSEMC/Media Files/audio/"*.amr
+do
+	mv "$i" "$dropfolder/$(uuidgen).amr"
+done
 
 # save my password list
 passwordlist="$HOME/Dokumente/Listen/Hauptliste.kdb"
