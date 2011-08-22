@@ -13,6 +13,7 @@ dropfolder="$HOME/TODO/"
 
 mp3_packer="$HOME/Branches/mp3_packer/trunk/mp3_packer.py"
 
+
 if which ffmpeg > /dev/null
 then
 	"$mp3_packer" "$HOME/Musik/Musik/"
@@ -22,6 +23,15 @@ fi
 if [[ ! -d "$target" ]]
 then
 	echo -e "ERROR: $target is not mounted"
+	exit 1
+fi
+
+if ! touch "$target/rw-test"
+then
+	echo "$target is writeable"
+	exit 1
+else
+	rm "$target/rw-test"
 fi
 
 
