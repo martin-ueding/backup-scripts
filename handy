@@ -54,8 +54,3 @@ if [[ -f "$passwordlist" ]]
 then
 	cp -v "$passwordlist" "$target/"
 fi
-
-if [[ -d "$HOME/.nag" ]]
-then
-	touch "$HOME/.nag/Sync with Cell"
-fi
