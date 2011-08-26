@@ -45,7 +45,7 @@ done
 current="$backupdir/$name"
 if [[ ! -d "$current" ]]
 then
-	mkdir -p "$current"
+	mkdir -p -- "$current"
 fi
 
 # write everything to a log file
@@ -62,18 +62,18 @@ fi
 
 # Create a mountpoint for the FTP.
 tempdir=$(mktemp -d)
-chgrp fuse "$tempdir"
-chmod 700 "$tempdir"
+chgrp fuse -- "$tempdir"
+chmod 700 -- "$tempdir"
 
 # Mount the FTP
 curlftpfs "$server" "$tempdir"
 
 # Copy all the new data into the current directory
-rsync -avE --delete "$tempdir/$subfolder" "$current"
+rsync -avE --delete -- "$tempdir/$subfolder" "$current"
 
 # Release the mounted FTP
 fusermount -u "$tempdir"
-rmdir "$tempdir"
+rmdir -- "$tempdir"
 
 # Dump the MySQL database.
 if [[ -n "$user" && -n "$passwd" && -n "$dumpsite" ]]
@@ -89,17 +89,12 @@ fi
 destdir="$backupdir/$(date +%y%m)"
 if [[ ! -d "$destdir" ]]
 then
-	mkdir -p "$destdir"
+	mkdir -p -- "$destdir"
 fi
 tar -czf "$destdir/$name-$(date +%y%m%d).tar.gz" -C "$backupdir" "$name"
 
 # Mark the current execution of the backup.
 touch "$current/performed"
-
-if [[ -d "$HOME/.nag"]]
-then
-	touch "$HOME/.nag/Backup of $name"
-fi
 
 if which kdialog > /dev/null
 then
