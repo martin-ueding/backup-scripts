@@ -9,8 +9,6 @@ set -u
 #echo Mounting Vault
 #sudo mount /dev/mapper/$1 /media/usb-crypt
 
-echo Copying Files
-
 TARGET1=/media/3145afae-33c5-468f-9aba-d7275ae6487f/
 TARGET2=/media/USB-Zwei/
 
@@ -20,13 +18,7 @@ do
 	then
 		rsync -avhE --delete \
 			--exclude-from ~/.syncscripts/usbklon_exclude.txt \
-			/home/mu/ "$TARGET"
-
-		if [[ -d "$HOME/.nag"]]
-		then
-			touch "$HOME/.nag/Backup to USB"
-		fi
-
+			"$HOME/" "$TARGET"
 	else
 		echo -e "ERROR: $TARGET is not mounted"
 	fi
