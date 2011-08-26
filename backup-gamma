@@ -4,12 +4,6 @@
 set -u
 set -e
 
-logfile="$HOME/log/$(uuidgen).log"
-if [[ ! -d "$(dirname "$logfile")" ]]
-then
-	mkdir -p "$(dirname "$logfile")"
-fi
-
 target=/media/Gamma/Backup
 if [ ! -d "$target" ]
 then
@@ -18,16 +12,9 @@ then
 fi
 
 time rsync -avhE --delete \
-	--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu "$target/home/" \
-	>> "$logfile" 2>&1
+	--exclude-from ~/.syncscripts/gamma_exclude.txt /home/mu "$target/home/"
 time rsync -avhE --delete \
-	--exclude-from ~/.syncscripts/gamma_exclude.txt /etc "$target/" \
-	>> "$logfile" 2>&1
-
-if [[ -d "$HOME/.nag" ]]
-then
-	touch "$HOME/.nag/Backup to Gamma"
-fi
+	--exclude-from ~/.syncscripts/gamma_exclude.txt /etc "$target/"
 
 if which kdialog > /dev/null
 then
