@@ -1,28 +1,42 @@
 #!/bin/bash
 # Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
 
-set -u
 set -e
+set -u
 
 targets=("/media/Gamma/Backup" "/media/Sigma/Backup" "/media/USB-Eins/" "/media/USB-Zwei/")
 for target in "${targets[@]}"
 do
 	if [[ -d "$target" ]]
 	then
+		# Print a fancy box if the tool is installed, print a simple message if
+		# not.
 		if which boxes
 		then
 			echo "$target" | boxes -a c -s 80 -d shell
-		fi
-
-		if [[ -f "$target/.small_backup" ]]
-		then
-			excludefile="$HOME/.syncscripts/exclude_small.txt"
 		else
-			excludefile="$HOME/.syncscripts/exclude_big.txt"
+			echo "Creating Backup to $target."
 		fi
 
-		time rsync -avhE --delete --exclude-from "$excludefile" -- /home/mu "$target/home/"
-		time rsync -avhE --delete --exclude-from "$excludefile" -- /etc "$target/"
-		time rsync -avhE --delete --exclude-from "$excludefile" -- /opt "$target/"
+
+		my_rsync () {
+			# If the backup volume features the small_backup flag, exclude more
+			# than ususal.
+			if [[ -f "$target/.small_backup" ]]
+			then
+				time rsync -avhE --delete \
+					--exclude-from "$HOME/.syncscripts/exclude_big.txt" \
+					--exclude-from "$HOME/.syncscripts/exclude_small.txt" \
+					-- "$1" "$2"
+			else
+				time rsync -avhE --delete \
+					--exclude-from "$HOME/.syncscripts/exclude_big.txt" \
+					-- "$1" "$2"
+			fi
+		}
+
+		my_rsync /etc "$target/"
+		my_rsync /home/mu "$target/home/"
+		my_rsync /opt "$target/"
 	fi
 done
