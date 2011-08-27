@@ -1,0 +1,19 @@
+#!/bin/bash
+# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+
+set -u
+set -e
+
+targets=("/media/Gamma/Backup" "/media/Sigma/Backup")
+for target in "${targets[@]}"
+do
+	if [ -d "$target" ]
+	then
+		if which boxes
+		then
+			echo "$target" | boxes -a c -s 80 -d shell
+		fi
+		time rsync -avhE --delete --exclude-from ~/.syncscripts/gamma_exclude.txt -- /home/mu "$target/home/"
+		time rsync -avhE --delete --exclude-from ~/.syncscripts/gamma_exclude.txt -- /etc "$target/"
+	fi
+done
