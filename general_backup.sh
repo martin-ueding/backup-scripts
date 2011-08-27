@@ -96,7 +96,4 @@ tar -czf "$destdir/$name-$(date +%y%m%d).tar.gz" -C "$backupdir" "$name"
 # Mark the current execution of the backup.
 touch "$current/performed"
 
-if which kdialog > /dev/null
-then
-	kdialog --passivepopup "Backup $name is done." 3
-fi
+echo "Backup $name is done."
