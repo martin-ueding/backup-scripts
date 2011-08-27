@@ -4,7 +4,7 @@
 set -u
 set -e
 
-targets=("/media/Gamma/Backup" "/media/Sigma/Backup")
+targets=("/media/Gamma/Backup" "/media/Sigma/Backup" "/media/USB-Eins/" "/media/USB-Zwei/")
 for target in "${targets[@]}"
 do
 	if [ -d "$target" ]
@@ -13,7 +13,16 @@ do
 		then
 			echo "$target" | boxes -a c -s 80 -d shell
 		fi
-		time rsync -avhE --delete --exclude-from ~/.syncscripts/gamma_exclude.txt -- /home/mu "$target/home/"
-		time rsync -avhE --delete --exclude-from ~/.syncscripts/gamma_exclude.txt -- /etc "$target/"
+
+		if [[ -f "$target/.small_backup" ]]
+		then
+			excludefile="$HOME/.syncscripts/exclude_small.txt"
+		else
+			excludefile="$HOME/.syncscripts/exclude_big.txt"
+		fi
+
+		time rsync -avhE --delete --exclude-from "$excludefile" -- /home/mu "$target/home/"
+		time rsync -avhE --delete --exclude-from "$excludefile" -- /etc "$target/"
+		time rsync -avhE --delete --exclude-from "$excludefile" -- /opt "$target/"
 	fi
 done
