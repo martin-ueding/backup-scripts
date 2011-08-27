@@ -35,8 +35,10 @@ do
 			fi
 		}
 
+		set +e
 		my_rsync /etc "$target/"
 		my_rsync /home/mu "$target/home/"
 		my_rsync /opt "$target/"
+		set -e
 	fi
 done
