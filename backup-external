@@ -7,7 +7,7 @@ set -e
 targets=("/media/Gamma/Backup" "/media/Sigma/Backup" "/media/USB-Eins/" "/media/USB-Zwei/")
 for target in "${targets[@]}"
 do
-	if [ -d "$target" ]
+	if [[ -d "$target" ]]
 	then
 		if which boxes
 		then
