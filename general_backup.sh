@@ -40,6 +40,17 @@ do
 	esac
 done
 
+cleanup() {
+	# Release the mounted FTP
+	if [[ -d "$tempdir" ]]
+	then
+		fusermount -u "$tempdir"
+		rmdir -- "$tempdir"
+	fi
+}
+
+trap cleanup EXIT
+trap cleanup ERR
 
 # Create a current folder if it does not exist yet.
 current="$backupdir/$name"
@@ -70,10 +81,6 @@ curlftpfs "$server" "$tempdir"
 
 # Copy all the new data into the current directory
 rsync -avE --delete -- "$tempdir/$subfolder" "$current"
-
-# Release the mounted FTP
-fusermount -u "$tempdir"
-rmdir -- "$tempdir"
 
 # Dump the MySQL database.
 if [[ -n "$user" && -n "$passwd" && -n "$dumpsite" ]]
