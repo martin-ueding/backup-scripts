@@ -35,6 +35,9 @@ else
 fi
 
 
+# Delete all empty files that cause trouble from the target's MP3 folder.
+find "$target/MP3" -size 0 -delete
+
 time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
 	--force --exclude-from "/home/mu/.syncscripts/handy_musik.txt" \
 	"/home/mu/.mp3_packer/128/home/mu/Musik/Musik" "$target/MP3/"
