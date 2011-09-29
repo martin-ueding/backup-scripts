@@ -48,7 +48,7 @@ find "$target/DCIM/" -type f -exec mv '{}' "$dropfolder" \;
 # move audio notes
 for i in "$target/MSSEMC/Media Files/audio/"*.amr
 do
-	mv "$i" "$dropfolder/$(uuidgen).amr"
+	mv -v "$i" "$dropfolder/$(uuidgen).amr"
 done
 
 # save my password list
