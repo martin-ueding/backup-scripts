@@ -11,7 +11,7 @@ set -u
 target="/media/THETA"
 dropfolder="$HOME/TODO/"
 
-mp3_packer="$HOME/Branches/mp3_packer/mp3_packer.py"
+mp3_packer="$HOME/Branches/mp3_packer/mp3-packer"
 
 
 if which ffmpeg > /dev/null
