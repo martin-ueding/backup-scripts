@@ -40,5 +40,7 @@ do
 		my_rsync /home/mu "$target/home/"
 		my_rsync /opt "$target/"
 		set -e
+
+		backup-status update "$target"
 	fi
 done
