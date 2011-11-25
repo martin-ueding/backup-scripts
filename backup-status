@@ -1,0 +1,52 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+
+import datetime
+import json
+import optparse
+import os
+
+def main():
+    parser = optparse.OptionParser(usage="", description="")
+    #parser.add_option("", dest="", type="", default=, help=)
+
+    (options, args) = parser.parse_args()
+    del parser
+
+
+    statusfile = ".backup-status"
+
+    # Open the already existing file
+    if os.path.exists(statusfile):
+        with open(statusfile, "r") as f:
+            status = json.loads(f.read())
+    else:
+        status = []
+
+    print status
+
+    if len(args) >= 2:
+        if args[0] == 'update':
+            backup = args[1]
+
+
+            if not backup in [x["name"] for x in status]:
+                status.append({"name": backup})
+
+            for s in status:
+                if not s["name"] == backup:
+                    continue
+
+                s["last"] = str(datetime.datetime.now())
+
+    print status
+
+
+    with open(statusfile, "w") as f:
+        f.write(json.dumps(status))
+
+
+if __name__ == "__main__":
+	main()
