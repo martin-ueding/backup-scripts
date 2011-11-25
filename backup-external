@@ -47,3 +47,8 @@ do
 		fi
 	fi
 done
+
+if which backup-status > /dev/null 2>&1
+then
+	backup-status
+fi
