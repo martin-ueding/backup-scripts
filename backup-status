@@ -4,9 +4,26 @@
 # Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
 
 import datetime
+import dateutil.parser
 import json
 import optparse
 import os
+
+def pretty(status):
+    col_name = 15
+    col_last = 30
+    col_diff = 15
+
+
+    print "Name".ljust(col_name), "Last".ljust(col_last), "Difference".ljust(col_diff)
+
+    for s in status:
+        name = s["name"]
+        last = s["last"]
+        last_date = dateutil.parser.parse(last)
+        difference = datetime.datetime.now() - last_date
+
+        print name.ljust(col_name), str(last_date).ljust(col_last), str(difference).ljust(col_diff)
 
 def main():
     parser = optparse.OptionParser(usage="", description="")
@@ -16,7 +33,7 @@ def main():
     del parser
 
 
-    statusfile = ".backup-status"
+    statusfile = os.path.expanduser("~/.syncscripts/backup-status")
 
     # Open the already existing file
     if os.path.exists(statusfile):
@@ -25,7 +42,6 @@ def main():
     else:
         status = []
 
-    print status
 
     if len(args) >= 2:
         if args[0] == 'update':
@@ -41,7 +57,7 @@ def main():
 
                 s["last"] = str(datetime.datetime.now())
 
-    print status
+    pretty(status)
 
 
     with open(statusfile, "w") as f:
