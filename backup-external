@@ -11,7 +11,7 @@ do
 	then
 		# Print a fancy box if the tool is installed, print a simple message if
 		# not.
-		if which boxes
+		if which boxes > /dev/null 2>&1
 		then
 			echo "$target" | boxes -a c -s 80 -d shell
 		else
@@ -41,6 +41,9 @@ do
 		my_rsync /opt "$target/"
 		set -e
 
-		backup-status update "$target"
+		if which backup-status > /dev/null 2>&1
+		then
+			backup-status update "$target"
+		fi
 	fi
 done
