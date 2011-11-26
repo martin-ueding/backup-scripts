@@ -10,7 +10,7 @@ import optparse
 import os
 
 def pretty(status):
-    col_name = 25
+    col_name = 30
     col_last = 30
     col_diff = 15
 
