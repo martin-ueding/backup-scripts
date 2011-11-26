@@ -8,6 +8,8 @@
 set -e
 set -u
 
+shopt -s nullglob
+
 target="/media/THETA"
 dropfolder="$HOME/TODO/"
 
