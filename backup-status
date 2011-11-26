@@ -10,6 +10,8 @@ import optparse
 import os
 
 def pretty(status):
+    status = sorted(status, key=lambda backup: backup["last"])
+
     col_name = 30
     col_last = 30
     col_diff = 15
