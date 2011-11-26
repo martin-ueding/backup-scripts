@@ -104,3 +104,5 @@ tar -czf "$destdir/$name-$(date +%y%m%d).tar.gz" -C "$backupdir" "$name"
 touch "$current/performed"
 
 echo "Backup $name is done."
+
+backup-status update "$name"
