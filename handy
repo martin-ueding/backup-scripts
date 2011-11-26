@@ -57,3 +57,5 @@ if [[ -f "$passwordlist" ]]
 then
 	cp -v "$passwordlist" "$target/"
 fi
+
+backup-status update "$target"
