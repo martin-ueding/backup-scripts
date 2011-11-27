@@ -93,7 +93,7 @@ then
 fi
 
 # Create an archive which contains the current snapshot.
-destdir="$backupdir/$(date +%y%m)"
+destdir="$backupdir/$(date +%Y-%m)"
 if [[ ! -d "$destdir" ]]
 then
 	mkdir -p -- "$destdir"
