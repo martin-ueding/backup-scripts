@@ -12,20 +12,26 @@ import os
 def pretty(status):
     status = sorted(status, key=lambda backup: backup["last"])
 
+    col_dir = 3
     col_name = 30
     col_last = 30
     col_diff = 15
 
 
-    print "Name".ljust(col_name), "Last".ljust(col_last), "Difference".ljust(col_diff)
+    print "Dir".ljust(col_dir), "Name".ljust(col_name), "Last".ljust(col_last), "Difference".ljust(col_diff)
 
     for s in status:
+        if s["type"] == "to":
+            direction = "->"
+        else:
+            direction = "<-"
+
         name = s["name"]
         last = s["last"]
         last_date = dateutil.parser.parse(last)
         difference = datetime.datetime.now() - last_date
 
-        print name.ljust(col_name), str(last_date).ljust(col_last), str(difference).ljust(col_diff)
+        print direction.ljust(col_dir), name.ljust(col_name), str(last_date).ljust(col_last), str(difference).ljust(col_diff)
 
 def main():
     parser = optparse.OptionParser(usage="", description="")
@@ -35,7 +41,7 @@ def main():
     del parser
 
 
-    statusfile = os.path.expanduser("~/.syncscripts/backup-status")
+    statusfile = os.path.expanduser("~/.syncscripts/backup-status.js")
 
     # Open the already existing file
     if os.path.exists(statusfile):
@@ -58,6 +64,9 @@ def main():
                     continue
 
                 s["last"] = str(datetime.datetime.now())
+                
+                if len(args) >= 3:
+                    s["type"] = args[2]
 
     else:
         pretty(status)
