@@ -23,8 +23,10 @@ def pretty(status):
     for s in status:
         if s["type"] == "to":
             direction = "->"
-        else:
+        elif s["type"] == "from":
             direction = "<-"
+        else:
+            direction = "??"
 
         name = s["name"]
         last = s["last"]
