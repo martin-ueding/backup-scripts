@@ -82,7 +82,7 @@ def main():
 
     if changed:
         with open(statusfile, "w") as f:
-            f.write(json.dumps(status))
+            f.write(json.dumps(status, sort_keys=True, indent=4))
 
 
 if __name__ == "__main__":
