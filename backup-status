@@ -45,6 +45,8 @@ def main():
     (options, args) = parser.parse_args()
     del parser
 
+    changed = False
+
 
     statusfile = os.path.expanduser("~/.syncscripts/backup-status.js")
 
@@ -69,6 +71,7 @@ def main():
                     continue
 
                 s["last"] = str(datetime.datetime.now())
+                changed = True
                 
                 if len(args) >= 3:
                     s["type"] = args[2]
@@ -77,8 +80,9 @@ def main():
         pretty(status)
 
 
-    with open(statusfile, "w") as f:
-        f.write(json.dumps(status))
+    if changed:
+        with open(statusfile, "w") as f:
+            f.write(json.dumps(status))
 
 
 if __name__ == "__main__":
