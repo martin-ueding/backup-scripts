@@ -12,12 +12,12 @@ then
 	do
 		time rsync -avhE --delete -- "$source" "${target}${source}/"
 	done
+
+	if which backup-status > /dev/null 2>&1
+	then
+		backup-status update "$target"
+		backup-status
+	fi
 else
 	echo "ERROR: $target is not mounted."
-fi
-
-if which backup-status > /dev/null 2>&1
-then
-	backup-status update "$target"
-	backup-status
 fi
