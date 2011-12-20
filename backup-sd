@@ -1,0 +1,23 @@
+#!/bin/bash
+# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+
+set -e
+set -u
+
+target="/media/Eta/Backup"
+
+if [[ -d "$target" ]]
+then
+	for source in "/home/mu/Dokumente" "/home/mu/Branches" "/home/mu/TODO"
+	do
+		time rsync -avhE --delete -- "$source" "${target}${source}/"
+	done
+else
+	echo "ERROR: $target is not mounted."
+fi
+
+if which backup-status > /dev/null 2>&1
+then
+	backup-status update "$target"
+	backup-status
+fi
