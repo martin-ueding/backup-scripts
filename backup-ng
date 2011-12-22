@@ -1,0 +1,26 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+
+import optparse
+
+backups = {
+    "Eta": "/media/Eta/Backup",
+    "Gamma": "/media/Gamma/Backup",
+    "Sigma": "/media/Sigma/Backup",
+    "USB-Eins": "/media/USB-Eins/",
+    "USB-Zwei": "/media/USB-Zwei/"
+}
+
+def main():
+    #parser = optparse.OptionParser(usage=, description=)
+    #parser.add_option("", dest="", type="", default=, help=)
+
+    #(options, args) = parser.parse_args()
+    #del parser
+    pass
+
+
+if __name__ == "__main__":
+	main()
