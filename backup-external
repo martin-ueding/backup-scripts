@@ -1,54 +1,42 @@
-#!/bin/bash
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 # Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
 
-set -e
-set -u
+import optparse
+import subprocess
+import os
 
-targets=("/media/Gamma/Backup" "/media/Sigma/Backup" "/media/USB-Eins/" "/media/USB-Zwei/")
-for target in "${targets[@]}"
-do
-	if [[ -d "$target" ]]
-	then
-		# Print a fancy box if the tool is installed, print a simple message if
-		# not.
-		if which boxes > /dev/null 2>&1
-		then
-			echo "$target" | boxes -a c -s 80 -d shell
-		else
-			echo "Creating Backup to $target."
-		fi
+backups = {
+    "Eta": "/media/Eta/Backup",
+    "Gamma": "/media/Gamma/Backup",
+    "Sigma": "/media/Sigma/Backup",
+    "USB-Eins": "/media/USB-Eins",
+    "USB-Zwei": "/media/USB-Zwei"
+}
+
+def backup(name, target):
+    includesfile = os.path.expanduser("~/.syncscripts/"+name+".include.txt")
+    excludesfile = os.path.expanduser("~/.syncscripts/"+name+".exclude.txt")
+
+    if os.path.exists(includesfile):
+        with open(includesfile) as h:
+            for include in h:
+                include = include.strip()
+
+                print "Backup %s -- %s" % (name, include)
+                destdir = target+os.path.dirname(include)
+                status = subprocess.call(["rsync", "-avhE", "--delete", "--", include, destdir])
+
+                if status == 0:
+                    subprocess.call(["backup-status", "update", name])
 
 
-		my_rsync () {
-			# If the backup volume features the small_backup flag, exclude more
-			# than ususal.
-			if [[ -f "$target/.small_backup" ]]
-			then
-				time rsync -avhE --delete \
-					--exclude-from "$HOME/.syncscripts/exclude_big.txt" \
-					--exclude-from "$HOME/.syncscripts/exclude_small.txt" \
-					-- "$1" "$2"
-			else
-				time rsync -avhE --delete \
-					--exclude-from "$HOME/.syncscripts/exclude_big.txt" \
-					-- "$1" "$2"
-			fi
-		}
+def main():
+    for name, target in backups.items():
+        if os.path.exists(target):
+            backup(name, target)
 
-		set +e
-		my_rsync /etc "$target/"
-		my_rsync /home/mu "$target/home/"
-		my_rsync /opt "$target/"
-		set -e
 
-		if which backup-status > /dev/null 2>&1
-		then
-			backup-status update "$target"
-		fi
-	fi
-done
-
-if which backup-status > /dev/null 2>&1
-then
-	backup-status
-fi
+if __name__ == "__main__":
+	main()
