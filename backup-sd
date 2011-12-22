@@ -8,8 +8,9 @@ target="/media/Eta/Backup"
 
 if [[ -d "$target" ]]
 then
-	for source in "/home/mu/Dokumente" "/home/mu/Branches" "/home/mu/TODO"
+	for source in "/home/mu/Dokumente" "/home/mu/Branches" "/home/mu/TODO" "/home/mu/.jscribble"
 	do
+		mkdir -p "${target}${source}/"
 		time rsync -avhE --delete -- "$source" "${target}${source}/"
 	done
 
