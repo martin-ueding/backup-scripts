@@ -9,16 +9,12 @@ import json
 import optparse
 import os
 
+import table
+
 def pretty(status):
     status = sorted(status, key=lambda backup: backup["last"])
 
-    col_dir = 3
-    col_name = 30
-    col_last = 30
-    col_diff = 15
-
-
-    print "Dir".ljust(col_dir), "Name".ljust(col_name), "Last".ljust(col_last), "Difference".ljust(col_diff)
+    data = []
 
     for s in status:
         if "type" in s:
@@ -36,7 +32,11 @@ def pretty(status):
         last_date = dateutil.parser.parse(last)
         difference = datetime.datetime.now() - last_date
 
-        print direction.ljust(col_dir), name.ljust(col_name), str(last_date).ljust(col_last), str(difference).ljust(col_diff)
+        data.append([direction, name, last_date, difference])
+
+    table.print_table(["Dir", "Name", "Last", "Difference"], data)
+
+
 
 def main():
     parser = optparse.OptionParser(usage="", description="")
