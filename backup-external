@@ -26,7 +26,13 @@ def backup(name, target):
 
                 print "Backup %s -- %s" % (name, include)
                 destdir = target+os.path.dirname(include)
-                status = subprocess.call(["rsync", "-avhE", "--delete", "--", include, destdir])
+
+                if os.path.exists(excludesfile):
+                    exclude_arg = ["--exclude-from", excludesfile]
+                else:
+                    exclude_arg = []
+
+                status = subprocess.call(["rsync", "-avhE", "--delete"] + exclude_arg + ["--", include, destdir])
 
                 if status == 0:
                     subprocess.call(["backup-status", "update", name])
