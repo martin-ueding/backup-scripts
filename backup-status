@@ -34,8 +34,8 @@ def pretty(status):
 
         data.append([direction, name, last_date, difference])
 
-    table.print_table(["Dir", "Name", "Last", "Difference"], data)
-
+    if len(data) > 0:
+        table.print_table(["Dir", "Name", "Last", "Difference"], data)
 
 
 def main():
