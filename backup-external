@@ -16,8 +16,8 @@ backups = {
 }
 
 def backup(name, target):
-    includesfile = os.path.expanduser("~/.syncscripts/"+name+".include.txt")
-    excludesfile = os.path.expanduser("~/.syncscripts/"+name+".exclude.txt")
+    includesfile = os.path.expanduser("~/.config/syncscripts/"+name+".include.txt")
+    excludesfile = os.path.expanduser("~/.config/syncscripts/"+name+".exclude.txt")
 
     if os.path.exists(includesfile):
         with open(includesfile) as h:

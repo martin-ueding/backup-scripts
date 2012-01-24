@@ -48,7 +48,7 @@ def main():
     changed = False
 
 
-    statusfile = os.path.expanduser("~/.syncscripts/backup-status.js")
+    statusfile = os.path.expanduser("~/.local/share/syncscripts/backup-status.js")
 
     # Open the already existing file
     if os.path.exists(statusfile):
