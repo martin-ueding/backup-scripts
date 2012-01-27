@@ -14,8 +14,21 @@ backups = {
     "USB-Eins": "/media/USB-Eins",
     "USB-Zwei": "/media/USB-Zwei"
 }
+"""
+List with backups.
+
+@type: dict
+"""
 
 def backup(name, target):
+    """
+    Creates a backup to C{target}.
+
+    @param name: Name of this backup.
+    @type name: str
+    @param target: Target directory.
+    @type target: str
+    """
     includesfile = os.path.expanduser("~/.config/syncscripts/"+name+".include.txt")
     excludesfile = os.path.expanduser("~/.config/syncscripts/"+name+".exclude.txt")
 

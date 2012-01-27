@@ -12,6 +12,12 @@ import os
 import table
 
 def pretty(status):
+    """
+    Pretty format the backup status.
+
+    @param status: List with status dicts.
+    @type status: dict
+    """
     status = sorted(status, key=lambda backup: backup["last"])
 
     data = []
