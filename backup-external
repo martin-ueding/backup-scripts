@@ -4,8 +4,8 @@
 # Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
 
 import optparse
-import subprocess
 import os
+import subprocess
 
 backups = {
     "Eta": "/media/Eta/Backup",
