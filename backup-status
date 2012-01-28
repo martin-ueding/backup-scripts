@@ -9,7 +9,7 @@ import json
 import optparse
 import os
 
-import table
+import prettytable
 
 def pretty(status):
     """
@@ -41,7 +41,7 @@ def pretty(status):
         data.append([direction, name, last_date, difference])
 
     if len(data) > 0:
-        table.print_table(["Dir", "Name", "Last", "Difference"], data)
+        prettytable.print_table(["Dir", "Name", "Last", "Difference"], data)
 
 
 def main():
