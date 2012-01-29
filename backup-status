@@ -11,7 +11,7 @@ import os
 
 import prettytable
 
-def pretty(status):
+def pretty(status, direction_filter):
     """
     Pretty format the backup status.
 
@@ -25,8 +25,12 @@ def pretty(status):
     for s in status:
         if "type" in s:
             if s["type"] == "to":
+                if direction_filter is not None and direction_filter != "to":
+                    continue
                 direction = "->"
             elif s["type"] == "from":
+                if direction_filter is not None and direction_filter != "from":
+                    continue
                 direction = "<-"
             else:
                 direction = "??"
@@ -50,6 +54,11 @@ def main():
 
     (options, args) = parser.parse_args()
     del parser
+
+    if len(args) > 0:
+        direction_filter = args[0]
+    else:
+        direction_filter = None
 
     changed = False
 
@@ -83,7 +92,7 @@ def main():
                     s["type"] = args[2]
 
     else:
-        pretty(status)
+        pretty(status, direction_filter)
 
 
     if changed:
