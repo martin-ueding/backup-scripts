@@ -42,7 +42,7 @@ find "$target/MP3" -size 0 -delete
 
 time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
 	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
-	"/home/mu/.mp3_packer/128/home/mu/Musik/Musik" "$target/MP3/"
+	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik" "$target/MP3/"
 
 # move pictures
 find "$target/DCIM/" -type f -exec mv '{}' "$dropfolder" \;
