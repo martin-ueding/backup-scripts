@@ -2,8 +2,10 @@
 # Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
 
 # Copies music to the phone and moves pictures and audio notes to a given
-# folder on the computer. The music is shrinked to 128 kBit/s to save space on
-# the phone using the mp3_packer.
+# folder on the computer.
+#
+# The music is shrinked to 128 kBit/s to save space on the phone using the
+# mp3_packer.
 
 set -e
 set -u
@@ -44,17 +46,17 @@ time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
 	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
 	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik" "$target/MP3/"
 
-# move pictures
+# Move pictures.
 rename -v 's/JPG$/jpg/' "$target"/DCIM/*/*.JPG
 find "$target/DCIM/" -type f -exec mv '{}' "$dropfolder" \;
 
-# move audio notes
+# Move audio notes.
 for i in "$target/MSSEMC/Media Files/audio/"*.amr
 do
 	mv -v "$i" "$dropfolder/$(uuidgen).amr"
 done
 
-# save my password list
+# Backup my password list.
 passwordlist="$HOME/Dokumente/Listen/Hauptliste.kdb"
 if [[ -f "$passwordlist" ]]
 then
