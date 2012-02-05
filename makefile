@@ -8,4 +8,6 @@ epydoc: $(pythonfiles)
 .PHONY: clean
 clean:
 	$(RM) *.pyc
-	$(RM) -f html
+	$(RM) -r html
+	$(RM) backup-externalc
+	$(RM) backup-statusc
