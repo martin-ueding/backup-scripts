@@ -1,4 +1,6 @@
 *.pyc
 backup-externalc
 backup-statusc
+build
+dist
 html
