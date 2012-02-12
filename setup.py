@@ -9,6 +9,9 @@ setup(
     author = "Martin Ueding",
     author_email = "dev@martin-ueding.de",
     name = "backup_scripts",
-    scripts = ["backup-status"],
+    scripts = [
+        "backup-external",
+        "backup-status",
+    ],
     version = "1.0",
 )
