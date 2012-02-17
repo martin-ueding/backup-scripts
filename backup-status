@@ -3,6 +3,10 @@
 
 # Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
 
+"""
+Gives a status summary for the backups.
+"""
+
 import datetime
 import dateutil.parser
 import json
