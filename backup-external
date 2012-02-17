@@ -3,6 +3,10 @@
 
 # Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
 
+"""
+Traverses through the external drives and updates the backup on them.
+"""
+
 import optparse
 import os
 import subprocess
