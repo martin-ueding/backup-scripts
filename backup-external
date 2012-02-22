@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+# Copyright (c) 2011-2012 Martin Ueding <dev@martin-ueding.de>
 
 """
 Traverses through the external drives and updates the backup on them.
@@ -56,9 +56,6 @@ def backup(name, target):
 
 
 def main():
-    # Clean up before the backup starts.
-    subprocess.check_call(["home-cleanup"])
-
     for name, target in backups.items():
         if os.path.exists(target):
             backup(name, target)
