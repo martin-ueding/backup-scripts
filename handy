@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+# Copyright (c) 2011-2012 Martin Ueding <dev@martin-ueding.de>
 
 # Copies music to the phone and moves pictures and audio notes to a given
 # folder on the computer.
@@ -15,12 +15,9 @@ shopt -s nullglob
 target="/media/THETA"
 dropfolder="$HOME/TODO/"
 
-mp3_packer="$HOME/Branches/mp3_packer/mp3-packer"
-
-
 if which ffmpeg > /dev/null
 then
-	"$mp3_packer" "$HOME/Musik/Musik/"
+	mp3-packer "$HOME/Musik/Musik/"
 fi
 
 
