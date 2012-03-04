@@ -22,3 +22,5 @@ then
 fi
 
 rsync -avE "$src" "$target"
+
+backup-status update "Eta-KeePassX" to
