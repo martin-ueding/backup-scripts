@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+# Copyright (c) 2011-2012 Martin Ueding <dev@martin-ueding.de>
 
 """
 Gives a status summary for the backups.
@@ -15,12 +15,14 @@ import os
 
 import prettytable
 
+__docformat__ = "restructuredtext en"
+
 def pretty(status, direction_filter):
     """
     Pretty format the backup status.
 
-    @param status: List with status dicts.
-    @type status: dict
+    :param status: List with status dicts.
+    :type status: dict
     """
     status = sorted(status, key=lambda backup: backup["last"])
 
