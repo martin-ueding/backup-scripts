@@ -1,0 +1,24 @@
+#!/bin/bash
+# Copyright (c) 2012 Martin Ueding <dev@martin-ueding.de>
+
+# Creates a copy of the Hauptliste.kdb onto the SD card.
+
+set -e
+set -u
+
+src="$HOME/Dokumente/Listen/Hauptliste.kdb"
+target="/media/Eta-KeePassX/Backup/"
+
+if [[ ! -d "$target" ]]
+then
+	echo "ERROR: $target not mounted."
+	exit 1
+fi
+
+if [[ ! -f "$src" ]]
+then
+	echo "ERROR: $src not found."
+	exit 2
+fi
+
+rsync -avE "$src" "$target"

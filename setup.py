@@ -11,6 +11,7 @@ setup(
     name = "backup_scripts",
     scripts = [
         "backup-external",
+        "backup-hauptliste",
         "backup-status",
     ],
     version = "1.0",
