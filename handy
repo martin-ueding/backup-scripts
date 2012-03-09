@@ -44,7 +44,7 @@ time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
 	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik" "$target/MP3/"
 
 # Move pictures.
-rename -v 's/JPG$/jpg/' "$target"/DCIM/*/*.JPG
+rename -v 's/JPG$/jpg/' "$target"/DCIM/*/*.JPG foobar
 find "$target/DCIM/" -type f -exec mv '{}' "$dropfolder" \;
 
 # Move audio notes.
