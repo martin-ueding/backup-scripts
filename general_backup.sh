@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+# Copyright (c) 2011-2012 Martin Ueding <dev@martin-ueding.de>
 
 set -e
 set -u
@@ -85,11 +85,14 @@ rsync -avE --delete -- "$tempdir/$subfolder" "$current"
 # Dump the MySQL database.
 if [[ -n "$user" && -n "$passwd" && -n "$dumpsite" ]]
 then
+	echo "Starting MySQL dump."
 	sqlfile="$current/dump.sql"
 	if [ ! -f $sqlfile ]
 	then
 		wget --user $user --password $passwd -O $sqlfile "$dumpsite"
 	fi
+else
+	echo "No MySQL credentials given."
 fi
 
 # Create an archive which contains the current snapshot.
@@ -98,6 +101,7 @@ if [[ ! -d "$destdir" ]]
 then
 	mkdir -p -- "$destdir"
 fi
+echo "Creating tar archive."
 tar -czf "$destdir/$name-$(date +%y%m%d).tar.gz" -C "$backupdir" "$name"
 
 # Mark the current execution of the backup.
