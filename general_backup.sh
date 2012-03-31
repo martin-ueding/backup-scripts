@@ -44,6 +44,7 @@ cleanup() {
 	# Release the mounted FTP
 	if [[ -d "$tempdir" ]]
 	then
+		echo "Umounting FTP server."
 		fusermount -u "$tempdir"
 		rmdir -- "$tempdir"
 	fi
@@ -67,19 +68,23 @@ if [[ -f "$current/performed" ]]
 then
 	if [[ $(( $(date +%s) - $(stat -c %Y "$current/performed") )) -lt $(( 3600 * 24 * 3)) ]]
 	then
+		echo "No need to run backup again."
 		exit 0
 	fi
 fi
 
 # Create a mountpoint for the FTP.
+echo "Creating temporary dir."
 tempdir=$(mktemp -d)
 chgrp fuse -- "$tempdir"
 chmod 700 -- "$tempdir"
 
 # Mount the FTP
+echo "Mounting FTP server."
 curlftpfs "$server" "$tempdir"
 
 # Copy all the new data into the current directory
+echo "Starting rsync."
 rsync -avE --delete -- "$tempdir/$subfolder" "$current"
 
 # Dump the MySQL database.
