@@ -92,10 +92,8 @@ if [[ -n "$user" && -n "$passwd" && -n "$dumpsite" ]]
 then
 	echo "Starting MySQL dump."
 	sqlfile="$current/dump.sql"
-	if [ ! -f $sqlfile ]
-	then
-		wget --user $user --password $passwd -O $sqlfile "$dumpsite"
-	fi
+	rm -f -- "$sqlfile"
+	wget --user "$user" --password "$passwd" -O "$sqlfile" "$dumpsite"
 else
 	echo "No MySQL credentials given."
 fi
