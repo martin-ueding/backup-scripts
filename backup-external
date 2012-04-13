@@ -14,7 +14,7 @@ import subprocess
 __docformat__ = "restructuredtext en"
 
 backups = {
-    "Eta": "/media/Eta/Backup",
+    "Eta": "/media/Eta-Data/Backup",
     "Gamma": "/media/Gamma/Backup",
     "Sigma": "/media/Sigma/Backup",
     "USB-Eins": "/media/USB-Eins",
