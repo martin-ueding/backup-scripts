@@ -18,6 +18,8 @@ dropfolder="$HOME/TODO/"
 if which ffmpeg > /dev/null
 then
 	mp3-packer "$HOME/Musik/Musik/"
+else
+	echo "Warning: Do not call mp3-packer since ffmpeg is missing."
 fi
 
 
