@@ -4,10 +4,16 @@
 # Copyright © 2012 Martin Ueding <dev@martin-ueding.de>
 
 import argparse
+import datetime
 import os.path
-import subprocess
+#import subprocess
 import tempfile
 import yaml
+
+class subprocess(object):
+    @classmethod
+    def check_call(cls, arguments):
+        print ' '.join(arguments)
 
 __docformat__ = "restructuredtext en"
 
@@ -28,26 +34,76 @@ def backup_server(server):
     """
     print server
 
-    current = os.path.join(os.path.expanduser(server["backupdir"]), server["name"])
-    print "Creating backup into “{dir}”.".format(dir=current)
+    server["backupdir"] = os.path.expanduser(server["backupdir"])
+
+    server["current"] = os.path.join(server["backupdir"], server["name"])
+    print "Creating backup into “{dir}”.".format(dir=server["current"])
 
     # Make sure that the destination directory is created.
-    if not os.path.isdir(current):
-        os.makedirs(current)
+    if not os.path.isdir(server["current"]):
+        os.makedirs(server["current"])
 
+    copy_data(server)
+    dump_database(server)
+    create_archive(server)
+
+def copy_data(server):
     # Create mountpoint
-    tempdir = tempfile.mkdtemp()
-    subprocess.check_call(["chgrp", "fuse", "--", tempdir])
-    subprocess.check_call(["chmod", "700", "--", tempdir])
+    server["tempdir"] = tempfile.mkdtemp()
+    subprocess.check_call(["chgrp", "fuse", server["tempdir"]])
+    subprocess.check_call(["chmod", "700", server["tempdir"]])
 
-    print "Using “{dir}” as mount point.".format(dir=tempdir)
+    print "Using “{dir}” as mount point.".format(dir=server["tempdir"])
 
     # Mount FTP volume
-    # Copy all the files
-    # Dump the MySQL database.
-    # Create a .tar.gz archive with the current data.
-    # Update the backup-status entry.
+    print "Mounting “{ftp}”.".format(ftp=server["server"])
+    subprocess.check_call(["curlftpfs", server["server"], server["tempdir"]])
 
+    # Copy all the files
+    print "Copying all the files."
+    subprocess.check_call(["rsync", "-avE", "--delete", server["tempdir"]+"/", server["current"]+"/"])
+
+    subprocess.check_call(["fusermount", "-u", server["tempdir"]])
+
+def dump_database(server):
+    """
+    Dump the MySQL database.
+    """
+    if "dump" in server:
+        print "Dumping MySQL server via “{url}”.".format(url=server["dump"])
+
+        sqlfile = os.path.join(server["current"], "dump.sql")
+        subprocess.check_call(["wget", "--user", server["dump-user"], "--password", server["dump-password"], "-O", sqlfile, server["dump"]])
+
+def create_archive(server):
+    """
+    Create a .tar.gz archive with the current data.
+    """
+    today = datetime.date.today()
+    destdir = os.path.join(
+        server["backupdir"],
+        "{y:04d}-{m:02d}".format(y=today.year, m=today.month),
+    )
+    print "The archive is going into “{dir}”.".format(dir=destdir)
+
+    if not os.path.isdir(destdir):
+        os.makedirs(destdir)
+
+    archivename = "{name}-{y:04d}{m:02d}{d:02d}.tar.gz".format(
+        name = server["name"],
+        y = today.year,
+        m = today.month,
+        d = today.day,
+    )
+
+    print "Creating “{tar}”.".format(tar=archivename)
+    subprocess.check_call(["tar", "-czf", os.path.join(destdir, archivename), "-C", server["backupdir"], server["name"]])
+
+def update_status(server):
+    """
+    Update the backup-status entry.
+    """
+    subprocess.check_call(["backup-status", "update", server["name"]])
 
 def load_servers(serverfile):
     """
@@ -74,7 +130,6 @@ def _parse_args():
     #parser.add_argument("--version", action="version", version="<the version>")
 
     return parser.parse_args()
-
 
 if __name__ == "__main__":
     main()
