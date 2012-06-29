@@ -35,8 +35,8 @@ def backup_server(server):
     print server
 
     server["backupdir"] = os.path.expanduser(server["backupdir"])
-
     server["current"] = os.path.join(server["backupdir"], server["name"])
+
     print "Creating backup into “{dir}”.".format(dir=server["current"])
 
     # Make sure that the destination directory is created.
@@ -48,22 +48,25 @@ def backup_server(server):
     create_archive(server)
 
 def copy_data(server):
-    # Create mountpoint
-    server["tempdir"] = tempfile.mkdtemp()
-    subprocess.check_call(["chgrp", "fuse", server["tempdir"]])
-    subprocess.check_call(["chmod", "700", server["tempdir"]])
+    try:
+        # Create mountpoint
+        server["tempdir"] = tempfile.mkdtemp()
+        subprocess.check_call(["chgrp", "fuse", server["tempdir"]])
+        subprocess.check_call(["chmod", "700", server["tempdir"]])
 
-    print "Using “{dir}” as mount point.".format(dir=server["tempdir"])
+        print "Using “{dir}” as mount point.".format(dir=server["tempdir"])
 
-    # Mount FTP volume
-    print "Mounting “{ftp}”.".format(ftp=server["server"])
-    subprocess.check_call(["curlftpfs", server["server"], server["tempdir"]])
+        # Mount FTP volume
+        print "Mounting “{ftp}”.".format(ftp=server["server"])
+        subprocess.check_call(["curlftpfs", server["server"], server["tempdir"]])
 
-    # Copy all the files
-    print "Copying all the files."
-    subprocess.check_call(["rsync", "-avE", "--delete", server["tempdir"]+"/", server["current"]+"/"])
+        # Copy all the files
+        print "Copying all the files."
+        subprocess.check_call(["rsync", "-avE", "--delete",
+                               server["tempdir"]+"/", server["current"]+"/"])
 
-    subprocess.check_call(["fusermount", "-u", server["tempdir"]])
+    finally:
+        subprocess.check_call(["fusermount", "-u", server["tempdir"]])
 
 def dump_database(server):
     """
@@ -73,7 +76,9 @@ def dump_database(server):
         print "Dumping MySQL server via “{url}”.".format(url=server["dump"])
 
         sqlfile = os.path.join(server["current"], "dump.sql")
-        subprocess.check_call(["wget", "--user", server["dump-user"], "--password", server["dump-password"], "-O", sqlfile, server["dump"]])
+        subprocess.check_call(["wget", "--user", server["dump-user"],
+                               "--password", server["dump-password"], "-O",
+                               sqlfile, server["dump"]])
 
 def create_archive(server):
     """
@@ -97,7 +102,8 @@ def create_archive(server):
     )
 
     print "Creating “{tar}”.".format(tar=archivename)
-    subprocess.check_call(["tar", "-czf", os.path.join(destdir, archivename), "-C", server["backupdir"], server["name"]])
+    subprocess.check_call(["tar", "-czf", os.path.join(destdir, archivename),
+                           "-C", server["backupdir"], server["name"]])
 
 def update_status(server):
     """
