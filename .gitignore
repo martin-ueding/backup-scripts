@@ -1,6 +1,7 @@
 *.pyc
 backup-externalc
 backup-statusc
+backup-webserversc
 build
 dist
 html
