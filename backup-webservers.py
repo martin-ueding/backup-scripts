@@ -11,7 +11,24 @@ __docformat__ = "restructuredtext en"
 def main():
     options = _parse_args()
 
-    load_servers("servers.yaml")
+    servers = load_servers("servers.yaml")
+
+    for server in servers:
+        backup_server(server)
+
+def backup_server(server):
+    """
+    Creates a backup of the given server.
+
+    :param server: Server data.
+    :type server: dict
+    """
+    # Create mountpoint
+    # Mount FTP volume
+    # Copy all the files
+    # Dump the MySQL database.
+    # Create a .tar.gz archive with the current data.
+    # Update the backup-status entry.
 
 
 def load_servers(serverfile):
