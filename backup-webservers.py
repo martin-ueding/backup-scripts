@@ -45,7 +45,7 @@ def backup_server(server):
 def copy_data(server):
     try:
         # Create mountpoint
-        server["tempdir"] = tempfile.mkdtemp()
+        server["tempdir"] = tempfile.mkdtemp(prefix="backup-webservers")
         subprocess.check_call(["chgrp", "fuse", server["tempdir"]])
         subprocess.check_call(["chmod", "700", server["tempdir"]])
 
