@@ -6,14 +6,9 @@
 import argparse
 import datetime
 import os.path
-#import subprocess
+import subprocess
 import tempfile
 import yaml
-
-class subprocess(object):
-    @classmethod
-    def check_call(cls, arguments):
-        print ' '.join(arguments)
 
 __docformat__ = "restructuredtext en"
 
