@@ -62,8 +62,14 @@ def copy_data(server):
 
         # Copy all the files
         print "Copying all the files."
+
+        if "subfolder" in server:
+            subfolder = server["tempdir"] + "/" + server["subfolder"] + "/"
+        else:
+            subfolder = server["tempdir"] + "/"
+
         subprocess.check_call(["rsync", "-avE", "--delete",
-                               server["tempdir"]+"/", server["current"]+"/"])
+                               subfolder, server["current"]+"/"])
 
     finally:
         subprocess.check_call(["fusermount", "-u", server["tempdir"]])
