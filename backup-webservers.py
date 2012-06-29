@@ -18,7 +18,10 @@ def main():
     servers = load_servers("servers.yaml")
 
     for server in servers:
-        backup_server(server)
+        try:
+            backup_server(server)
+        except subprocess.CalledProcessError as e:
+            print e
 
 def backup_server(server):
     """
