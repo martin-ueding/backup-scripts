@@ -1,6 +1,6 @@
 # Copyright (c) 2012 Martin Ueding <dev@martin-ueding.de>
 
-pythonfiles:=$(wildcard *.py) backup-external backup-status
+pythonfiles:=$(wildcard *.py) backup-external backup-status backup-webservers
 
 epydoc: $(pythonfiles)
 	epydoc -v $^

@@ -13,6 +13,7 @@ setup(
         "backup-external",
         "backup-hauptliste",
         "backup-status",
+        "backup-webservers",
     ],
     version = "1.0",
 )
