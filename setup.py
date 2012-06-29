@@ -14,6 +14,7 @@ setup(
         "backup-hauptliste",
         "backup-status",
         "backup-webservers",
+        "handy",
     ],
     version = "1.0",
 )
