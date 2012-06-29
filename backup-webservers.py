@@ -4,6 +4,9 @@
 # Copyright © 2012 Martin Ueding <dev@martin-ueding.de>
 
 import argparse
+import os.path
+import subprocess
+import tempfile
 import yaml
 
 __docformat__ = "restructuredtext en"
@@ -23,7 +26,22 @@ def backup_server(server):
     :param server: Server data.
     :type server: dict
     """
+    print server
+
+    current = os.path.join(os.path.expanduser(server["backupdir"]), server["name"])
+    print "Creating backup into “{dir}”.".format(dir=current)
+
+    # Make sure that the destination directory is created.
+    if not os.path.isdir(current):
+        os.makedirs(current)
+
     # Create mountpoint
+    tempdir = tempfile.mkdtemp()
+    subprocess.check_call(["chgrp", "fuse", "--", tempdir])
+    subprocess.check_call(["chmod", "700", "--", tempdir])
+
+    print "Using “{dir}” as mount point.".format(dir=tempdir)
+
     # Mount FTP volume
     # Copy all the files
     # Dump the MySQL database.
