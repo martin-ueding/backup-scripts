@@ -27,8 +27,8 @@ setup(
     author = "Martin Ueding",
     author_email = "dev@martin-ueding.de",
     description = "Creates backups of FTP servers.",
-    license = "MIT"
-    name = "backupwebservers",
+    license = "MIT",
+    name = "webserverbackup",
     py_modules = ["webserverbackup"],
     scripts = ["backup-webservers"],
     version = "1.0",
