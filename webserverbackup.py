@@ -31,6 +31,16 @@ Creates backups from FTP servers and MySQL databases.
 You can use the ``backup-webservers`` script with a configuration file (see
 that script for more information). You can also just use this module and use it
 in your own scripts.
+
+dependencies
+============
+
+This module depends on the following things:
+
+- You have ``curlftpfs`` as a program installed.
+- There is a ``chmod`` and a ``chgrp`` program. I assume this is the case only
+  on Linux and UNIX.
+- Your user is in group ``fuse``.
 """
 
 def backup_server(server):
