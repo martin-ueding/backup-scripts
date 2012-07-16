@@ -2,6 +2,12 @@
 
 pythonfiles:=backup-external backup-status backup-webservers
 
+all:
+	@echo "Nothing to do."
+
+install:
+	python setup.py install --prefix "$(DESTDIR)"
+
 epydoc: $(pythonfiles)
 	epydoc -v $^
 
