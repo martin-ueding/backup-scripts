@@ -43,6 +43,14 @@ This module depends on the following things:
 - Your user is in group ``fuse``.
 """
 
+import datetime
+import os.path
+import subprocess
+import tempfile
+import yaml
+
+__docformat__ = "restructuredtext en"
+
 def backup_server(server):
     """
     Creates a backup of the given server.
