@@ -1,0 +1,7 @@
+v1.1.1
+	- Use Debian directory layout for Python modules.
+v1.1
+    - Merge a bunch of smaller projects into this.
+    - Use Python for the webserver backup.
+v1.0
+    Initial Release.
