@@ -27,6 +27,7 @@ setup(
     author = "Martin Ueding",
     author_email = "dev@martin-ueding.de",
     name = "backup_scripts",
+    py_modules = ["webserverbackup"],
     scripts = [
         "backup-external",
         "backup-hauptliste",
@@ -34,5 +35,5 @@ setup(
         "backup-webservers",
         "handy",
     ],
-    version = "1.0",
+    version = "1.1.2",
 )
