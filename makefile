@@ -6,7 +6,7 @@ all:
 	@echo "Nothing to do."
 
 install:
-	python setup.py install --prefix "$(DESTDIR)"
+	python setup.py install --install-layout deb --root "$(DESTDIR)"
 
 epydoc: $(pythonfiles)
 	epydoc -v $^
