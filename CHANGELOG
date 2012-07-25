@@ -1,9 +1,20 @@
+.. Copyright © 2012 Martin Ueding <dev@martin-ueding.de>
+
+#########
+CHANGELOG
+#########
+
 v1.1.2
 	- Actually include Python module in installation.
+
 v1.1.1
 	- Use Debian directory layout for Python modules.
+
 v1.1
     - Merge a bunch of smaller projects into this.
     - Use Python for the webserver backup.
+
 v1.0
     Initial Release.
+
+.. vim: ft=rst
