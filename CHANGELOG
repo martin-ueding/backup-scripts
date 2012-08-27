@@ -4,6 +4,9 @@
 CHANGELOG
 #########
 
+v1.1.5
+    - Delete excluded files.
+
 v1.1.4
     - Fix update part.
 
