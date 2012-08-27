@@ -54,8 +54,10 @@ def backup(name, target):
                 if not os.path.isdir(destdir):
                     os.makedirs(destdir)
 
+                command = ["rsync", "-avhE", "--delete", "--delete-excluded"] + exclude_arg + ["--", include, destdir]
+
                 try:
-                    subprocess.check_call(["rsync", "-avhE", "--delete"] + exclude_arg + ["--", include, destdir])
+                    subprocess.check_call(command)
                 except subprocess.CalledProcessError as e:
                     print e
                 else:
