@@ -4,6 +4,9 @@
 CHANGELOG
 #########
 
+v1.2
+    - Use old bash scripts for ``backup-webservers``.
+
 v1.1.5
     - Delete excluded files.
 
