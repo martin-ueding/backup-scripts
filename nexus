@@ -4,4 +4,26 @@
 set -e
 set -u
 
+if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
+then
+	bold="\[$(tput bold)\]"
+	blue="\[$(tput setaf 4)\]"
+	green="\[$(tput setaf 2)\]"
+	orange="\[$(tput setaf 3)\]"
+	red="\[$(tput setaf 1)\]"
+	reset="\[$(tput sgr0)\]"
+else
+	bold=
+	blue=
+	green=
+	orange=
+	red=
+	reset=
+fi
 
+cat <<EOF
+│╲   │  ┌──  ╲  ╱  │   │  ╱──
+│ ╲  │  │__   ╲╱   │   │  ╲__
+│  ╲ │  │     ╱╲   │   │     ╲
+│   ╲│  └──  ╱  ╲  └───┘   __╱
+EOF
