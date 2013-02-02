@@ -4,14 +4,19 @@
 set -e
 set -u
 
+shopt -s nullglob
+
+target="/media/Nexus"
+dropfolder="$HOME/TODO/"
+
 if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
 then
-	bold="\[$(tput bold)\]"
-	blue="\[$(tput setaf 4)\]"
-	green="\[$(tput setaf 2)\]"
-	orange="\[$(tput setaf 3)\]"
-	red="\[$(tput setaf 1)\]"
-	reset="\[$(tput sgr0)\]"
+	bold="$(tput bold)"
+	blue="$(tput setaf 4)"
+	green="$(tput setaf 2)"
+	orange="$(tput setaf 3)"
+	red="$(tput setaf 1)"
+	reset="$(tput sgr0)"
 else
 	bold=
 	blue=
@@ -22,8 +27,33 @@ else
 fi
 
 cat <<EOF
-│╲   │  ┌──  ╲  ╱  │   │  ╱──
-│ ╲  │  │__   ╲╱   │   │  ╲__
-│  ╲ │  │     ╱╲   │   │     ╲
-│   ╲│  └──  ╱  ╲  └───┘   __╱
+│╲   │  ┌──  ${blue}╲  ${red}╱${reset}  │   │  ╱──
+│ ╲  │  │__   ${blue}╲${red}╱${reset}   │   │  ╲__
+│  ╲ │  │     ${orange}╱${green}╲${reset}   │   │     ╲
+│   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱
 EOF
+
+mp3-packer "$HOME/Musik/Musik/"
+
+if [[ ! -d "$target" ]]
+then
+	echo -e "Error: $target is not mounted"
+	exit 1
+fi
+
+if ! touch "$target/rw-test"
+then
+	echo "$target is writeable"
+	exit 1
+else
+	rm "$target/rw-test"
+fi
+
+# Delete all empty files that cause trouble from the target's MP3 folder.
+find "$target/MP3" -size 0 -delete
+
+time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
+	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
+	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik" "$target/MP3/"
+
+backup-status update "$target"
