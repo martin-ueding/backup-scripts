@@ -6,7 +6,10 @@ set -u
 
 shopt -s nullglob
 
-target="/media/Nexus"
+target="/media/Nexus/"
+target_music="$target/MP3/"
+target_pdf="$target/PDF/"
+
 dropfolder="$HOME/TODO/"
 
 if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
@@ -33,7 +36,13 @@ cat <<EOF
 │   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱
 EOF
 
-rsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' ~/Dokumente/Studium/physik321/ ~/TODO/
+copypdf() {
+	from="$0"
+
+	rsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target_pdf/$from"
+}
+
+copypdf "$HOME/Dokumente/Studium/physik321/"
 
 exit 0
 
@@ -54,10 +63,10 @@ else
 fi
 
 # Delete all empty files that cause trouble from the target's MP3 folder.
-find "$target/MP3" -size 0 -delete
+find "$target_music" -size 0 -delete
 
 time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
 	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
-	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik" "$target/MP3/"
+	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik" "$target_music"
 
 backup-status update "$target"
