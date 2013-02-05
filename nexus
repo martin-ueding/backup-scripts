@@ -37,19 +37,17 @@ pdfdirs=(
 ###############################################################################
 
 myrsync() {
-	rsync --rsh='ssh -p 2222' "$@"
+	rsync --rsh='ssh -p 2222' --progress -hlmrv --delete --size-only --ignore-errors "$@"
 }
 
 copypdf() {
 	local from="$1"
 	local frombase="${from#/home/*/}"
-	local target="$target_pdf/${frombase}"
+	local target="$target_pdf/${frombase%/*}"
 
 	echo "${cyan}Folder $from to $target${reset}"
 
-	ssh -p 2222 $ip mkdir -p "/sdcard/PDF/$frombase"
-
-	myrsync -aEhmv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target"
+	myrsync --include='*.pdf' --include='*/' --exclude='*' "$from" "$target/"
 
 	echo
 }
@@ -117,7 +115,7 @@ echo
 
 #mp3-packer "$HOME/Musik/Musik/"
 
-myrsync --max-size 15M -mvr --size-only --delete --ignore-errors \
+myrsync --max-size 15M \
 	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
 	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
 
