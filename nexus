@@ -81,7 +81,7 @@ EOF
 ###############################################################################
 
 echo
-echo "${cyan}Copying PDF files to Nexus${reset}"
+echo "${green}Copying PDF files to Nexus${reset}"
 echo
 
 copypdf() {
@@ -103,11 +103,13 @@ do
 	copypdf "$pdfdir"
 done
 
-exit 0
-
 ###############################################################################
 #                               copy MP3 files                                #
 ###############################################################################
+
+echo
+echo "${green}Copying MP3 files to Nexus${reset}"
+echo
 
 mp3-packer "$HOME/Musik/Musik/"
 
