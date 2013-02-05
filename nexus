@@ -11,7 +11,8 @@ shopt -s extglob
 #                                   options                                   #
 ###############################################################################
 
-target="192.168.100.106:/sdcard"
+ip=192.168.100.106
+target="$ip:/sdcard"
 target_music="$target/Music"
 target_pdf="$target/PDF"
 
@@ -46,9 +47,9 @@ copypdf() {
 
 	echo "${cyan}Folder $from to $target${reset}"
 
-	mkdir -p "$target"
+	ssh -p 2222 $ip mkdir -p "/sdcard/PDF/$frombase"
 
-	myrsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target"
+	myrsync -aEhmv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target"
 
 	echo
 }
