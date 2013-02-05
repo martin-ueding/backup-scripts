@@ -6,26 +6,39 @@ set -u
 
 shopt -s nullglob
 
-target="/media/Nexus/"
-target_music="$target/MP3/"
-target_pdf="$target/PDF/"
+target="/media/Nexus"
+target="$HOME/TODO"
+target_music="$target/MP3"
+target_pdf="$target/PDF"
 
 dropfolder="$HOME/TODO/"
 
 if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
 then
 	bold="$(tput bold)"
+
+	black="$(tput setaf 0)"
 	blue="$(tput setaf 4)"
+	cyan="$(tput setaf 6)"
 	green="$(tput setaf 2)"
 	orange="$(tput setaf 3)"
+	purple="$(tput setaf 5)"
 	red="$(tput setaf 1)"
+	white="$(tput setaf 7)"
+
 	reset="$(tput sgr0)"
 else
 	bold=
+
+	black=
 	blue=
+	cyan=
 	green=
 	orange=
+	purple=
 	red=
+	white=
+
 	reset=
 fi
 
@@ -36,10 +49,20 @@ cat <<EOF
 │   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱
 EOF
 
-copypdf() {
-	from="$0"
+echo
+echo "${cyan}Copying PDF files to Nexus${reset}"
+echo
 
-	rsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target_pdf/$from"
+copypdf() {
+	local from="$1"
+	local frombase="${from#/home/*/}"
+	local target="$target_pdf/${frombase}"
+
+	echo "${cyan}Folder $from to $target${reset}"
+
+	mkdir -p "$target"
+
+	rsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target"
 }
 
 copypdf "$HOME/Dokumente/Studium/physik321/"
