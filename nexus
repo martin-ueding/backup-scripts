@@ -11,9 +11,8 @@ shopt -s extglob
 #                                   options                                   #
 ###############################################################################
 
-target="192.168.100.106"
-target="$HOME/TODO"
-target_music="$target/MP3"
+target="192.168.100.106:/sdcard"
+target_music="$target/Music"
 target_pdf="$target/PDF"
 
 dropfolder="$HOME/TODO/"
@@ -32,11 +31,27 @@ pdfdirs=(
 
 )
 
-rsync="rsync --rsh='ssh -p 2222'"
-
 ###############################################################################
 #                                   program                                   #
 ###############################################################################
+
+myrsync() {
+	rsync --rsh='ssh -p 2222' "$@"
+}
+
+copypdf() {
+	local from="$1"
+	local frombase="${from#/home/*/}"
+	local target="$target_pdf/${frombase}"
+
+	echo "${cyan}Folder $from to $target${reset}"
+
+	mkdir -p "$target"
+
+	myrsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target"
+
+	echo
+}
 
 if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
 then
@@ -86,20 +101,6 @@ echo
 echo "${green}Copying PDF files to Nexus${reset}"
 echo
 
-copypdf() {
-	local from="$1"
-	local frombase="${from#/home/*/}"
-	local target="$target_pdf/${frombase}"
-
-	echo "${cyan}Folder $from to $target${reset}"
-
-	mkdir -p "$target"
-
-	$rsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target"
-
-	echo
-}
-
 for pdfdir in "${pdfdirs[@]}"
 do
 	copypdf "$pdfdir"
@@ -113,28 +114,11 @@ echo
 echo "${green}Copying MP3 files to Nexus${reset}"
 echo
 
-mp3-packer "$HOME/Musik/Musik/"
+#mp3-packer "$HOME/Musik/Musik/"
 
-if [[ ! -d "$target" ]]
-then
-	echo -e "Error: $target is not mounted"
-	exit 1
-fi
-
-if ! touch "$target/rw-test"
-then
-	echo "$target is writeable"
-	exit 1
-else
-	rm "$target/rw-test"
-fi
-
-# Delete all empty files that cause trouble from the target's MP3 folder.
-find "$target_music" -size 0 -delete
-
-time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
+myrsync --max-size 15M -mvr --size-only --delete --ignore-errors \
 	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
-	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik" "$target_music"
+	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
 
 ###############################################################################
 #                            update backup-status                             #
