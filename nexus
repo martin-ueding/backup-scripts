@@ -5,6 +5,7 @@ set -e
 set -u
 
 shopt -s nullglob
+shopt -s extglob
 
 target="/media/Nexus"
 target="$HOME/TODO"
@@ -63,9 +64,28 @@ copypdf() {
 	mkdir -p "$target"
 
 	rsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target"
+
+	echo
 }
 
-copypdf "$HOME/Dokumente/Studium/physik321/"
+pdfdirs=(
+
+"$HOME/Dokumente/2012-LaTeX_Kurs"
+"$HOME/Dokumente/Anleitungen"
+"$HOME/Dokumente/Informationen"
+"$HOME/Dokumente/Nachhilfe"
+"$HOME/Dokumente/Physik_Dokumente"
+"$HOME/Dokumente/Studium/"Modulhandbuch_*.pdf
+"$HOME/Dokumente/Studium/EBooks"
+"$HOME/Dokumente/Studium/math340"
+"$HOME/Dokumente/Studium/physik321"
+
+)
+
+for pdfdir in "${pdfdirs[@]}"
+do
+	copypdf "$pdfdir"
+done
 
 exit 0
 
