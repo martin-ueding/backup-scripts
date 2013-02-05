@@ -33,6 +33,10 @@ cat <<EOF
 │   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱
 EOF
 
+rsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' ~/Dokumente/Studium/physik321/ ~/TODO/
+
+exit 0
+
 mp3-packer "$HOME/Musik/Musik/"
 
 if [[ ! -d "$target" ]]
