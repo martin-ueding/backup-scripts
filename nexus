@@ -65,12 +65,20 @@ else
 	reset=
 fi
 
+###############################################################################
+#                                program title                                #
+###############################################################################
+
 cat <<EOF
 │╲   │  ┌──  ${blue}╲  ${red}╱${reset}  │   │  ╱──
 │ ╲  │  │__   ${blue}╲${red}╱${reset}   │   │  ╲__
 │  ╲ │  │     ${orange}╱${green}╲${reset}   │   │     ╲
 │   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱
 EOF
+
+###############################################################################
+#                               copy PDF files                                #
+###############################################################################
 
 echo
 echo "${cyan}Copying PDF files to Nexus${reset}"
@@ -90,13 +98,16 @@ copypdf() {
 	echo
 }
 
-
 for pdfdir in "${pdfdirs[@]}"
 do
 	copypdf "$pdfdir"
 done
 
 exit 0
+
+###############################################################################
+#                               copy MP3 files                                #
+###############################################################################
 
 mp3-packer "$HOME/Musik/Musik/"
 
@@ -120,5 +131,9 @@ find "$target_music" -size 0 -delete
 time rsync --max-size 15M -vr --size-only --delete --ignore-errors \
 	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
 	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik" "$target_music"
+
+###############################################################################
+#                            update backup-status                             #
+###############################################################################
 
 backup-status update "$target"
