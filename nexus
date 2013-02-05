@@ -7,12 +7,34 @@ set -u
 shopt -s nullglob
 shopt -s extglob
 
+###############################################################################
+#                                   options                                   #
+###############################################################################
+
 target="/media/Nexus"
 target="$HOME/TODO"
 target_music="$target/MP3"
 target_pdf="$target/PDF"
 
 dropfolder="$HOME/TODO/"
+
+pdfdirs=(
+
+"$HOME/Dokumente/2012-LaTeX_Kurs"
+"$HOME/Dokumente/Anleitungen"
+"$HOME/Dokumente/Informationen"
+"$HOME/Dokumente/Nachhilfe"
+"$HOME/Dokumente/Physik_Dokumente"
+"$HOME/Dokumente/Studium/"Modulhandbuch_*.pdf
+"$HOME/Dokumente/Studium/EBooks"
+"$HOME/Dokumente/Studium/math340"
+"$HOME/Dokumente/Studium/physik321"
+
+)
+
+###############################################################################
+#                                   program                                   #
+###############################################################################
 
 if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
 then
@@ -68,19 +90,6 @@ copypdf() {
 	echo
 }
 
-pdfdirs=(
-
-"$HOME/Dokumente/2012-LaTeX_Kurs"
-"$HOME/Dokumente/Anleitungen"
-"$HOME/Dokumente/Informationen"
-"$HOME/Dokumente/Nachhilfe"
-"$HOME/Dokumente/Physik_Dokumente"
-"$HOME/Dokumente/Studium/"Modulhandbuch_*.pdf
-"$HOME/Dokumente/Studium/EBooks"
-"$HOME/Dokumente/Studium/math340"
-"$HOME/Dokumente/Studium/physik321"
-
-)
 
 for pdfdir in "${pdfdirs[@]}"
 do
