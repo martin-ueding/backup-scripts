@@ -11,7 +11,7 @@ shopt -s extglob
 #                                   options                                   #
 ###############################################################################
 
-target="/media/Nexus"
+target="192.168.100.106"
 target="$HOME/TODO"
 target_music="$target/MP3"
 target_pdf="$target/PDF"
@@ -31,6 +31,8 @@ pdfdirs=(
 "$HOME/Dokumente/Studium/physik321"
 
 )
+
+rsync="rsync --rsh='ssh -p 2222'"
 
 ###############################################################################
 #                                   program                                   #
@@ -93,7 +95,7 @@ copypdf() {
 
 	mkdir -p "$target"
 
-	rsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target"
+	$rsync -aEhmnv --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target"
 
 	echo
 }
