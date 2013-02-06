@@ -25,9 +25,11 @@ pdfdirs=(
 "$HOME/Dokumente/Informationen"
 "$HOME/Dokumente/Nachhilfe"
 "$HOME/Dokumente/Physik_Dokumente"
+"$HOME/Dokumente/Spektrum"
 "$HOME/Dokumente/Studium/"Modulhandbuch_*.pdf
 "$HOME/Dokumente/Studium/EBooks"
 "$HOME/Dokumente/Studium/math340"
+"$HOME/Dokumente/Studium/physik312"
 "$HOME/Dokumente/Studium/physik321"
 
 )
