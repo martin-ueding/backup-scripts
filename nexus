@@ -136,7 +136,7 @@ ssh -p 2222 "$ip" "rm -rv /sdcard/Download/*"
 
 printheading "Copying MP3 files to Nexus"
 
-#mp3-packer "$HOME/Musik/Musik/"
+mp3-packer "$HOME/Musik/Musik/"
 
 myrsync --max-size 15M \
 	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
