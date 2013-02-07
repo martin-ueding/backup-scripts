@@ -11,7 +11,8 @@ shopt -s extglob
 #                                   options                                   #
 ###############################################################################
 
-ip=192.168.100.106
+ip="192.168.100.106"
+port="2222"
 target="$ip:/sdcard"
 target_music="$target/Music"
 target_pdf="$target/PDF"
@@ -39,7 +40,7 @@ pdfdirs=(
 ###############################################################################
 
 myrsync() {
-	rsync --rsh='ssh -p 2222' --progress -hlmrv --delete --size-only --ignore-errors "$@"
+	rsync --rsh="ssh -p $port" --progress -hlmrv --delete --size-only --ignore-errors "$@"
 }
 
 copypdf() {
@@ -51,6 +52,12 @@ copypdf() {
 
 	myrsync --include='*.pdf' --include='*/' --exclude='*' "$from" "$target/"
 
+	echo
+}
+
+printheading() {
+	echo
+	echo "${green}$1${reset}"
 	echo
 }
 
@@ -98,9 +105,7 @@ EOF
 #                               copy PDF files                                #
 ###############################################################################
 
-echo
-echo "${green}Copying PDF files to Nexus${reset}"
-echo
+printheading "copying PDF files to Nexus"
 
 for pdfdir in "${pdfdirs[@]}"
 do
@@ -108,12 +113,28 @@ do
 done
 
 ###############################################################################
+#                     move camera images to the computer                      #
+###############################################################################
+
+printheading "mode taken pictures to computer"
+
+myrsync "$target/DCIM/Camera/" "$dropfolder"
+ssh -p 2222 "$ip" "rm -v /sdcard/DCIM/Camera/*"
+
+###############################################################################
+#                     move download items to the computer                     #
+###############################################################################
+
+printheading "move downloaded items to computer"
+
+myrsync "$target/Download/" "$dropfolder"
+ssh -p 2222 "$ip" "rm -rv /sdcard/Download/*"
+
+###############################################################################
 #                               copy MP3 files                                #
 ###############################################################################
 
-echo
-echo "${green}Copying MP3 files to Nexus${reset}"
-echo
+printheading "Copying MP3 files to Nexus"
 
 #mp3-packer "$HOME/Musik/Musik/"
 
