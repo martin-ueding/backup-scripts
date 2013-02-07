@@ -16,7 +16,7 @@ target="$ip:/sdcard"
 target_music="$target/Music"
 target_pdf="$target/PDF"
 
-dropfolder="$HOME/TODO/"
+dropfolder="$HOME/TODO"
 
 pdfdirs=(
 
