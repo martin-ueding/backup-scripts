@@ -40,7 +40,7 @@ pdfdirs=(
 ###############################################################################
 
 myrsync() {
-	rsync --rsh="ssh -p $port" --progress -hlmrv --delete --size-only --ignore-errors "$@"
+	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors "$@"
 }
 
 copypdf() {
@@ -50,7 +50,7 @@ copypdf() {
 
 	echo "${cyan}Folder $from to $target${reset}"
 
-	myrsync --include='*.pdf' --include='*/' --exclude='*' "$from" "$target/"
+	myrsync --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target/"
 
 	echo
 }
@@ -138,7 +138,7 @@ printheading "Copying MP3 files to Nexus"
 
 mp3-packer "$HOME/Musik/Musik/"
 
-myrsync --max-size 15M \
+myrsync --delete --max-size 15M \
 	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
 	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
 
