@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Copyright © 2012 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2012-2013 Martin Ueding <dev@martin-ueding.de>
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to
@@ -34,6 +34,7 @@ setup(
         "backup-status",
         "backup-webservers",
         "handy",
+        "nexus",
     ],
-    version = "1.1.2",
+    version = "1.3",
 )
