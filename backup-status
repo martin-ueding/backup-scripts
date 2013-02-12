@@ -1,7 +1,6 @@
 #!/usr/bin/python
+# Copyright © 2011-2013 Martin Ueding <dev@martin-ueding.de>
 # -*- coding: utf-8 -*-
-
-# Copyright (c) 2011-2012 Martin Ueding <dev@martin-ueding.de>
 
 """
 Gives a status summary for the backups.

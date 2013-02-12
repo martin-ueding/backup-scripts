@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2011-2013 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2011-2013 Martin Ueding <dev@martin-ueding.de>
 
 # Copies music to the phone and moves pictures and audio notes to a given
 # folder on the computer.
