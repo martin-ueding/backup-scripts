@@ -122,7 +122,7 @@ done
 printheading "mode taken pictures to computer"
 
 myrsync "$target/DCIM/Camera/" "$dropfolder"
-ssh -p 2222 "$ip" "rm -fv /sdcard/DCIM/Camera/*"
+ssh -p 2222 "$ip" "rm -frv /sdcard/DCIM/Camera/*"
 
 ###############################################################################
 #                     move download items to the computer                     #
@@ -131,7 +131,7 @@ ssh -p 2222 "$ip" "rm -fv /sdcard/DCIM/Camera/*"
 printheading "move downloaded items to computer"
 
 myrsync "$target/Download/" "$dropfolder"
-ssh -p 2222 "$ip" "rm -rfv /sdcard/Download/*"
+ssh -p 2222 "$ip" "rm -frv /sdcard/Download/*"
 
 ###############################################################################
 #                               copy MP3 files                                #
