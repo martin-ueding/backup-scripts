@@ -52,6 +52,7 @@ copypdf() {
 
 	echo "${cyan}Folder $from to $target${reset}"
 
+	ssh -p "$port" "$ip" "mkdir -p \"${target#*:}\""
 	myrsync --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target/"
 
 	echo
