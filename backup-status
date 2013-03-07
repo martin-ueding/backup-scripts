@@ -7,13 +7,13 @@
 Gives a status summary for the backups.
 """
 
+from prettytable import PrettyTable
 import datetime
 import dateutil.parser
 import json
 import optparse
 import os
 
-import prettytable
 
 __docformat__ = "restructuredtext en"
 
@@ -51,7 +51,13 @@ def pretty(status, direction_filter):
         data.append([direction, name, last_date, difference])
 
     if len(data) > 0:
-        prettytable.print_table(["Dir", "Name", "Last", "Difference"], data)
+        t = PrettyTable(["Dir", "Name", "Last", "Difference"])
+        for row in data:
+            t.add_row(row)
+        t.align["Name"] = "l"
+        t.align["Dir"] = "c"
+        t.align["Difference"] = "r"
+        print t
 
 
 def main():
