@@ -37,6 +37,14 @@ pdfdirs=(
 
 )
 
+bins=(
+
+DCIM/Camera
+Download
+TODO
+
+)
+
 ###############################################################################
 #                                   program                                   #
 ###############################################################################
@@ -56,6 +64,15 @@ copypdf() {
 	myrsync --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target/"
 
 	echo
+}
+
+movetocomputer() {
+	folder="$1"
+
+	printheading "move $folder to computer"
+
+	myrsync "$target/$folder/" "$dropfolder"
+	ssh -p 2222 "$ip" "rm -frv /sdcard/$folder/*"
 }
 
 printheading() {
@@ -116,22 +133,13 @@ do
 done
 
 ###############################################################################
-#                     move camera images to the computer                      #
+#                          move data to the computer                          #
 ###############################################################################
 
-printheading "mode taken pictures to computer"
-
-myrsync "$target/DCIM/Camera/" "$dropfolder"
-ssh -p 2222 "$ip" "rm -frv /sdcard/DCIM/Camera/*"
-
-###############################################################################
-#                     move download items to the computer                     #
-###############################################################################
-
-printheading "move downloaded items to computer"
-
-myrsync "$target/Download/" "$dropfolder"
-ssh -p 2222 "$ip" "rm -frv /sdcard/Download/*"
+for bin in "${bins[@]}"
+do
+	movetocomputer "$bin"
+done
 
 ###############################################################################
 #                               copy MP3 files                                #
