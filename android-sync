@@ -7,10 +7,6 @@ set -u
 shopt -s nullglob
 shopt -s extglob
 
-###############################################################################
-#                                   options                                   #
-###############################################################################
-
 pdfdirs=(
 
 "$HOME/Dokumente/2012-LaTeX_Kurs"
@@ -44,9 +40,34 @@ ips=(
 
 )
 
-###############################################################################
-#                                   program                                   #
-###############################################################################
+if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
+then
+	bold="$(tput bold)"
+
+	black="$(tput setaf 0)"
+	blue="$(tput setaf 4)"
+	cyan="$(tput setaf 6)"
+	green="$(tput setaf 2)"
+	orange="$(tput setaf 3)"
+	purple="$(tput setaf 5)"
+	red="$(tput setaf 1)"
+	white="$(tput setaf 7)"
+
+	reset="$(tput sgr0)"
+else
+	bold=
+
+	black=
+	blue=
+	cyan=
+	green=
+	orange=
+	purple=
+	red=
+	white=
+
+	reset=
+fi
 
 myrsync() {
 	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors "$@"
@@ -79,35 +100,6 @@ printheading() {
 	echo "${green}$1${reset}"
 	echo
 }
-
-if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
-then
-	bold="$(tput bold)"
-
-	black="$(tput setaf 0)"
-	blue="$(tput setaf 4)"
-	cyan="$(tput setaf 6)"
-	green="$(tput setaf 2)"
-	orange="$(tput setaf 3)"
-	purple="$(tput setaf 5)"
-	red="$(tput setaf 1)"
-	white="$(tput setaf 7)"
-
-	reset="$(tput sgr0)"
-else
-	bold=
-
-	black=
-	blue=
-	cyan=
-	green=
-	orange=
-	purple=
-	red=
-	white=
-
-	reset=
-fi
 
 print-nexus() {
 	cat <<<EOF
