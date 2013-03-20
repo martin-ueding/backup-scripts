@@ -41,6 +41,8 @@ ips=(
 
 )
 
+# Gathers colorcodes. It will set the variables for use within the program:
+# black, blue, cyan, green, orange, burple, red, white and bold, reset.
 gather-colorcodes() {
 	if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
 	then
