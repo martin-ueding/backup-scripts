@@ -37,6 +37,13 @@ TODO
 
 )
 
+ips=(
+
+"192.168.100.101"
+"192.168.100.106"
+
+)
+
 ###############################################################################
 #                                   program                                   #
 ###############################################################################
@@ -111,63 +118,46 @@ print-nexus() {
 	EOF
 }
 
-print-usage() {
-	echo "usage: $0 nexus|sony"
-	exit 1
+ping-test() {
+	ping -c 1 -w 2 "$ip" &> /dev/null
 }
 
-case "${1:-}" in
-	nexus)
-		ip="192.168.100.106"
-		;;
-	sony)
-		ip="192.168.100.101"
-		;;
-	*)
-		print-usage
-		;;
-esac
+sync-device() {
+	echo "${bold}Syncing $ip${reset}"
 
+	if ! ping-test
+	then
+		echo "${red}Device is not reachable. Aborting.${reset}"
+		return
+	fi
 
-port="2222"
-target="$ip:/sdcard"
-target_music="$target/Music"
-target_pdf="$target/PDF"
+	port="2222"
+	target="$ip:/sdcard"
+	target_music="$target/Music"
+	target_pdf="$target/PDF"
 
-dropfolder="$HOME/TODO"
+	dropfolder="$HOME/TODO"
 
-###############################################################################
-#                               copy PDF files                                #
-###############################################################################
+	printheading "copying PDF files to device"
+	for pdfdir in "${pdfdirs[@]}"
+	do
+		copypdf "$pdfdir"
+	done
 
-printheading "copying PDF files to device"
+	for bin in "${bins[@]}"
+	do
+		movetocomputer "$bin"
+	done
 
-for pdfdir in "${pdfdirs[@]}"
+	printheading "Copying MP3 files to device"
+	myrsync --delete --max-size 15M \
+		--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
+		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
+
+	backup-status update "$target"
+}
+
+for ip in "${ips[@]}"
 do
-	copypdf "$pdfdir"
+	sync-device
 done
-
-###############################################################################
-#                          move data to the computer                          #
-###############################################################################
-
-for bin in "${bins[@]}"
-do
-	movetocomputer "$bin"
-done
-
-###############################################################################
-#                               copy MP3 files                                #
-###############################################################################
-
-printheading "Copying MP3 files to device"
-
-myrsync --delete --max-size 15M \
-	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
-	"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
-
-###############################################################################
-#                            update backup-status                             #
-###############################################################################
-
-backup-status update "$target"
