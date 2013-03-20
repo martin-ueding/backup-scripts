@@ -41,34 +41,36 @@ ips=(
 
 )
 
-if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
-then
-	bold="$(tput bold)"
+gather-colorcodes() {
+	if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
+	then
+		bold="$(tput bold)"
 
-	black="$(tput setaf 0)"
-	blue="$(tput setaf 4)"
-	cyan="$(tput setaf 6)"
-	green="$(tput setaf 2)"
-	orange="$(tput setaf 3)"
-	purple="$(tput setaf 5)"
-	red="$(tput setaf 1)"
-	white="$(tput setaf 7)"
+		black="$(tput setaf 0)"
+		blue="$(tput setaf 4)"
+		cyan="$(tput setaf 6)"
+		green="$(tput setaf 2)"
+		orange="$(tput setaf 3)"
+		purple="$(tput setaf 5)"
+		red="$(tput setaf 1)"
+		white="$(tput setaf 7)"
 
-	reset="$(tput sgr0)"
-else
-	bold=
+		reset="$(tput sgr0)"
+	else
+		bold=
 
-	black=
-	blue=
-	cyan=
-	green=
-	orange=
-	purple=
-	red=
-	white=
+		black=
+		blue=
+		cyan=
+		green=
+		orange=
+		purple=
+		red=
+		white=
 
-	reset=
-fi
+		reset=
+	fi
+}
 
 # Wrapper for rsync with all the options.
 #
@@ -185,6 +187,8 @@ sync-device() {
 
 	backup-status update "$target"
 }
+
+gather-colorcodes
 
 for ip in "${ips[@]}"
 do
