@@ -37,6 +37,7 @@ ips=(
 
 "192.168.100.101"
 "192.168.100.106"
+"192.168.43.1"
 
 )
 
@@ -127,7 +128,7 @@ print-nexus() {
 #
 # :returns: the exit status of ping
 ping-test() {
-	ping -c 1 -w 2 "$ip" &> /dev/null
+	ping -c 1 -w 1 "$ip" &> /dev/null
 }
 
 # Copies dotfiles to the remote device.
