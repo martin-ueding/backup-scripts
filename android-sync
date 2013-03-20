@@ -148,6 +148,9 @@ ping-test() {
 copy-dotfiles() {
 	myrsync "${dotfiles[@]}" \
 		"$ip:/data/data/com.spartacusrex.spartacuside/files/"
+
+	myrsync "${dotfiles[@]}" \
+		"$target/"
 }
 
 # copies PDF files to the device using ``copypdf``.
