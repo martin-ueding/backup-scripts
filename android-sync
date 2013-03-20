@@ -11,20 +11,6 @@ shopt -s extglob
 #                                   options                                   #
 ###############################################################################
 
-if [[ "$1" = nexus ]]
-then
-	ip="192.168.100.106"
-else
-	ip="192.168.100.101"
-fi
-
-port="2222"
-target="$ip:/sdcard"
-target_music="$target/Music"
-target_pdf="$target/PDF"
-
-dropfolder="$HOME/TODO"
-
 pdfdirs=(
 
 "$HOME/Dokumente/2012-LaTeX_Kurs"
@@ -124,6 +110,31 @@ print-nexus() {
 	│   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱
 	EOF
 }
+
+print-usage() {
+	echo "usage: $0 nexus|sony"
+	exit 1
+}
+
+case "${1:-}" in
+	nexus)
+		ip="192.168.100.106"
+		;;
+	sony)
+		ip="192.168.100.101"
+		;;
+	*)
+		print-usage
+		;;
+esac
+
+
+port="2222"
+target="$ip:/sdcard"
+target_music="$target/Music"
+target_pdf="$target/PDF"
+
+dropfolder="$HOME/TODO"
 
 ###############################################################################
 #                               copy PDF files                                #
