@@ -11,12 +11,11 @@ setup(
     name = "backup_scripts",
     py_modules = ["webserverbackup"],
     scripts = [
+        "android-sync",
         "backup-external",
         "backup-hauptliste",
         "backup-status",
         "backup-webservers",
-        "handy",
-        "nexus",
     ],
     version = "1.3",
 )
