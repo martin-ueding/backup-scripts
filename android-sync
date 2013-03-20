@@ -69,10 +69,16 @@ else
 	reset=
 fi
 
+# Wrapper for rsync with all the options.
+#
+# :param: A list with more parameters for rsync.
 myrsync() {
 	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors "$@"
 }
 
+# Copies a folder with PDFs to the device.
+#
+# :param: Folder to copy.
 copypdf() {
 	local from="$1"
 	local frombase="${from#/home/*/}"
@@ -86,21 +92,28 @@ copypdf() {
 	echo
 }
 
-movetocomputer() {
+# Moves a given folder to the dropfolder.
+#
+# :param: Folder on the remote device.
+move-to-computer() {
 	folder="$1"
 
-	printheading "move $folder to computer"
+	print-heading "move $folder to computer"
 
 	myrsync "$target/$folder/" "$dropfolder"
 	ssh -p 2222 "$ip" "rm -frv /sdcard/$folder/*"
 }
 
-printheading() {
+# Prints a colored heading.
+#
+# :param: Heading text.
+print-heading() {
 	echo
 	echo "${green}$1${reset}"
 	echo
 }
 
+# Prints a colored “NEXUS” banner.
 print-nexus() {
 	cat <<<EOF
 	│╲   │  ┌──  ${blue}╲  ${red}╱${reset}  │   │  ╱──
@@ -110,36 +123,44 @@ print-nexus() {
 	EOF
 }
 
+# Checks whether the given host is reachable.
+#
+# :returns: the exit status of ping
 ping-test() {
 	ping -c 1 -w 2 "$ip" &> /dev/null
 }
 
+# Copies dotfiles to the remote device.
 copy-dotfiles() {
 	myrsync ~/.bashrc ~/.vimrc "$ip:/data/data/com.spartacusrex.spartacuside/files/"
 }
 
+# copies PDF files to the device using ``copypdf``.
 copy-pdffiles() {
-	printheading "copying PDF files to device"
+	print-heading "copying PDF files to device"
 	for pdfdir in "${pdfdirs[@]}"
 	do
 		copypdf "$pdfdir"
 	done
 }
 
+# Copies the contents of the bins using ``move-to-computer``.
 copy-bins() {
 	for bin in "${bins[@]}"
 	do
-		movetocomputer "$bin"
+		move-to-computer "$bin"
 	done
 }
 
+# Copies all the music to the device.
 copy-music() {
-	printheading "Copying MP3 files to device"
+	print-heading "Copying MP3 files to device"
 	myrsync --delete --max-size 15M \
 		--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
 		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
 }
 
+# Performs the syncing. This functions pretty much calls all other functions.
 sync-device() {
 	echo "${bold}Syncing $ip${reset}"
 
