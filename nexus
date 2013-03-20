@@ -11,7 +11,13 @@ shopt -s extglob
 #                                   options                                   #
 ###############################################################################
 
-ip="192.168.100.106"
+if [[ "$1" = nexus ]]
+then
+	ip="192.168.100.106"
+else
+	ip="192.168.100.101"
+fi
+
 port="2222"
 target="$ip:/sdcard"
 target_music="$target/Music"
@@ -110,22 +116,20 @@ else
 	reset=
 fi
 
-###############################################################################
-#                                program title                                #
-###############################################################################
-
-cat <<EOF
-│╲   │  ┌──  ${blue}╲  ${red}╱${reset}  │   │  ╱──
-│ ╲  │  │__   ${blue}╲${red}╱${reset}   │   │  ╲__
-│  ╲ │  │     ${orange}╱${green}╲${reset}   │   │     ╲
-│   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱
-EOF
+print-nexus() {
+	cat <<<EOF
+	│╲   │  ┌──  ${blue}╲  ${red}╱${reset}  │   │  ╱──
+	│ ╲  │  │__   ${blue}╲${red}╱${reset}   │   │  ╲__
+	│  ╲ │  │     ${orange}╱${green}╲${reset}   │   │     ╲
+	│   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱
+	EOF
+}
 
 ###############################################################################
 #                               copy PDF files                                #
 ###############################################################################
 
-printheading "copying PDF files to Nexus"
+printheading "copying PDF files to device"
 
 for pdfdir in "${pdfdirs[@]}"
 do
@@ -145,7 +149,7 @@ done
 #                               copy MP3 files                                #
 ###############################################################################
 
-printheading "Copying MP3 files to Nexus"
+printheading "Copying MP3 files to device"
 
 myrsync --delete --max-size 15M \
 	--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
