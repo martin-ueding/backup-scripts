@@ -99,7 +99,7 @@ myrsync() {
 # Copies a folder with PDFs to the device.
 #
 # :param: Folder to copy.
-copypdf() {
+copy-single-pdf-folder() {
 	local from="$1"
 	local frombase="${from#/home/*/}"
 	local target="$target_pdf/${frombase%/*}"
@@ -160,12 +160,12 @@ copy-dotfiles() {
 		"$target/"
 }
 
-# copies PDF files to the device using ``copypdf``.
+# copies PDF files to the device using ``copy-single-pdf-folder``.
 copy-pdffiles() {
 	print-heading "copying PDF files to device"
 	for pdfdir in "${pdfdirs[@]}"
 	do
-		copypdf "$pdfdir"
+		copy-single-pdf-folder "$pdfdir"
 	done
 }
 
