@@ -1,12 +1,16 @@
 #!/bin/bash
 # Copyright © 2013 Martin Ueding <dev@martin-ueding.de>
 
+# Copies files onto Android devices using SSH. The devices should run the
+# “SSHelper” program that provides an SSH server for Android.
+
 set -e
 set -u
 
 shopt -s nullglob
 shopt -s extglob
 
+# Directories with PDF files that should be copied onto the device.
 pdfdirs=(
 
 "$HOME/Dokumente/2012-LaTeX_Kurs"
@@ -25,6 +29,7 @@ pdfdirs=(
 
 )
 
+# Folders where data will build up on the device.
 bins=(
 
 DCIM
@@ -33,6 +38,7 @@ TODO
 
 )
 
+# IP addresses where Android devices might be.
 ips=(
 
 "192.168.100.101"
@@ -41,6 +47,7 @@ ips=(
 
 )
 
+# Files that should be copied into the ``$HOME`` on the devices.
 dotfiles=(
 
 ~/.bashrc
