@@ -41,6 +41,13 @@ ips=(
 
 )
 
+dotfiles=(
+
+~/.bashrc
+~/.vimrc
+
+)
+
 # Gathers colorcodes. It will set the variables for use within the program:
 # black, blue, cyan, green, orange, burple, red, white and bold, reset.
 gather-colorcodes() {
@@ -78,7 +85,8 @@ gather-colorcodes() {
 #
 # :param: A list with more parameters for rsync.
 myrsync() {
-	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors "$@"
+	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors \
+		"$@"
 }
 
 # Copies a folder with PDFs to the device.
@@ -92,7 +100,8 @@ copypdf() {
 	echo "${cyan}Folder $from to $target${reset}"
 
 	ssh -p "$port" "$ip" "mkdir -p \"${target#*:}\""
-	myrsync --delete --include='*.pdf' --include='*/' --exclude='*' "$from" "$target/"
+	myrsync --delete --include='*.pdf' --include='*/' --exclude='*' \
+		"$from" "$target/"
 
 	echo
 }
@@ -137,7 +146,8 @@ ping-test() {
 
 # Copies dotfiles to the remote device.
 copy-dotfiles() {
-	myrsync ~/.bashrc ~/.vimrc "$ip:/data/data/com.spartacusrex.spartacuside/files/"
+	myrsync "${dotfiles[@]}" \
+		"$ip:/data/data/com.spartacusrex.spartacuside/files/"
 }
 
 # copies PDF files to the device using ``copypdf``.
