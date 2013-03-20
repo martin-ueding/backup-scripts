@@ -27,7 +27,7 @@ pdfdirs=(
 
 bins=(
 
-DCIM/Camera
+DCIM
 Download
 TODO
 
@@ -114,6 +114,32 @@ ping-test() {
 	ping -c 1 -w 2 "$ip" &> /dev/null
 }
 
+copy-dotfiles() {
+	myrsync ~/.bashrc ~/.vimrc "$ip:/data/data/com.spartacusrex.spartacuside/files/"
+}
+
+copy-pdffiles() {
+	printheading "copying PDF files to device"
+	for pdfdir in "${pdfdirs[@]}"
+	do
+		copypdf "$pdfdir"
+	done
+}
+
+copy-bins() {
+	for bin in "${bins[@]}"
+	do
+		movetocomputer "$bin"
+	done
+}
+
+copy-music() {
+	printheading "Copying MP3 files to device"
+	myrsync --delete --max-size 15M \
+		--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
+		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
+}
+
 sync-device() {
 	echo "${bold}Syncing $ip${reset}"
 
@@ -130,21 +156,10 @@ sync-device() {
 
 	dropfolder="$HOME/TODO"
 
-	printheading "copying PDF files to device"
-	for pdfdir in "${pdfdirs[@]}"
-	do
-		copypdf "$pdfdir"
-	done
-
-	for bin in "${bins[@]}"
-	do
-		movetocomputer "$bin"
-	done
-
-	printheading "Copying MP3 files to device"
-	myrsync --delete --max-size 15M \
-		--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
-		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
+	copy-bins
+	copy-dotfiles
+	copy-music
+	copy-pdffiles
 
 	backup-status update "$target"
 }
