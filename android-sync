@@ -154,8 +154,7 @@ ping-test() {
 
 # Copies dotfiles to the remote device.
 copy-dotfiles() {
-	myrsync "${dotfiles[@]}" \
-		"$target/"
+	myrsync "${dotfiles[@]}" "$target/"
 }
 
 # copies PDF files to the device using ``copy-single-pdf-folder``.
