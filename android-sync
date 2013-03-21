@@ -32,10 +32,10 @@ pdfdirs=(
 # Folders where data will build up on the device.
 bins=(
 
-DCIM
-Download
-Pictures/Screenshots
-TODO
+"DCIM"
+"Download"
+"Pictures/Screenshots"
+"TODO"
 
 )
 
@@ -51,8 +51,8 @@ ips=(
 # Files that should be copied into the ``$HOME`` on the devices.
 dotfiles=(
 
-~/.bashrc
-~/.vimrc
+"$HOME/.bashrc"
+"$HOME/.vimrc"
 
 )
 
