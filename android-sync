@@ -155,9 +155,6 @@ ping-test() {
 # Copies dotfiles to the remote device.
 copy-dotfiles() {
 	myrsync "${dotfiles[@]}" \
-		"$ip:/data/data/com.spartacusrex.spartacuside/files/"
-
-	myrsync "${dotfiles[@]}" \
 		"$target/"
 }
 
