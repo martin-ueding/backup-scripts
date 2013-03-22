@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # Copyright © 2011-2013 Martin Ueding <dev@martin-ueding.de>
@@ -47,8 +47,8 @@ def backup(name, target):
                 include = include.strip()
 
                 heading = "Backup {name} -- {include}".format(name=name, include=include)
-                print _c.bold + heading.center(80) + _c.reset
-                print _c.bold + ("="*len(heading)).center(80) + _c.reset
+                print(_c.bold + heading.center(80) + _c.reset)
+                print(_c.bold + ("="*len(heading)).center(80) + _c.reset)
                 destdir = target+os.path.dirname(include)
 
                 if os.path.exists(excludesfile):
@@ -64,13 +64,13 @@ def backup(name, target):
                 try:
                     subprocess.check_call(command)
                 except subprocess.CalledProcessError as e:
-                    print e
+                    print(e)
                 else:
                     subprocess.call(["backup-status", "update", name])
 
 
 def main():
-    for name, target in backups.items():
+    for name, target in list(backups.items()):
         if os.path.exists(target):
             backup(name, target)
 
