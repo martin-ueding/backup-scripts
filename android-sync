@@ -124,6 +124,9 @@ move-to-computer() {
 
 	myrsync "$target/$folder/" "$dropfolder"
 	ssh -p 2222 "$ip" "rm -frv /sdcard/$folder/*"
+
+	find "$dropfolder" -type f -exec chmod u+rw '{}' \;
+	find "$dropfolder" -type d -exec chmod u+rwx '{}' \;
 }
 
 # Prints a colored heading.
