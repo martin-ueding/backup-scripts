@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # Copyright © 2011-2013 Martin Ueding <dev@martin-ueding.de>
@@ -57,7 +57,7 @@ def pretty(status, direction_filter):
         t.align["Name"] = "l"
         t.align["Dir"] = "c"
         t.align["Difference"] = "r"
-        print t
+        print(t)
 
 
 def main():
