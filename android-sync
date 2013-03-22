@@ -215,8 +215,8 @@ sync-device() {
 
 	copy-bins
 	copy-dotfiles
-	copy-music
 	copy-pdffiles
+	copy-music
 
 	fix-permissions
 
