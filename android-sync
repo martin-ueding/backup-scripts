@@ -182,6 +182,10 @@ copy-music() {
 		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
 }
 
+# Gives the user access rights to all the files in the dropfolder. Apparently,
+# the files that are copied from the device have their permissions preserved.
+# Since the user ID is different, the user who calls this script does not have
+# permissions on the files and folders.
 fix-permissions() {
 	print-heading "Fix permissions in $dropfolder"
 	find "$dropfolder" -type d -exec chmod u+rwx '{}' \;
