@@ -226,5 +226,8 @@ gather-colorcodes
 
 for ip in "${ips[@]}"
 do
-	sync-device
+	if ! sync-device
+	then
+		echo "Failed."
+	fi
 done
