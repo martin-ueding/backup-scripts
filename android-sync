@@ -224,10 +224,16 @@ sync-device() {
 
 gather-colorcodes
 
-for ip in "${ips[@]}"
-do
-	if ! sync-device
-	then
-		echo "Failed."
-	fi
-done
+if [[ -n "${1:-}" ]]
+then
+	ip="$1"
+	sync-device
+else
+	for ip in "${ips[@]}"
+	do
+		if ! sync-device
+		then
+			echo "Failed."
+		fi
+	done
+fi
