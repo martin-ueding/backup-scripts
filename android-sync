@@ -61,6 +61,17 @@ dotfiles=(
 
 )
 
+# Retrives the hostname from the device.
+get-hostname() {
+	tempfile="$(mktemp)"
+
+	myrsync "$target/hostname.txt" "$tempfile"
+
+	hostname="$(cat "$tempfile")"
+	
+	rm -f "$tempfile"
+}
+
 # Gathers colorcodes. It will set the variables for use within the program:
 # black, blue, cyan, green, orange, burple, red, white and bold, reset.
 gather-colorcodes() {
@@ -199,8 +210,6 @@ fix-permissions() {
 
 # Performs the syncing. This functions pretty much calls all other functions.
 sync-device() {
-	echo "${bold}Syncing $ip${reset}"
-
 	if ! ping-test
 	then
 		echo "${red}Device is not reachable. Aborting.${reset}"
@@ -214,6 +223,10 @@ sync-device() {
 
 	dropfolder="$HOME/TODO"
 
+	get-hostname &> /dev/null
+
+	echo "${bold}Syncing $hostname @ $ip${reset}"
+
 	copy-bins
 	copy-dotfiles
 	copy-pdffiles
@@ -221,7 +234,7 @@ sync-device() {
 
 	fix-permissions
 
-	backup-status update "$target"
+	backup-status update "$hostname"
 }
 
 gather-colorcodes
