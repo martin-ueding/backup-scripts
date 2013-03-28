@@ -67,21 +67,27 @@ dotfiles=(
 #   -p PORT         SSH port to use
 #   -t TARGET       Target folder
 get-hostname() {
+	local port
 	local target
 	local tempfile
 
-	while getopts "t:" opt
+	OPTIND=1
+	while getopts "p:t:" opt
 	do
 		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
 			t)
 				target="$OPTARG"
 				;;
 		esac
 	done
+	shift $((OPTIND-1))
 
 	tempfile="$(mktemp)"
 
-	myrsync -p "$port" "$target/hostname.txt" "$tempfile" &> /dev/null
+	myrsync -p "$port" -- "$target/hostname.txt" "$tempfile" &> /dev/null
 
 	cat "$tempfile"
 	
@@ -131,6 +137,7 @@ gather-colorcodes() {
 myrsync() {
 	local port
 
+	OPTIND=1
 	while getopts "p:" opt
 	do
 		case "$opt" in
@@ -139,6 +146,7 @@ myrsync() {
 				;;
 		esac
 	done
+	shift $((OPTIND-1))
 
 	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors \
 		"$@"
@@ -158,6 +166,7 @@ copy-single-pdf-folder() {
 	local frombase
 	local target
 
+	OPTIND=1
 	while getopts "b:p:t:" opt
 	do
 		case "$opt" in
@@ -172,6 +181,7 @@ copy-single-pdf-folder() {
 				;;
 		esac
 	done
+	shift $((OPTIND-1))
 
 	from="$1"
 	frombase="${from#/home/*/}"
@@ -180,8 +190,8 @@ copy-single-pdf-folder() {
 	echo "${cyan}Folder $from to $target${reset}"
 
 	ssh -p "$port" "$ip" "mkdir -p \"${target#*:}\""
-	myrsync --delete --include='*.pdf' --include='*/' --exclude='*' \
-		"$from" "$target/"
+	myrsync -p "$port" -- --delete --include='*.pdf' --include='*/' \
+		--exclude='*' "$from" "$target/"
 
 	echo
 }
@@ -201,8 +211,7 @@ move-to-computer() {
 	local port
 	local target
 
-	folder="$1"
-
+	OPTIND=1
 	while getopts "d:p:t:" opt
 	do
 		case "$opt" in
@@ -217,10 +226,13 @@ move-to-computer() {
 				;;
 		esac
 	done
+	shift $((OPTIND-1))
+
+	folder="$1"
 
 	print-heading "move $folder to computer"
 
-	myrsync -p "$port" -b "$target/$folder/" "$dropfolder"
+	myrsync -p "$port" -- -b "$target/$folder/" "$dropfolder"
 	ssh -p "$port" "$ip" "rm -frv /sdcard/$folder/*"
 }
 
@@ -252,16 +264,35 @@ print-nexus() {
 # Exit status:
 #   the exit status of ping
 ping-test() {
-	ping -c 1 -w 1 "$1" &> /dev/null
+	ping -c 1 -w 2 "$1" &> /dev/null
 }
 
 # Copies dotfiles to the remote device.
 copy-dotfiles() {
-	myrsync -p "$port" "${dotfiles[@]}" "$target/"
+	myrsync -p "$port" -- "${dotfiles[@]}" "$target/"
 }
 
-# copies PDF files to the device using ``copy-single-pdf-folder``.
+# Copies PDF files to the device using ``copy-single-pdf-folder``.
+#
+# Options:
+#   -p PORT         port for SSH
+#
+# Positional arguments:
+#   PDFDIR ...      directory with PDF files
 copy-pdffiles() {
+	local port
+
+	OPTIND=1
+	while getopts "p:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
 	print-heading "copying PDF files to device"
 
 	for pdfdir
@@ -287,6 +318,7 @@ copy-bins() {
 
 	folder="$1"
 
+	OPTIND=1
 	while getopts "d:p:t:" opt
 	do
 		case "$opt" in
@@ -301,6 +333,7 @@ copy-bins() {
 				;;
 		esac
 	done
+	shift $((OPTIND-1))
 
 	for bin
 	do
@@ -319,6 +352,7 @@ copy-music() {
 	local port
 	local target_music
 
+	OPTIND=1
 	while getopts "p:" opt
 	do
 		case "$opt" in
@@ -327,11 +361,12 @@ copy-music() {
 				;;
 		esac
 	done
+	shift $((OPTIND-1))
 
 	target_music="$1"
 
 	print-heading "Copying MP3 files to device"
-	myrsync -p "$port" --delete --max-size 15M \
+	myrsync -p "$port" -- --delete --max-size 15M \
 		--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
 		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
 }
@@ -371,7 +406,7 @@ sync-device() {
 	if ! ping-test "$ip"
 	then
 		echo "${red}Device is not reachable. Aborting.${reset}"
-		return
+		exit 1
 	fi
 
 	port="2222"
@@ -381,14 +416,14 @@ sync-device() {
 
 	dropfolder="$HOME/TODO"
 
-	hostname="$(get-hostname -t "$target")"
+	hostname="$(get-hostname -p "$port" -t "$target")"
 
 	echo "${bold}Syncing $hostname @ $ip${reset}"
 
 	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
 	copy-dotfiles -p "$port" "${dotfiles[@]}"
 	copy-pdffiles -p "$port" "${pdfdirs[@]}"
-	copy-music -p "$port"
+	copy-music -p "$port" "$target_music"
 
 	fix-permissions "$dropfolder"
 
