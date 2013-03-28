@@ -63,11 +63,22 @@ dotfiles=(
 
 # Retrives the hostname from the device.
 get-hostname() {
+	local target
+	local tempfile
+
+	while getopts "t:" opt
+	do
+		case "$opt" in
+			t)
+				target="$OPTARG"
+		esac
+	done
+
 	tempfile="$(mktemp)"
 
-	myrsync "$target/hostname.txt" "$tempfile"
+	myrsync "$target/hostname.txt" "$tempfile" &> /dev/null
 
-	hostname="$(cat "$tempfile")"
+	cat "$tempfile"
 	
 	rm -f "$tempfile"
 }
@@ -223,7 +234,10 @@ sync-device() {
 
 	dropfolder="$HOME/TODO"
 
-	get-hostname &> /dev/null
+	hostname="$(get-hostname -t "$target")"
+
+	echo "$hostname"
+	exit
 
 	echo "${bold}Syncing $hostname @ $ip${reset}"
 
