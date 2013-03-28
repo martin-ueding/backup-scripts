@@ -44,15 +44,6 @@ bins=(
 
 )
 
-# IP addresses where Android devices might be.
-ips=(
-
-192.168.0.110		# Frederike
-192.168.100.{100..110}	# Home
-192.168.43.1		# Hotspot created by phone
-
-)
-
 # Files that should be copied into the ``$HOME`` on the devices.
 dotfiles=(
 
@@ -61,15 +52,206 @@ dotfiles=(
 
 )
 
-# Retrives the hostname from the device.
-get-hostname() {
-	tempfile="$(mktemp)"
+# Copies the contents of the bins using ``move-to-computer``.
+#
+# Options:
+#   -d DROPFOLDER   folder on computer
+#   -p PORT         port for SSH
+#   -t TARGET       target folder on device
+#
+# Positional arguments:
+#   BIN ...         bins to empty
+copy-bins() {
+	local bin
+	local dropfolder
+	local folder
+	local opt
+	local port
+	local target
 
-	myrsync "$target/hostname.txt" "$tempfile"
+	folder="$1"
 
-	hostname="$(cat "$tempfile")"
-	
-	rm -f "$tempfile"
+	OPTIND=1
+	while getopts "d:p:t:" opt
+	do
+		case "$opt" in
+			d)
+				dropfolder="$OPTARG"
+				;;
+			p)
+				port="$OPTARG"
+				;;
+			t)
+				target="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	for bin
+	do
+		move-to-computer -d "$dropfolder" -p "$port" -t "$target" "$bin"
+	done
+}
+
+# Copies dotfiles to the remote device.
+#
+# Options:
+#   -p PORT         port for SSH
+#   -t TARGET       target folder on device
+#
+# Positional arguments:
+#   DOTFILE ...     dotfiles to copy
+copy-dotfiles() {
+	local opt
+	local port
+
+	OPTIND=1
+	while getopts "p:t:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+			t)
+				target="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	print-heading "Copying dotfiles files to device"
+
+	myrsync -p "$port" -- "$@" "$target/"
+}
+
+# Copies all the music to the device.
+#
+# Options:
+#   -p PORT         SSH port to use
+#
+# Positional arguments:
+#   TARGET          target folder
+copy-music() {
+	local opt
+	local port
+	local target_music
+
+	OPTIND=1
+	while getopts "p:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	target_music="$1"
+
+	print-heading "Copying MP3 files to device"
+
+	myrsync -p "$port" -- --delete --max-size 15M \
+		--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
+		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
+}
+
+# Copies PDF files to the device using ``copy-single-pdf-folder``.
+#
+# Options:
+#   -p PORT         port for SSH
+#   -t TARGET       target folder on device
+#
+# Positional arguments:
+#   PDFDIR ...      directory with PDF files
+copy-pdffiles() {
+	local opt
+	local pdfdir
+	local port
+
+	OPTIND=1
+	while getopts "p:t:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+			t)
+				target="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	print-heading "copying PDF files to device"
+
+	for pdfdir
+	do
+		copy-single-pdf-folder -p "$port" -t "$target" "$pdfdir"
+	done
+}
+
+# Copies a folder with PDFs to the device.
+#
+# Options:
+#   -b BASE         base on the computer
+#   -p PORT         Port for SSH
+#   -t TARGET       target folder on device
+#
+# Positional arguments:
+#   FROM            folder on the computer
+copy-single-pdf-folder() {
+	local from
+	local frombase
+	local opt
+	local target
+
+	OPTIND=1
+	while getopts "b:p:t:" opt
+	do
+		case "$opt" in
+			b)
+				frombase="$OPTARG"
+				;;
+			p)
+				port="$OPTARG"
+				;;
+			t)
+				target="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	from="$1"
+	frombase="${from#/home/*/}"
+	target="$target_pdf/${frombase%/*}"
+
+	echo "${cyan}Folder $from to $target${reset}"
+
+	ssh -p "$port" "$ip" "mkdir -p \"${target#*:}\""
+	myrsync -p "$port" -- --delete --include='*.pdf' --include='*/' \
+		--exclude='*' "$from" "$target/"
+
+	echo
+}
+
+# Gives the user access rights to all the files in the dropfolder. Apparently,
+# the files that are copied from the device have their permissions preserved.
+# Since the user ID is different, the user who calls this script does not have
+# permissions on the files and folders.
+#
+# Positional arguments:
+#   DROPFOLDER      folder on computer
+fix-permissions() {
+	local dropfolder
+
+	dropfolder="$1"
+
+	print-heading "Fix permissions in $dropfolder"
+	find "$dropfolder" -type d -exec chmod u+rwx '{}' \;
+	find "$dropfolder" -type f -exec chmod u+rw '{}' \;
 }
 
 # Gathers colorcodes. It will set the variables for use within the program:
@@ -105,46 +287,121 @@ gather-colorcodes() {
 	fi
 }
 
-# Wrapper for rsync with all the options.
+# Retrives the hostname from the device.
 #
-# :param: A list with more parameters for rsync.
-myrsync() {
-	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors \
-		"$@"
-}
+# Options:
+#   -p PORT         SSH port to use
+#   -t TARGET       Target folder
+get-hostname() {
+	local port
+	local target
+	local tempfile
 
-# Copies a folder with PDFs to the device.
-#
-# :param: Folder to copy.
-copy-single-pdf-folder() {
-	local from="$1"
-	local frombase="${from#/home/*/}"
-	local target="$target_pdf/${frombase%/*}"
+	OPTIND=1
+	while getopts "p:t:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+			t)
+				target="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
 
-	echo "${cyan}Folder $from to $target${reset}"
+	tempfile="$(mktemp)"
 
-	ssh -p "$port" "$ip" "mkdir -p \"${target#*:}\""
-	myrsync --delete --include='*.pdf' --include='*/' --exclude='*' \
-		"$from" "$target/"
+	myrsync -p "$port" -- "$target/hostname.txt" "$tempfile" &> /dev/null
 
-	echo
+	cat "$tempfile"
+	
+	rm -f "$tempfile"
 }
 
 # Moves a given folder to the dropfolder.
 #
-# :param: Folder on the remote device.
+# Options:
+#   -d DROPFOLDER   folder on computer
+#   -p PORT         port for SSH
+#   -t TARGET       target folder on device
+#
+# Positional arguments:
+#   FOLDER          folder on the remote device
 move-to-computer() {
+	local dropfolder
+	local folder
+	local opt
+	local port
+	local target
+
+	OPTIND=1
+	while getopts "d:p:t:" opt
+	do
+		case "$opt" in
+			d)
+				dropfolder="$OPTARG"
+				;;
+			p)
+				port="$OPTARG"
+				;;
+			t)
+				target="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
 	folder="$1"
 
 	print-heading "move $folder to computer"
 
-	myrsync -b "$target/$folder/" "$dropfolder"
-	ssh -p 2222 "$ip" "rm -frv /sdcard/$folder/*"
+	myrsync -p "$port" -- -b "$target/$folder/" "$dropfolder"
+	ssh -p "$port" "$ip" "rm -frv /sdcard/$folder/*"
+}
+
+# Wrapper for rsync with all the options.
+#
+# Options:
+#   -p PORT         Port for SSH
+#
+# Positional arguments:
+#   OPTIONS         other rsync options and arguments
+myrsync() {
+	local opt
+	local port
+
+	OPTIND=1
+	while getopts "p:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors \
+		"$@"
+}
+
+# Checks whether the given host is reachable.
+#
+# Positional arguments:
+#   IP              IP address to check
+#
+# Exit status:
+#   the exit status of ping
+ping-test() {
+	ping -c 1 -w 2 "$1" &> /dev/null
 }
 
 # Prints a colored heading.
 #
-# :param: Heading text.
+# Positional arguments
+#   TEXT            text to print
 print-heading() {
 	echo
 	echo "${green}$1${reset}"
@@ -161,59 +418,25 @@ print-nexus() {
 	EOF
 }
 
-# Checks whether the given host is reachable.
-#
-# :returns: the exit status of ping
-ping-test() {
-	ping -c 1 -w 1 "$ip" &> /dev/null
-}
-
-# Copies dotfiles to the remote device.
-copy-dotfiles() {
-	myrsync "${dotfiles[@]}" "$target/"
-}
-
-# copies PDF files to the device using ``copy-single-pdf-folder``.
-copy-pdffiles() {
-	print-heading "copying PDF files to device"
-	for pdfdir in "${pdfdirs[@]}"
-	do
-		copy-single-pdf-folder "$pdfdir"
-	done
-}
-
-# Copies the contents of the bins using ``move-to-computer``.
-copy-bins() {
-	for bin in "${bins[@]}"
-	do
-		move-to-computer "$bin"
-	done
-}
-
-# Copies all the music to the device.
-copy-music() {
-	print-heading "Copying MP3 files to device"
-	myrsync --delete --max-size 15M \
-		--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
-		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
-}
-
-# Gives the user access rights to all the files in the dropfolder. Apparently,
-# the files that are copied from the device have their permissions preserved.
-# Since the user ID is different, the user who calls this script does not have
-# permissions on the files and folders.
-fix-permissions() {
-	print-heading "Fix permissions in $dropfolder"
-	find "$dropfolder" -type d -exec chmod u+rwx '{}' \;
-	find "$dropfolder" -type f -exec chmod u+rw '{}' \;
-}
-
 # Performs the syncing. This functions pretty much calls all other functions.
+#
+# Positional arguments
+#   IP              IP address of the device
 sync-device() {
-	if ! ping-test
+	local dropfolder
+	local hostname
+	local ip
+	local port
+	local target
+	local target_music
+	local target_pdf
+
+	ip="$1"
+
+	if ! ping-test "$ip"
 	then
 		echo "${red}Device is not reachable. Aborting.${reset}"
-		return
+		exit 1
 	fi
 
 	port="2222"
@@ -223,16 +446,16 @@ sync-device() {
 
 	dropfolder="$HOME/TODO"
 
-	get-hostname &> /dev/null
+	hostname="$(get-hostname -p "$port" -t "$target")"
 
 	echo "${bold}Syncing $hostname @ $ip${reset}"
 
-	copy-bins
-	copy-dotfiles
-	copy-pdffiles
-	copy-music
+	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
+	copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
+	copy-pdffiles -p "$port" "${pdfdirs[@]}"
+	copy-music -p "$port" "$target_music"
 
-	fix-permissions
+	fix-permissions "$dropfolder"
 
 	backup-status update "$hostname"
 }
@@ -241,14 +464,10 @@ gather-colorcodes
 
 if [[ -n "${1:-}" ]]
 then
-	ip="$1"
-	sync-device
+	sync-device "$1"
 else
-	for ip in "${ips[@]}"
-	do
-		if ! sync-device
-		then
-			echo "Failed."
-		fi
-	done
+	echo "usage: $0 IP"
+	exit 2
 fi
+
+set -o posix && set
