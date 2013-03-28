@@ -67,6 +67,7 @@ dotfiles=(
 #   -p PORT         SSH port to use
 #   -t TARGET       Target folder
 get-hostname() {
+	local opt
 	local port
 	local target
 	local tempfile
@@ -135,6 +136,7 @@ gather-colorcodes() {
 # Positional arguments:
 #   OPTIONS         other rsync options and arguments
 myrsync() {
+	local opt
 	local port
 
 	OPTIND=1
@@ -164,6 +166,7 @@ myrsync() {
 copy-single-pdf-folder() {
 	local from
 	local frombase
+	local opt
 	local target
 
 	OPTIND=1
@@ -208,6 +211,7 @@ copy-single-pdf-folder() {
 move-to-computer() {
 	local dropfolder
 	local folder
+	local opt
 	local port
 	local target
 
@@ -268,26 +272,58 @@ ping-test() {
 }
 
 # Copies dotfiles to the remote device.
+#
+# Options:
+#   -p PORT         port for SSH
+#   -t TARGET       target folder on device
+#
+# Positional arguments:
+#   DOTFILE ...     dotfiles to copy
 copy-dotfiles() {
-	myrsync -p "$port" -- "${dotfiles[@]}" "$target/"
+	local opt
+	local port
+
+	OPTIND=1
+	while getopts "p:t:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+			t)
+				target="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	print-heading "Copying dotfiles files to device"
+
+	myrsync -p "$port" -- "$@" "$target/"
 }
 
 # Copies PDF files to the device using ``copy-single-pdf-folder``.
 #
 # Options:
 #   -p PORT         port for SSH
+#   -t TARGET       target folder on device
 #
 # Positional arguments:
 #   PDFDIR ...      directory with PDF files
 copy-pdffiles() {
+	local opt
+	local pdfdir
 	local port
 
 	OPTIND=1
-	while getopts "p:" opt
+	while getopts "p:t:" opt
 	do
 		case "$opt" in
 			p)
 				port="$OPTARG"
+				;;
+			t)
+				target="$OPTARG"
 				;;
 		esac
 	done
@@ -297,7 +333,7 @@ copy-pdffiles() {
 
 	for pdfdir
 	do
-		copy-single-pdf-folder -p "$port" "$pdfdir"
+		copy-single-pdf-folder -p "$port" -t "$target" "$pdfdir"
 	done
 }
 
@@ -311,8 +347,10 @@ copy-pdffiles() {
 # Positional arguments:
 #   BIN ...         bins to empty
 copy-bins() {
+	local bin
 	local dropfolder
 	local folder
+	local opt
 	local port
 	local target
 
@@ -347,8 +385,9 @@ copy-bins() {
 #   -p PORT         SSH port to use
 #
 # Positional arguments:
-#   TARGET          Target folder
+#   TARGET          target folder
 copy-music() {
+	local opt
 	local port
 	local target_music
 
@@ -366,6 +405,7 @@ copy-music() {
 	target_music="$1"
 
 	print-heading "Copying MP3 files to device"
+
 	myrsync -p "$port" -- --delete --max-size 15M \
 		--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
 		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
@@ -421,7 +461,7 @@ sync-device() {
 	echo "${bold}Syncing $hostname @ $ip${reset}"
 
 	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
-	copy-dotfiles -p "$port" "${dotfiles[@]}"
+	copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
 	copy-pdffiles -p "$port" "${pdfdirs[@]}"
 	copy-music -p "$port" "$target_music"
 
@@ -444,3 +484,5 @@ else
 		fi
 	done
 fi
+
+set -o posix && set
