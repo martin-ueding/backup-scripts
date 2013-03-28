@@ -469,5 +469,3 @@ else
 	echo "usage: $0 IP"
 	exit 2
 fi
-
-set -o posix && set
