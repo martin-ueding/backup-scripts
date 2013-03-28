@@ -44,15 +44,6 @@ bins=(
 
 )
 
-# IP addresses where Android devices might be.
-ips=(
-
-192.168.0.110		# Frederike
-192.168.100.{100..110}	# Home
-192.168.43.1		# Hotspot created by phone
-
-)
-
 # Files that should be copied into the ``$HOME`` on the devices.
 dotfiles=(
 
@@ -67,7 +58,6 @@ dotfiles=(
 #   -p PORT         SSH port to use
 #   -t TARGET       Target folder
 get-hostname() {
-	local opt
 	local port
 	local target
 	local tempfile
@@ -476,13 +466,8 @@ if [[ -n "${1:-}" ]]
 then
 	sync-device "$1"
 else
-	for ip in "${ips[@]}"
-	do
-		if ! sync-device "$ip"
-		then
-			echo "Failed."
-		fi
-	done
+	echo "usage: $0 IP"
+	exit 2
 fi
 
 set -o posix && set
