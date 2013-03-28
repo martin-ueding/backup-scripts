@@ -357,7 +357,7 @@ move-to-computer() {
 
 	print-heading "move $folder to computer"
 
-	myrsync -p "$port" -- -b "$target/$folder/" "$dropfolder"
+	myrsync -p "$port" -- "$target/$folder/" "$dropfolder"
 	ssh -p "$port" "$ip" "rm -frv /sdcard/$folder/* /sdcard/$folder/.??*"
 }
 
