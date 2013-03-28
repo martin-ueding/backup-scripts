@@ -444,7 +444,7 @@ sync-device() {
 	target_music="$target/Music"
 	target_pdf="$target/PDF"
 
-	dropfolder="$HOME/TODO"
+	dropfolder="$(mktemp -d "$HOME/TODO/android-sync-$(date +%Y%m%dT%H%M%S%z)-XXX")"
 
 	hostname="$(get-hostname -p "$port" -t "$target")"
 
