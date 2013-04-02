@@ -448,9 +448,16 @@ sync-device() {
 	echo "${bold}Syncing $hostname @ $ip${reset}"
 
 	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
-	copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
 	copy-pdffiles -p "$port" "${pdfdirs[@]}"
-	copy-music -p "$port" "$target_music"
+
+	case "$hostname" in
+		"Nexus 10")
+			copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
+			;;
+		"Xperia Mini Pro")
+			copy-music -p "$port" "$target_music"
+			;;
+	esac
 
 	fix-permissions "$dropfolder"
 
