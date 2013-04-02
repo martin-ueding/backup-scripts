@@ -407,12 +407,10 @@ print-heading() {
 
 # Prints a colored “NEXUS” banner.
 print-nexus() {
-	cat <<<EOF
-	│╲   │  ┌──  ${blue}╲  ${red}╱${reset}  │   │  ╱──
-	│ ╲  │  │__   ${blue}╲${red}╱${reset}   │   │  ╲__
-	│  ╲ │  │     ${orange}╱${green}╲${reset}   │   │     ╲
-	│   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱
-	EOF
+	echo "│╲   │  ┌──  ${blue}╲  ${red}╱${reset}  │   │  ╱──"
+	echo "│ ╲  │  │__   ${blue}╲${red}╱${reset}   │   │  ╲__"
+	echo "│  ╲ │  │     ${orange}╱${green}╲${reset}   │   │     ╲"
+	echo "│   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱"
 }
 
 # Performs the syncing. This functions pretty much calls all other functions.
@@ -447,17 +445,18 @@ sync-device() {
 
 	echo "${bold}Syncing $hostname @ $ip${reset}"
 
-	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
-	copy-pdffiles -p "$port" "${pdfdirs[@]}"
-
 	case "$hostname" in
 		"Nexus 10")
+			print-nexus
 			copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
 			;;
 		"Xperia Mini Pro")
 			copy-music -p "$port" "$target_music"
 			;;
 	esac
+
+	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
+	copy-pdffiles -p "$port" "${pdfdirs[@]}"
 
 	fix-permissions "$dropfolder"
 
