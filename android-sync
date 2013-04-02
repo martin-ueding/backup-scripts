@@ -193,7 +193,7 @@ copy-pdffiles() {
 #
 # Options:
 #   -b BASE         base on the computer
-#   -p PORT         Port for SSH
+#   -p PORT         port for SSH
 #   -t TARGET       target folder on device
 #
 # Positional arguments:
@@ -288,7 +288,7 @@ gather-colorcodes() {
 #
 # Options:
 #   -p PORT         SSH port to use
-#   -t TARGET       Target folder
+#   -t TARGET       target folder
 get-hostname() {
 	local port
 	local target
@@ -361,7 +361,7 @@ move-to-computer() {
 # Wrapper for rsync with all the options.
 #
 # Options:
-#   -p PORT         Port for SSH
+#   -p PORT         port for SSH
 #
 # Positional arguments:
 #   OPTIONS         other rsync options and arguments
