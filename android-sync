@@ -381,7 +381,7 @@ myrsync() {
 	shift $((OPTIND-1))
 
 	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors \
-		"$@"
+		--exclude=.thumbnails "$@"
 }
 
 # Checks whether the given host is reachable.
