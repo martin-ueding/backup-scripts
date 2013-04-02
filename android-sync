@@ -460,6 +460,9 @@ sync-device() {
 
 	fix-permissions "$dropfolder"
 
+	# Delete the dropfolder, if it is empty.
+	rmdir --ignore-fail-on-non-empty "$dropfolder"
+
 	backup-status update "$hostname"
 }
 
