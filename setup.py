@@ -17,5 +17,5 @@ setup(
         "backup-status",
         "backup-webservers",
     ],
-    version = "1.3",
+    version = "1.4",
 )
