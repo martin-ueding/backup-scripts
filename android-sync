@@ -36,6 +36,7 @@ bins=(
 
 "DCIM"
 "Download"
+"OpenGPSTracker"
 "Pictures/Screenshots"
 "TODO"
 
