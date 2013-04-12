@@ -28,6 +28,10 @@ pdfdirs=(
 "$HOME/Dokumente/Studium/physik220"
 "$HOME/Dokumente/Studium/physik312"
 "$HOME/Dokumente/Studium/physik321"
+"$HOME/Dokumente/Studium/physik411"
+"$HOME/Dokumente/Studium/physik421"
+"$HOME/Dokumente/Studium/physik441"
+"$HOME/Dokumente/Studium/physik541"
 
 )
 
