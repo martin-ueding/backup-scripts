@@ -330,9 +330,23 @@ get-hostname() {
 main() {
 	gather-colorcodes
 
-	if [[ -n "${1:-}" ]]
+	local full_ip_regex='^ *([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}) *$'
+	local partial_ip_regex='^([[:digit:]]{1,3})$'
+	local own_ip="$(hostname -I)"
+
+	if [[ "$own_ip" =~ $full_ip_regex ]]
 	then
-		sync-device "$1"
+		local subnet="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}"
+	fi
+
+	if [[ "${1:-}" =~ $full_ip_regex ]]
+	then
+		local ip="$1"
+		sync-device "$ip"
+	elif [[ "${1:-}" =~ $partial_ip_regex ]]
+	then
+		local ip="$subnet.$1"
+		sync-device "$ip"
 	else
 		echo "usage: $0 IP"
 		exit 2
