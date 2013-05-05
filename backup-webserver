@@ -1,0 +1,109 @@
+#!/bin/bash
+# Copyright © 2011-2013 Martin Ueding <dev@martin-ueding.de>
+
+# Downloads a dump of the MySQL database via HTTP and saves them in
+# plain text files in the backup folder.
+#
+# The FTP server is mounted and then synced into a local directory. Then an
+# archive file is created with the contents of this local file.
+
+set -u
+set -e
+
+while getopts "d:f:n:p:s:u" opt; do
+	case "$opt" in
+		d)
+			$dumpsite="$OPTARG"
+			;;
+		f)
+			$subfolder="$OPTARG"
+			;;
+		n)
+			$name="$OPTARG"
+			;;
+		p)
+			$passwd="$OPTARG"
+			;;
+		s)
+			$server="$OPTARG"
+			;;
+		u)
+			$user="$OPTARG"
+			;;
+	esac
+done
+shift $((OPTIND-1))
+
+backupdir="$HOME/Backup"
+
+cleanup() {
+	# Release the mounted FTP.
+	if [[ -d "$1" ]]
+	then
+		echo "Umounting FTP server ($1)."
+		fusermount -u "$1"
+		rmdir -- "$1"
+	fi
+}
+
+# Create a current folder if it does not exist yet.
+current="$backupdir/$name"
+if [[ ! -d "$current" ]]
+then
+	mkdir -p -- "$current"
+fi
+
+# Write everything to a log file.
+exec &> "$backupdir/$name.log"
+
+# Test whether this needs to be backuped already.
+if [[ -f "$current/performed" ]]
+then
+	if [[ $(( $(date +%s) - $(stat -c %Y "$current/performed") )) -lt $(( 3600 * 24 * 3)) ]]
+	then
+		echo "No need to run backup again."
+		exit 0
+	fi
+fi
+
+# Create a mountpoint for the FTP.
+tempdir="$(mktemp -d)"
+echo "Using temporary dir $tempdir."
+
+trap "cleanup $tempdir" EXIT
+
+chgrp fuse -- "$tempdir"
+chmod 700 -- "$tempdir"
+
+# Mount the FTP
+echo "Mounting FTP server $server into $tempdir."
+curlftpfs "$server" "$tempdir"
+
+# Copy all the new data into the current directory
+echo "Starting rsync into $current."
+rsync -avE --delete -- "$tempdir/${subfolder:-}" "$current"
+
+# Dump the MySQL database.
+if [[ -n "${user:-}" && -n "${passwd:-}" && -n "${dumpsite:-}" ]]
+then
+	sqlfile="$current/dump.sql"
+	echo "Starting MySQL dump from $dumpsite into $sqlfile."
+	rm -f -- "$sqlfile"
+	wget --user "$user" --password "$passwd" -O "$sqlfile" "$dumpsite"
+fi
+
+# Create an archive which contains the current snapshot.
+destdir="$backupdir/$(date +%Y-%m)"
+if [[ ! -d "$destdir" ]]
+then
+	mkdir -p -- "$destdir"
+fi
+echo "Creating tar archive."
+tar -czf "$destdir/$name-$(date +%Y%m%d).tar.gz" -C "$backupdir" "$name"
+
+# Mark the current execution of the backup.
+touch "$current/performed"
+
+echo "Backup $name is done."
+
+backup-status update "$name"
