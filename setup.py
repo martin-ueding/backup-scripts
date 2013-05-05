@@ -15,6 +15,7 @@ setup(
         "backup-external",
         "backup-hauptliste",
         "backup-status",
+        "backup-webserver",
         "backup-webservers",
     ],
     version="1.4",
