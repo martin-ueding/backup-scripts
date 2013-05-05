@@ -8,7 +8,7 @@ all:
 install:
 	python setup.py install --install-layout deb --root "$(DESTDIR)"
 
-epydoc: $(pythonfiles)
+html: $(pythonfiles)
 	epydoc -v $^
 
 .PHONY: clean
