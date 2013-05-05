@@ -10,25 +10,25 @@
 set -u
 set -e
 
-while getopts "d:f:n:p:s:u" opt; do
+while getopts "d:f:n:p:s:u:" opt; do
 	case "$opt" in
 		d)
-			$dumpsite="$OPTARG"
+			dumpsite="$OPTARG"
 			;;
 		f)
-			$subfolder="$OPTARG"
+			subfolder="$OPTARG"
 			;;
 		n)
-			$name="$OPTARG"
+			name="$OPTARG"
 			;;
 		p)
-			$passwd="$OPTARG"
+			passwd="$OPTARG"
 			;;
 		s)
-			$server="$OPTARG"
+			server="$OPTARG"
 			;;
 		u)
-			$user="$OPTARG"
+			user="$OPTARG"
 			;;
 	esac
 done
