@@ -160,7 +160,9 @@ copy-music() {
 
 	myrsync -p "$port" -- --delete --max-size 15M \
 		--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
-		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" "$target_music/"
+		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" \
+		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Podcasts/" \
+		"$target_music/"
 }
 
 # Copies PDF files to the device using ``copy-single-pdf-folder``.
