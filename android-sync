@@ -4,7 +4,6 @@
 # Copies files onto Android devices using SSH. The devices should run the
 # “SSHelper” program that provides an SSH server for Android.
 
-set -e
 set -u
 
 shopt -s nullglob
