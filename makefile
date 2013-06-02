@@ -3,7 +3,6 @@
 pythonfiles := backup-external backup-status
 
 all:
-	@echo "Nothing to do."
 
 install:
 	python setup.py install --install-layout deb --root "$(DESTDIR)"
