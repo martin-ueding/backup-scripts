@@ -5,7 +5,7 @@ pythonfiles := backup-external backup-status
 all:
 
 install:
-	python setup.py install --install-layout deb --root "$(DESTDIR)"
+	./setup.py install --install-layout deb --root "$(DESTDIR)"
 
 html: $(pythonfiles)
 	epydoc -v $^
