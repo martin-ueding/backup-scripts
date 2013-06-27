@@ -158,7 +158,7 @@ copy-music() {
 
 	print-heading "Copying MP3 files to device"
 
-	myrsync -p "$port" -- --delete --max-size 15M \
+	myrsync -p "$port" -- --delete \
 		--force --exclude-from "/home/mu/.config/syncscripts/handy_musik.txt" \
 		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" \
 		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Podcasts/" \
