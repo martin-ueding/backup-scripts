@@ -443,6 +443,10 @@ sync-device() {
 
 	echo "${bold}Syncing $hostname @ $ip${reset}"
 
+	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
+
+	fix-permissions "$dropfolder"
+
 	case "$hostname" in
 		"Nexus 10")
 			print-nexus
@@ -453,10 +457,7 @@ sync-device() {
 			;;
 	esac
 
-	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
 	copy-pdffiles -p "$port" "${pdfdirs[@]}"
-
-	fix-permissions "$dropfolder"
 
 	# Delete the dropfolder, if it is empty.
 	rmdir --ignore-fail-on-non-empty "$dropfolder"
