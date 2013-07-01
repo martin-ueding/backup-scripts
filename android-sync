@@ -55,6 +55,15 @@ dotfiles=(
 
 )
 
+# Cleanup actions.
+#
+# Positional arguments:
+#   DROPFOLDER      bins to empty
+cleanup() {
+	# Delete the dropfolder, if it is empty.
+	rmdir --ignore-fail-on-non-empty "$1"
+}
+
 # Copies the contents of the bins.
 #
 # Options:
@@ -112,6 +121,7 @@ copy-bins() {
 copy-dotfiles() {
 	local opt
 	local port
+	local target
 
 	OPTIND=1
 	while getopts "p:t:" opt
@@ -178,6 +188,7 @@ copy-pdffiles() {
 	local opt
 	local pdfdir
 	local port
+	local target
 
 	OPTIND=1
 	while getopts "p:t:" opt
@@ -331,24 +342,30 @@ get-hostname() {
 
 # Main function of this script.
 main() {
+	local full_ip_regex
+	local ip
+	local own_ip
+	local partial_ip_regex
+	local subnet
+
 	gather-colorcodes
 
-	local full_ip_regex='^ *([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}) *$'
-	local partial_ip_regex='^([[:digit:]]{1,3})$'
-	local own_ip="$(hostname -I)"
+	full_ip_regex='^ *([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}) *$'
+	partial_ip_regex='^([[:digit:]]{1,3})$'
+	own_ip="$(hostname -I)"
 
 	if [[ "$own_ip" =~ $full_ip_regex ]]
 	then
-		local subnet="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}"
+		subnet="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}"
 	fi
 
 	if [[ "${1:-}" =~ $full_ip_regex ]]
 	then
-		local ip="$1"
+		ip="$1"
 		sync-device "$ip"
 	elif [[ "${1:-}" =~ $partial_ip_regex ]]
 	then
-		local ip="$subnet.$1"
+		ip="$subnet.$1"
 		sync-device "$ip"
 	else
 		echo "usage: $0 IP"
@@ -439,9 +456,18 @@ sync-device() {
 
 	dropfolder="$(mktemp -d "$HOME/TODO/android-sync-$(date +%Y%m%dT%H%M%S%z)-XXX")"
 
+	trap "cleanup '$dropfolder'" EXIT
+
 	hostname="$(get-hostname -p "$port" -t "$target")"
 
 	echo "${bold}Syncing $hostname @ $ip${reset}"
+
+	case "$hostname" in
+		"Nexus 10")
+			print-nexus
+			;;
+	esac
+
 
 	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
 
@@ -449,7 +475,6 @@ sync-device() {
 
 	case "$hostname" in
 		"Nexus 10")
-			print-nexus
 			copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
 			;;
 		"Xperia Mini Pro")
@@ -457,10 +482,7 @@ sync-device() {
 			;;
 	esac
 
-	copy-pdffiles -p "$port" "${pdfdirs[@]}"
-
-	# Delete the dropfolder, if it is empty.
-	rmdir --ignore-fail-on-non-empty "$dropfolder"
+	copy-pdffiles -p "$port" -t "$target" "${pdfdirs[@]}"
 
 	backup-status update "$hostname"
 }
