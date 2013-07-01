@@ -21,11 +21,11 @@ pdfdirs=(
 "$HOME/Dokumente/Physik_Dokumente"
 "$HOME/Dokumente/Schule/Abizeitung/Abizeitung-300.pdf"
 "$HOME/Dokumente/Spektrum"
-"$HOME/Dokumente/Studium/"Modulhandbuch_*.pdf
 "$HOME/Dokumente/Studium/EBooks"
 "$HOME/Dokumente/Studium/math140"
 "$HOME/Dokumente/Studium/math240"
 "$HOME/Dokumente/Studium/math340"
+"$HOME/Dokumente/Studium/Modulhandbücher"
 "$HOME/Dokumente/Studium/physik220"
 "$HOME/Dokumente/Studium/physik312"
 "$HOME/Dokumente/Studium/physik321"
