@@ -41,6 +41,7 @@ bins=(
 
 "DCIM"
 "Download"
+"Locus/export"
 "OpenGPSTracker"
 "Pictures/Screenshots"
 "TODO"
