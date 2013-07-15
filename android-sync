@@ -152,8 +152,16 @@ copy-dotfiles() {
 copy-latex-documentation() {
 	local headerfile
 	local opt
+	local package
+	local pdffile
+	local pdffiles
 	local port
 	local target
+	local usepackage_regex
+
+	headerfile="$HOME/Vorlagen/header.tex"
+	pdffiles=()
+	usepackage_regex='\usepackage.*\{(.*)\}'
 
 	OPTIND=1
 	while getopts "p:" opt
@@ -170,26 +178,36 @@ copy-latex-documentation() {
 
 	print-heading "Copying LaTeX documentation to device"
 
-	# Go through the include statements in the header file.
-	headerfile="$HOME/Vorlagen/header.tex"
-
 	if ! [[ -f "$headerfile" ]]
 	then
 		echo "$headerfile does not exist."
 		return 0
 	fi
 
-	echo "Header exists"
-
-	usepackage_regex='\usepackage.*\{(.*)\}'
-
+	# Go through the include statements in the header file.
 	while read line
 	do
 		if [[ "$line" =~ $usepackage_regex ]]
 		then
-			echo "${BASH_REMATCH[1]}"
+			package="${BASH_REMATCH[1]}"
+			echo "Looking for $package.pdf …"
+
+			pdffile="$(locate --limit 1 "$package.pdf")"
+			if [[ -n "$pdffile" ]]
+			then
+				if [[ -z "${pdffiles[@]-}" ]]
+				then
+					pdffiles=("$pdffile")
+				else
+					pdffiles=("${pdffiles[@]}" "$pdffile")
+				fi
+			fi
 		fi
 	done < "$headerfile"
+
+	echo "${pdffiles[@]}"
+
+	myrsync -p "$port" -- --delete "${pdffiles[@]}" "$target/"
 }
 
 # Copies all the music to the device.
