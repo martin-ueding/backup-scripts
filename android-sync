@@ -149,6 +149,56 @@ copy-dotfiles() {
 #
 # Positional arguments:
 #   TARGET          target folder
+copy-latex-documentation() {
+	local headerfile
+	local opt
+	local port
+	local target
+
+	OPTIND=1
+	while getopts "p:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	target="$1"
+
+	print-heading "Copying LaTeX documentation to device"
+
+	# Go through the include statements in the header file.
+	headerfile="$HOME/Vorlagen/header.tex"
+
+	if ! [[ -f "$headerfile" ]]
+	then
+		echo "$headerfile does not exist."
+		return 0
+	fi
+
+	echo "Header exists"
+
+	usepackage_regex='\usepackage.*\{(.*)\}'
+
+	while read line
+	do
+		if [[ "$line" =~ $usepackage_regex ]]
+		then
+			echo "${BASH_REMATCH[1]}"
+		fi
+	done < "$headerfile"
+}
+
+# Copies all the music to the device.
+#
+# Options:
+#   -p PORT         SSH port to use
+#
+# Positional arguments:
+#   TARGET          target folder
 copy-music() {
 	local opt
 	local port
