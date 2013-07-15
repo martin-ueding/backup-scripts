@@ -100,7 +100,6 @@ copy-bins() {
 	done
 	shift $((OPTIND-1))
 
-
 	for bin
 	do
 		print-heading "move $bin to computer"
@@ -536,7 +535,6 @@ sync-device() {
 			;;
 	esac
 
-
 	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
 
 	fix-permissions "$dropfolder"
@@ -550,6 +548,7 @@ sync-device() {
 			;;
 	esac
 
+	copy-latex-documentation -p "$port" "$target/PDF/LaTeX"
 	copy-pdffiles -p "$port" -t "$target" "${pdfdirs[@]}"
 
 	backup-status update "$hostname"
