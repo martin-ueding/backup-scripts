@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.5.8
+    - Copy MP3 files by size only
+
 v1.5.7
     - Changelog within the repository
     - Copy LaTeX documentation that is used in ``header.tex`` onto the device
