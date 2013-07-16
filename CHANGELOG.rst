@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v1.5.7
+    - Changelog within the repository
+    - Copy LaTeX documentation that is used in ``header.tex`` onto the device
+    - Empty ``Locus/export`` bin
+
 v1.5.6
     - Move files first
     - Sync all module handbooks
