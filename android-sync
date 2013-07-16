@@ -192,7 +192,7 @@ copy-latex-documentation() {
 			package="${BASH_REMATCH[1]}"
 			echo "Looking for $package.pdf …"
 
-			pdffile="$(locate --limit 1 "$package.pdf")"
+			pdffile="$(locate --limit 1 "*/$package.pdf")"
 			if [[ -n "$pdffile" ]]
 			then
 				if [[ -z "${pdffiles[@]-}" ]]
@@ -464,7 +464,7 @@ myrsync() {
 	shift $((OPTIND-1))
 
 	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors \
-		--exclude=.thumbnails "$@"
+		--exclude=.thumbnails --copy-links "$@"
 }
 
 # Checks whether the given host is reachable.
