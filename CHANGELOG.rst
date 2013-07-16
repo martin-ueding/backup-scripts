@@ -6,6 +6,7 @@ Changelog
 
 v1.5.8
     - Copy MP3 files by size only
+    - Copy links
 
 v1.5.7
     - Changelog within the repository
