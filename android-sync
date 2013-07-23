@@ -112,7 +112,7 @@ copy-backupdirs() {
 	do
 		frombase="${from#/home/*/}"
 		targetfolder="$target/${frombase%/*}"
-		myrsync -p "$port" -- --delete "$from" "$targetfolder/" 
+		myrsync -p "$port" -- --delete "$from" "$targetfolder/"
 	done
 }
 
@@ -455,7 +455,7 @@ get-hostname() {
 	myrsync -p "$port" -- "$target/hostname.txt" "$tempfile" &> /dev/null
 
 	cat "$tempfile"
-	
+
 	rm -f "$tempfile"
 }
 
