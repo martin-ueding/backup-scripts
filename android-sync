@@ -21,6 +21,11 @@ pdfdirs=(
 "$HOME/Dokumente/Physik_Dokumente"
 "$HOME/Dokumente/Schule/Abizeitung/Abizeitung-300.pdf"
 "$HOME/Dokumente/Spektrum"
+
+)
+
+studiumpdfdirs=(
+
 "$HOME/Dokumente/Studium/EBooks"
 "$HOME/Dokumente/Studium/math140"
 "$HOME/Dokumente/Studium/math240"
@@ -33,6 +38,12 @@ pdfdirs=(
 "$HOME/Dokumente/Studium/physik421"
 "$HOME/Dokumente/Studium/physik441"
 "$HOME/Dokumente/Studium/physik541"
+
+)
+
+backupdirs=(
+
+"$HOME/Dokumente/Studium"
 
 )
 
@@ -63,6 +74,46 @@ dotfiles=(
 cleanup() {
 	# Delete the dropfolder, if it is empty.
 	rmdir --ignore-fail-on-non-empty "$1"
+}
+
+# Copies backup folders onto the device.
+#
+# Options:
+#   -p PORT         port for SSH
+#   -t TARGET       target folder on device
+#
+# Positional arguments:
+#   BACKUPDIR ...   directory with PDF files
+copy-backupdirs() {
+	local from
+	local frombase
+	local opt
+	local port
+	local target
+	local targetfolder
+
+	OPTIND=1
+	while getopts "p:t:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+			t)
+				target="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	print-heading "copying backup files to device"
+
+	for from
+	do
+		frombase="${from#/home/*/}"
+		targetfolder="$target/${frombase%/*}"
+		myrsync -p "$port" -- --delete "$from" "$targetfolder/" 
+	done
 }
 
 # Copies the contents of the bins.
@@ -543,8 +594,10 @@ sync-device() {
 	case "$hostname" in
 		"Nexus 10")
 			copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
+			copy-pdffiles -p "$port" -t "$target" "${studiumpdfdirs[@]}"
 			;;
 		"Xperia Mini Pro")
+			copy-backupdirs -p "$port" -t "$target" "${backupdirs[@]}"
 			copy-music -p "$port" "$target_music"
 			;;
 	esac
