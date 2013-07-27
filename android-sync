@@ -568,7 +568,7 @@ show-disk-usage() {
 	result="$(ssh -p "$port" "$ip" df -h /sdcard | grep /sdcard | awk '{print $4}')"
 
 	echo
-	echo "$result of /sdcard free."
+	echo "$result of /sdcard used"
 }
 
 # Performs the syncing. This functions pretty much calls all other functions.
