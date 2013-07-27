@@ -547,6 +547,30 @@ print-nexus() {
 	echo "│   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱"
 }
 
+show-disk-usage() {
+	local ip
+	local port
+
+	OPTIND=1
+	while getopts "p:i:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+			i)
+				ip="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	result="$(ssh -p "$port" "$ip" df -h /sdcard | grep /sdcard | awk '{print $4}')"
+
+	echo
+	echo "$result of /sdcard free."
+}
+
 # Performs the syncing. This functions pretty much calls all other functions.
 #
 # Positional arguments
@@ -587,6 +611,8 @@ sync-device() {
 			;;
 	esac
 
+	show-disk-usage -i "$ip" -p "$port"
+
 	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
 
 	fix-permissions "$dropfolder"
@@ -604,6 +630,8 @@ sync-device() {
 
 	copy-latex-documentation -p "$port" "$target/PDF/LaTeX"
 	copy-pdffiles -p "$port" -t "$target" "${pdfdirs[@]}"
+
+	show-disk-usage -i "$ip" -p "$port"
 
 	backup-status update "$hostname"
 }
