@@ -71,7 +71,7 @@ v1.3
     - *android-sync*: Nexus 10 script
 
 v1.2
-    - Use old Bash scripts for ``backup-webservers``
+    - *backup-webservers*: Use old Bash scripts
 
 v1.1.5
     - Delete excluded files
@@ -83,14 +83,14 @@ v1.1.3
     - Get the imports right
 
 v1.1.2
-    - Actually include Python module in installation
+    - *setup*: Actually include Python module in installation
 
 v1.1.1
-    - Use Debian directory layout for Python modules
+    - *setup*: Use Debian directory layout for Python modules
 
 v1.1
+    - *backup-webservers*: Use Python for the webserver backup
     - Merge a bunch of smaller projects into this
-    - Use Python for the webserver backup
 
 v1.0
     Initial Release
