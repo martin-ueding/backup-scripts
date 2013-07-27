@@ -4,67 +4,71 @@
 Changelog
 #########
 
+v1.6
+    - *android-sync*: Backup of ``~/Dokumente/Studium`` onto the phone.
+    - *android-sync*: Show disk usage
+
 v1.5.8
-    - Copy MP3 files by size only
-    - Copy links
+    - *android-sync*: Copy links
+    - *android-sync*: Copy MP3 files by size only
 
 v1.5.7
+    - *android-sync*: Copy LaTeX documentation that is used in ``header.tex`` onto the device
+    - *android-sync*: Empty ``Locus/export`` bin
     - Changelog within the repository
-    - Copy LaTeX documentation that is used in ``header.tex`` onto the device
-    - Empty ``Locus/export`` bin
 
 v1.5.6
-    - Move files first
-    - Sync all module handbooks
+    - *android-sync*: Move files first
+    - *android-sync*: Sync all module handbooks
 
 v1.5.5
-    - Sync Abizeitung
+    - *android-sync*: Sync Abizeitung
 
 v1.5.4
     - Correct Python version for installation
     - Remove -e flag
 
 v1.5.3
-    - Copy podcasts
+    - *android-sync*: Copy podcasts
 
 v1.5.2
-    - Fix subfolder key
+    - *backup-webservers*: Fix subfolder key
 
 v1.5.1
-    - Add both flag
+    - *backup-status*: Add both flag
 
 v1.5
+    - *backup-webservers*: Sensitive data into INI file
     - New modules
-    - Sensitive data into INI file
 
 v1.4
-    - Delete empty dropfolder
-    - Exclude thumbnails
-    - Print Nexus banner for Nexus 10
-    - Do some tasks only for one device
-    - Use unique folder
-    - Retrieve hostname from device
-    - Allow IP as first argument
-    - Update clean target
+    - *android-sync*: Allow IP as first argument
+    - *android-sync*: Copy dotfiles into /sdcard as well
+    - *android-sync*: Delete empty dropfolder
+    - *android-sync*: Do some tasks only for one device
+    - *android-sync*: Install nexus script
+    - *android-sync*: Move images and sounds from Tablet
+    - *android-sync*: Print Nexus banner for Nexus 10
+    - *android-sync*: Retrieve hostname from device
+    - *android-sync*: Script for both devices
+    - *android-sync*: Use unique folder
     - Convert to Python 3
-    - Use colorcodes module
-    - Fix permissions
-    - Copy dotfiles into /sdcard as well
-    - Refactoring
-    - Print usage
-    - Rename script
-    - Script for both devices
-    - Move images and sounds from Tablet
-    - Make setup executable
-    - Use other prettytable module
     - Create directories
     - Encoding before copyright message
-    - Use real copyright symbol
+    - Exclude thumbnails
+    - Fix permissions
+    - Make setup executable
+    - Print usage
+    - Refactoring
     - Remove license
-    - Install nexus script
+    - Rename script
+    - Update clean target
+    - Use colorcodes module
+    - Use other prettytable module
+    - Use real copyright symbol
 
 v1.3
-    - Nexus 10 script
+    - *android-sync*: Nexus 10 script
 
 v1.2
     - Use old Bash scripts for ``backup-webservers``
