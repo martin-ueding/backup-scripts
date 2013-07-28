@@ -571,6 +571,24 @@ show-disk-usage() {
 	echo "$result of /sdcard used"
 }
 
+# Stashes the GPX files into the target directory.
+#
+# Positional arguments
+#   DROPFOLDER      Source folder
+stash-gpx-files() {
+	local dropfolder="$1"
+	local gpxfile
+
+	print-heading "Move GPX files into target folder"
+
+	shopt -s nullglob
+
+	for gpxfile in "$dropfolder"/*.gpx
+	do
+		mv -v "$gpxfile" "$HOME/Dokumente/GPS/"
+	done
+}
+
 # Performs the syncing. This functions pretty much calls all other functions.
 #
 # Positional arguments
@@ -616,6 +634,8 @@ sync-device() {
 	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
 
 	fix-permissions "$dropfolder"
+
+	stash-gpx-files "$dropfolder"
 
 	case "$hostname" in
 		"Nexus 10")
