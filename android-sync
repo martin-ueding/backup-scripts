@@ -133,8 +133,6 @@ copy-bins() {
 	local port
 	local target
 
-	folder="$1"
-
 	OPTIND=1
 	while getopts "d:p:t:" opt
 	do
@@ -151,6 +149,8 @@ copy-bins() {
 		esac
 	done
 	shift $((OPTIND-1))
+	
+	folder="$1"
 
 	for bin
 	do
@@ -201,18 +201,14 @@ copy-dotfiles() {
 # Positional arguments:
 #   TARGET          target folder
 copy-latex-documentation() {
-	local headerfile
+	local headerfile="$HOME/Vorlagen/header.tex"
 	local opt
 	local package
 	local pdffile
-	local pdffiles
+	local pdffiles=()
 	local port
 	local target
-	local usepackage_regex
-
-	headerfile="$HOME/Vorlagen/header.tex"
-	pdffiles=()
-	usepackage_regex='\usepackage.*\{(.*)\}'
+	local usepackage_regex='\usepackage.*\{(.*)\}'
 
 	OPTIND=1
 	while getopts "p:" opt
@@ -385,9 +381,7 @@ copy-single-pdf-folder() {
 # Positional arguments:
 #   DROPFOLDER      folder on computer
 fix-permissions() {
-	local dropfolder
-
-	dropfolder="$1"
+	local dropfolder="$1"
 
 	print-heading "Fix permissions in $dropfolder"
 	find "$dropfolder" -type d -exec chmod u+rwx '{}' \;
@@ -438,7 +432,7 @@ gather-colorcodes() {
 get-hostname() {
 	local port
 	local target
-	local tempfile
+	local tempfile="$(mktemp)"
 
 	OPTIND=1
 	while getopts "p:t:" opt
@@ -454,28 +448,20 @@ get-hostname() {
 	done
 	shift $((OPTIND-1))
 
-	tempfile="$(mktemp)"
-
 	myrsync -p "$port" -- "$target/hostname.txt" "$tempfile" &> /dev/null
-
 	cat "$tempfile"
-
 	rm -f "$tempfile"
 }
 
 # Main function of this script.
 main() {
-	local full_ip_regex
+	local full_ip_regex='^ *([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}) *$'
 	local ip
-	local own_ip
-	local partial_ip_regex
+	local own_ip="$(hostname -I)"
+	local partial_ip_regex='^([[:digit:]]{1,3})$'
 	local subnet
 
 	gather-colorcodes
-
-	full_ip_regex='^ *([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}) *$'
-	partial_ip_regex='^([[:digit:]]{1,3})$'
-	own_ip="$(hostname -I)"
 
 	if [[ "$own_ip" =~ $full_ip_regex ]]
 	then
@@ -605,13 +591,11 @@ stash-gpx-files() {
 sync-device() {
 	local dropfolder
 	local hostname
-	local ip
+	local ip="$1"
 	local port
 	local target
 	local target_music
 	local target_pdf
-
-	ip="$1"
 
 	if ! ping-test "$ip"
 	then
