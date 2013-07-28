@@ -376,10 +376,11 @@ copy-single-pdf-folder() {
 	echo
 }
 
-# Gives the user access rights to all the files in the dropfolder. Apparently,
-# the files that are copied from the device have their permissions preserved.
-# Since the user ID is different, the user who calls this script does not have
-# permissions on the files and folders.
+# Gives the user access rights to all the files in the dropfolder.
+#
+# Apparently, the files that are copied from the device have their permissions
+# preserved. Since the user ID is different, the user who calls this script
+# does not have permissions on the files and folders.
 #
 # Positional arguments:
 #   DROPFOLDER      folder on computer
@@ -393,8 +394,11 @@ fix-permissions() {
 	find "$dropfolder" -type f -exec chmod u+rw '{}' \;
 }
 
-# Gathers colorcodes. It will set the variables for use within the program:
-# black, blue, cyan, green, orange, burple, red, white and bold, reset.
+# Gathers colorcodes.
+#
+# It will set the variables for use within the program:
+#
+#     black, blue, cyan, green, orange, purple, red, white and bold, reset
 gather-colorcodes() {
 	if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
 	then
@@ -547,6 +551,11 @@ print-nexus() {
 	echo "│   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱"
 }
 
+# Shows the disk usage on the device.
+#
+# Options:
+#   -i IP           IP address of the device
+#   -p PORT         port for SSH
 show-disk-usage() {
 	local ip
 	local port
