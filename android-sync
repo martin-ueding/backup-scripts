@@ -149,7 +149,7 @@ copy-bins() {
 		esac
 	done
 	shift $((OPTIND-1))
-	
+
 	folder="$1"
 
 	for bin

@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.6.1
+    - *android-sync*: Move GPX files automatically
+
 v1.6
     - *android-sync*: Backup of ``~/Dokumente/Studium`` onto the phone.
     - *android-sync*: Show disk usage
