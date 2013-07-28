@@ -16,7 +16,8 @@ v1.5.8
     - *android-sync*: Copy MP3 files by size only
 
 v1.5.7
-    - *android-sync*: Copy LaTeX documentation that is used in ``header.tex`` onto the device
+    - *android-sync*: Copy LaTeX documentation that is used in ``header.tex``
+      onto the device
     - *android-sync*: Empty ``Locus/export`` bin
     - Changelog within the repository
 
