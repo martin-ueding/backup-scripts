@@ -36,7 +36,7 @@ class Worker(threading.Thread):
 def main():
     options = _parse_args()
 
-    configfile = os.path.expanduser("~/.config/syncscripts/webservers.ini")
+    configfile = os.path.expanduser("~/.config/backup-scripts/webservers.ini")
     configfile_alt = "webservers.ini"
 
     config = configparser.ConfigParser()

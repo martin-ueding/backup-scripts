@@ -38,8 +38,8 @@ def backup(name, target):
     :param target: Target directory.
     :type target: str
     """
-    includesfile = os.path.expanduser("~/.config/syncscripts/"+name+".include.txt")
-    excludesfile = os.path.expanduser("~/.config/syncscripts/"+name+".exclude.txt")
+    includesfile = os.path.expanduser("~/.config/backup-scripts/"+name+".include.txt")
+    excludesfile = os.path.expanduser("~/.config/backup-scripts/"+name+".exclude.txt")
 
     if os.path.exists(includesfile):
         with open(includesfile) as h:
