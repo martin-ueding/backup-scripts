@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.6.3
+    - Change folder name
+
 v1.6.2
     - Make this ready for release
 
