@@ -625,10 +625,7 @@ sync-device() {
 	show-disk-usage -i "$ip" -p "$port"
 
 	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
-
 	fix-permissions "$dropfolder"
-
-	stash-gpx-files "$dropfolder"
 
 	case "$hostname" in
 		"Nexus 10")
@@ -643,10 +640,45 @@ sync-device() {
 
 	copy-latex-documentation -p "$port" "$target/PDF/LaTeX"
 	copy-pdffiles -p "$port" -t "$target" "${pdfdirs[@]}"
+	stash-gpx-files "$dropfolder"
+	sync-locus-maps -p "$port" -t "$target"
 
 	show-disk-usage -i "$ip" -p "$port"
 
 	backup-status update "$hostname"
+}
+
+# Syncs the Locus maps from and to the device.
+#
+# The maps are cached on the computer, so that they can be copied between the
+# devices.
+#
+# Options:
+#   -p PORT         SSH port to use
+#   -t TARGET       target folder
+sync-locus-maps() {
+	local cachefolder="$HOME/.cache/backup-scripts/locus-maps"
+	local port
+	local target
+
+	OPTIND=1
+	while getopts "p:t:" opt
+	do
+		case "$opt" in
+			p)
+				port="$OPTARG"
+				;;
+			t)
+				target="$OPTARG"
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	mkdir -p "$cachefolder"
+
+	myrsync -p "$port" -- "$target/Locus/maps/" "$cachefolder"
+	myrsync -p "$port" -- "$cachefolder/"* "$target/Locus/maps/"
 }
 
 main "$@"
