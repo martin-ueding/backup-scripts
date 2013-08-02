@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.7
+    - *android-sync*: Sync ``/sdcard/Locus/maps`` between devices
+
 v1.6.3
     - Change folder name
 
