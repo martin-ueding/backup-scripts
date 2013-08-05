@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.7.1
+    - *android-sync*: Sync physik313 module
+
 v1.7
     - *android-sync*: Sync ``/sdcard/Locus/maps`` between devices
 
