@@ -630,7 +630,6 @@ sync-device() {
 
 	case "$hostname" in
 		"Nexus 10")
-			copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
 			copy-pdffiles -p "$port" -t "$target" "${studiumpdfdirs[@]}"
 			;;
 		"Xperia Mini Pro")
@@ -639,6 +638,7 @@ sync-device() {
 			;;
 	esac
 
+	copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
 	copy-latex-documentation -p "$port" "$target/PDF/LaTeX"
 	copy-pdffiles -p "$port" -t "$target" "${pdfdirs[@]}"
 	stash-gpx-files "$dropfolder"
