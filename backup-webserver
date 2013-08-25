@@ -8,7 +8,6 @@
 # archive file is created with the contents of this local file.
 
 set -u
-set -e
 
 while getopts "d:f:n:p:s:u:" opt; do
 	case "$opt" in
