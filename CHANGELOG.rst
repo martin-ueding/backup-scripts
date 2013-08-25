@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.7.2
+    - *backup-webserver*: Do not stop on errors
+
 v1.7.1
     - *android-sync*: Sync physik313 module
 
