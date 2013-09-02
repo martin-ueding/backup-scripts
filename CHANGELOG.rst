@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.8
+    - *backup-webserver*: Start ``multitail`` in new window
+
 v1.7.2
     - *backup-webserver*: Do not stop on errors
 
