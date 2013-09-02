@@ -7,6 +7,7 @@ import argparse
 import configparser
 import os.path
 import subprocess
+import sys
 import threading
 
 __docformat__ = "restructuredtext en"
@@ -33,6 +34,17 @@ class Worker(threading.Thread):
         print(" ".join(command))
         subprocess.check_call(command)
 
+class LoggingWorker(threading.Thread):
+    def __init__(self, logfiles):
+        super().__init__()
+        self.logfiles = logfiles
+
+    def run(self):
+        command = ["konsole", "-e", "multitail", "-s", "2"] + self.logfiles
+
+        print(" ".join(command))
+        subprocess.check_call(command)
+
 def main():
     options = _parse_args()
 
@@ -44,6 +56,9 @@ def main():
 
     workers = []
 
+    logging_worker = LoggingWorker([os.path.join(os.path.expanduser("~/Backup"), x)+".log" for x in config.sections()])
+    logging_worker.start()
+
     for section in config.sections():
         opts = {key: val for key, val in config.items(section)}
         opts["name"] = section
@@ -54,6 +69,8 @@ def main():
 
     for worker in workers:
         worker.join()
+
+    sys.exit(0)
 
 def _parse_args():
     """
