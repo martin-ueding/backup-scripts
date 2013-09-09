@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.8.1
+    - *android-sync*: Rename GPX files
+
 v1.8
     - *backup-webserver*: Start ``multitail`` in new window
 
