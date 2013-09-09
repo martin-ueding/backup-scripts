@@ -583,6 +583,11 @@ stash-gpx-files() {
 	do
 		mv -v "$gpxfile" "$HOME/Dokumente/GPS/"
 	done
+
+	(
+	cd "$HOME/Dokumente/GPS"
+	rename 's/(\d{4})-(\d{2})-(\d{2})_\d{2}-\d{2}-\d{2}[-_](.+\.gpx)/$1$2$3-$4/' *.gpx
+	)
 }
 
 # Performs the syncing. This functions pretty much calls all other functions.
