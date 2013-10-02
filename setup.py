@@ -12,6 +12,7 @@ setup(
     py_modules=["webserverbackup"],
     scripts=[
         "android-sync",
+        "backup-chaos",
         "backup-external",
         "backup-hauptliste",
         "backup-status",
