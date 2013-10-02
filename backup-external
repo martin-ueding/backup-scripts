@@ -15,7 +15,7 @@ import subprocess
 __docformat__ = "restructuredtext en"
 
 backups = [
-    "MU-3-446G"
+    "MU-3-466G"
 ]
 """
 List with backups.
@@ -47,7 +47,7 @@ def backup(name):
         print(_c.red + "Target {} does not exist.".format(target) + _c.reset)
         return
 
-    destdir = os.path.join(target, os.path.dirname(source))
+    destdir = "{}/home/".format(target)
 
     if os.path.exists(excludesfile):
         exclude_arg = ["--exclude-from", excludesfile]
@@ -66,7 +66,9 @@ def backup(name):
     else:
         subprocess.call(["backup-status", "update", "{}-info".format(name)])
 
-    command = ["rsync", "-avhE", "--delete", "--delete-excluded"] + exclude_arg + ["--", include, destdir]
+
+    command = ["rsync", "-avhE", "--delete", "--delete-excluded"] + exclude_arg + ["--", source, destdir]
+    print(command)
 
     try:
         subprocess.check_call(command)
