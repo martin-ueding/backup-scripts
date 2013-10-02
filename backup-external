@@ -15,7 +15,7 @@ import subprocess
 __docformat__ = "restructuredtext en"
 
 backups = [
-    "MU-3-466G"
+    "MU-3-446G"
 ]
 """
 List with backups.
