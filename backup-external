@@ -44,6 +44,7 @@ def backup(name):
     print(_c.bold + ("="*len(heading)).center(80) + _c.reset)
 
     if not os.path.isdir(target):
+        print(_c.red + "Target {} does not exist.".format(target) + _c.reset)
         return
 
     destdir = os.path.join(target, os.path.dirname(source))
