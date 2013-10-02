@@ -14,17 +14,13 @@ import subprocess
 
 __docformat__ = "restructuredtext en"
 
-backups = {
-    "Eta": "/media/Eta-Data/Backup",
-    "Gamma": "/media/Gamma/Backup",
-    "Sigma": "/media/Sigma/Backup",
-    "USB-Eins": "/media/USB-Eins",
-    "USB-Zwei": "/media/USB-Zwei"
-}
+backups = [
+    "MU-3-466G"
+]
 """
 List with backups.
 
-:type: dict
+:type: list
 """
 
 _c = colorcodes.Colorcodes()
@@ -38,41 +34,51 @@ def backup(name, target):
     :param target: Target directory.
     :type target: str
     """
-    includesfile = os.path.expanduser("~/.config/backup-scripts/"+name+".include.txt")
-    excludesfile = os.path.expanduser("~/.config/backup-scripts/"+name+".exclude.txt")
+    excludesfile = os.path.expanduser("~/.config/backup-scripts/full.exclude.txt")
 
-    if os.path.exists(includesfile):
-        with open(includesfile) as h:
-            for include in h:
-                include = include.strip()
+    source = os.path.expanduser("~")
 
-                heading = "Backup {name} -- {include}".format(name=name, include=include)
-                print(_c.bold + heading.center(80) + _c.reset)
-                print(_c.bold + ("="*len(heading)).center(80) + _c.reset)
-                destdir = target+os.path.dirname(include)
+    target = os.path.join("/media", '{}-data'.format(name))
+    heading = "Backup {}".format(name)
+    print(_c.bold + heading.center(80) + _c.reset)
+    print(_c.bold + ("="*len(heading)).center(80) + _c.reset)
 
-                if os.path.exists(excludesfile):
-                    exclude_arg = ["--exclude-from", excludesfile]
-                else:
-                    exclude_arg = []
+    if not os.path.isdir(target):
+        return
 
-                if not os.path.isdir(destdir):
-                    os.makedirs(destdir)
+    destdir = os.path.join(target, os.path.dirname(source))
 
-                command = ["rsync", "-avhE", "--delete", "--delete-excluded"] + exclude_arg + ["--", include, destdir]
+    if os.path.exists(excludesfile):
+        exclude_arg = ["--exclude-from", excludesfile]
+    else:
+        exclude_arg = []
 
-                try:
-                    subprocess.check_call(command)
-                except subprocess.CalledProcessError as e:
-                    print(e)
-                else:
-                    subprocess.call(["backup-status", "update", name])
+    if not os.path.isdir(destdir):
+        os.makedirs(destdir)
+
+    command = ["rsync", "-avhE", "--delete", "--", os.path.expanduser("~/Dokumente/Listen/Hauptliste.kdb", "/media/{}-info/info/".format(name)]
+
+    try:
+        subprocess.check_call(command)
+    except subprocess.CalledProcessError as e:
+        print(e)
+    else:
+        subprocess.call(["backup-status", "update", "{}-info".format(name)])
+
+    command = ["rsync", "-avhE", "--delete", "--delete-excluded"] + exclude_arg + ["--", include, destdir]
+
+    try:
+        subprocess.check_call(command)
+    except subprocess.CalledProcessError as e:
+        print(e)
+    else:
+        subprocess.call(["backup-status", "update", "{}-data".format(name)])
+
 
 
 def main():
-    for name, target in list(backups.items()):
-        if os.path.exists(target):
-            backup(name, target)
+    for name in backups:
+        backup(name)
 
 
 if __name__ == "__main__":
