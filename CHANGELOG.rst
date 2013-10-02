@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.8.2
+    - **Added**: *backup-chaos* script
+
 v1.8.1
     - *android-sync*: Rename GPX files
 
