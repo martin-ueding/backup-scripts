@@ -73,7 +73,6 @@ def backup(name):
     else:
         subprocess.call(["backup-status", "update", "{}-info".format(name)])
 
-
     command = ["rsync", "-avhE", "--delete", "--delete-excluded"] + exclude_arg + ["--", source, destdir]
     print(command)
 
@@ -84,12 +83,9 @@ def backup(name):
     else:
         subprocess.call(["backup-status", "update", "{}-data".format(name)])
 
-
-
 def main():
     for name in backups:
         backup(name)
-
 
 if __name__ == "__main__":
 	main()
