@@ -12,9 +12,11 @@ rsync="rsync -aEhv --delete"
 target="chaos"
 
 $rsync .vim "$target:"
+$rsync debuild "$target:"
 $rsync Dokumente/Listen "$target:Dokumente/"
 $rsync Dokumente/Studium/*+([0-9]) "$target:Dokumente/Studium/"
 $rsync Projekte "$target:"
+$rsync rpmbuild "$target:"
 $rsync Vorlagen "$target:"
 
 if type backup-status &> /dev/null
