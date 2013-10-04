@@ -41,8 +41,8 @@ def backup(name):
 
     target = os.path.join("/media", '{}-data'.format(name))
     heading = "Backup {}".format(name)
-    print(_c.bold + heading.center(80) + _c.reset)
-    print(_c.bold + ("="*len(heading)).center(80) + _c.reset)
+    print(_c.bold + heading + _c.reset)
+    print(_c.bold + ("="*len(heading)) + _c.reset)
 
     if not os.path.isdir(target):
         print(_c.red + "Target {} does not exist.".format(target) + _c.reset)
