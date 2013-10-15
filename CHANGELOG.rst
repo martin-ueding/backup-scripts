@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.8.3
+    - *android-sync*: New folders
+
 v1.8.2
     - **Added**: *backup-chaos* script
 
