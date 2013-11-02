@@ -4,4 +4,21 @@
 set -e
 set -u
 
+mountpoint="$(mktemp -d)"
+dropfolder="$(mktemp -d ~/TODO/android-sync-XXX)"
 
+mtpfs -o allow_other "$mountpoint"
+
+ls "$mountpoint"
+
+sdcard="$mountpoint/Interner Speicher/"
+
+for bin in DCIM Download Locus/export OpenGPSTracker Pictures/Screenshots TODO
+do
+    ls "$sdcard/$bin"
+done
+
+
+fusermount -u "$mountpoint"
+rmdir "$mountpoint"
+rmdir --ignore-fail-on-non-empty "$dropfolder"
