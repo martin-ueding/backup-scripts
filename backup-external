@@ -15,11 +15,11 @@ import subprocess
 __docformat__ = "restructuredtext en"
 
 backups = {
-    "Eta": "/media/Eta-Data/Backup",
-    "Gamma": "/media/Gamma/Backup",
-    "Sigma": "/media/Sigma/Backup",
-    "USB-Eins": "/media/USB-Eins",
-    "USB-Zwei": "/media/USB-Zwei"
+    "Eta": "/media/mu/Eta-Data/Backup",
+    "Gamma": "/media/mu/Gamma/Backup",
+    "Sigma": "/media/mu/Sigma/Backup",
+    "USB-Eins": "/media/mu/USB-Eins",
+    "USB-Zwei": "/media/mu/USB-Zwei"
 }
 """
 List with backups.
