@@ -5,6 +5,8 @@ set -e
 set -u
 set -x
 
+shopt -s nullglob
+
 mountpoint="$(mktemp -d)"
 dropfolder="$(mktemp -d ~/TODO/android-sync-XXX)"
 
@@ -20,11 +22,27 @@ mtpfs -o allow_other "$mountpoint"
 
 ls "$mountpoint"
 
-sdcard="$mountpoint/Interner Speicher"
+sdcard1="$mountpoint/Interner Speicher"
+sdcard2="$mountpoint/SD-Karte"
+
+if [[ -d "$sdcard1" ]]
+then
+    sdcard="$sdcard1"
+fi
+
+if [[ -d "$sdcard2" ]]
+then
+    sdcard="$sdcard2"
+fi
 
 ls "$sdcard"
 
-for bin in DCIM Download Locus/export OpenGPSTracker Pictures/Screenshots TODO
+for bin in DCIM Download Locus/export Pictures/Screenshots TODO
 do
-    ls "$sdcard/$bin"
+    ls -l "$sdcard/$bin/"
+    mv -v "$sdcard/$bin/"* "$dropfolder/"
 done
+
+cd "$HOME"
+
+rsync -rv --files-from <(find /home/mu/Dokumente/Studium -name "*.pdf" -type f | cut -d / -f 4-) . "$sdcard/PDF/"
