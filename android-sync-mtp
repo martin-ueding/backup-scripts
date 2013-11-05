@@ -3,6 +3,7 @@
 
 set -e
 set -u
+set -x
 
 mountpoint="$(mktemp -d)"
 dropfolder="$(mktemp -d ~/TODO/android-sync-XXX)"
