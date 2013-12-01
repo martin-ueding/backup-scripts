@@ -16,12 +16,12 @@ __docformat__ = "restructuredtext en"
 
 data_partitions = [
     "Gamma",
-    "MU-1-466G-data",
+    "Sigma-data",
     "MU-3-466G-data",
 ]
 
 info_partitions = [
-    "MU-1-466G-info",
+    "Sigma-info",
     "MU-3-466G-info",
 ]
 
