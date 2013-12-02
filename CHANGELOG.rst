@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.9
+    - *backup-external*: Support ``-data`` and ``-info`` partitions
+
 v1.8.3
     - *android-sync*: New folders
 
