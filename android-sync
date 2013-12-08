@@ -649,7 +649,7 @@ sync-device() {
 
 	show-disk-usage -i "$ip" -p "$port"
 
-	backup-status update "$hostname"
+	backup-status --update "$hostname"
 }
 
 # Syncs the Locus maps from and to the device.

@@ -105,4 +105,4 @@ touch "$current/performed"
 
 echo "Backup $name is done."
 
-backup-status update "$name"
+backup-status --update "$name" --direction from
