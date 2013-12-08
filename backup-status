@@ -8,10 +8,10 @@ Gives a status summary for the backups.
 """
 
 from prettytable import PrettyTable
+import argparse
 import datetime
 import dateutil.parser
 import json
-import optparse
 import os
 
 
@@ -63,19 +63,11 @@ def pretty(status, direction_filter):
 
 
 def main():
-    parser = optparse.OptionParser(usage="", description="")
-    #parser.add_option("", dest="", type="", default=, help=)
+    options = _parse_args()
 
-    (options, args) = parser.parse_args()
-    del parser
-
-    if len(args) > 0:
-        direction_filter = args[0]
-    else:
-        direction_filter = None
+    print(options)
 
     changed = False
-
 
     statusfile = os.path.expanduser("~/.local/share/backup-scripts/backup-status.js")
 
@@ -87,31 +79,44 @@ def main():
         status = []
 
 
-    if len(args) >= 2:
-        if args[0] == 'update':
-            backup = args[1]
+    if options.update is not None:
+        backup = options.update
 
+        if not backup in [x["name"] for x in status]:
+            status.append({"name": backup})
 
-            if not backup in [x["name"] for x in status]:
-                status.append({"name": backup})
+        for s in status:
+            if not s["name"] == backup:
+                continue
 
-            for s in status:
-                if not s["name"] == backup:
-                    continue
-
-                s["last"] = str(datetime.datetime.now())
-                changed = True
-                
-                if len(args) >= 3:
-                    s["type"] = args[2]
+            s["last"] = str(datetime.datetime.now())
+            changed = True
+            
+            if options.direction is not None:
+                s["type"] = options.direction
 
     else:
-        pretty(status, direction_filter)
+        pretty(status, options.direction)
 
 
     if changed:
         with open(statusfile, "w") as f:
             f.write(json.dumps(status, sort_keys=True, indent=4))
+
+def _parse_args():
+    """
+    Parses the command line arguments.
+
+    :return: Namespace with arguments.
+    :rtype: Namespace
+    """
+    parser = argparse.ArgumentParser(description="")
+    parser.add_argument("--update", help='Update the given')
+    parser.add_argument("--direction", help='Update the given')
+    #parser.add_argument("--version", action="version", version="<the version>")
+
+    return parser.parse_args()
+
 
 
 if __name__ == "__main__":
