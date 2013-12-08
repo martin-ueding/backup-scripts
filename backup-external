@@ -73,7 +73,7 @@ def backup_data(name):
     except subprocess.CalledProcessError as e:
         print(e)
     else:
-        subprocess.call(["backup-status", "update", "{}".format(name)])
+        subprocess.call(["backup-status", "--update", "{}".format(name), '--direction', 'to'])
 
 def backup_info(name):
     target = "/media/mu/{}/info/".format(name)
@@ -89,7 +89,7 @@ def backup_info(name):
     except subprocess.CalledProcessError as e:
         print(e)
     else:
-        subprocess.call(["backup-status", "update", "{}".format(name)])
+        subprocess.call(["backup-status", "--update", "{}".format(name), '--direction', 'to'])
 
 def main():
     for name in data_partitions:
