@@ -111,8 +111,8 @@ def _parse_args():
     :rtype: Namespace
     """
     parser = argparse.ArgumentParser(description="")
-    parser.add_argument("--update", metavar='NAME', help='Update the given')
-    parser.add_argument("--direction", help='Update the given')
+    parser.add_argument("--update", metavar='NAME', help='Update the given backup.')
+    parser.add_argument("--direction", help='Filter the direction, or set the direction the updated backup.')
     #parser.add_argument("--version", action="version", version="<the version>")
 
     return parser.parse_args()
