@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.10
+    - Change the usage of ``backup-status``
+
 v1.9
     - *backup-external*: Support ``-data`` and ``-info`` partitions
 
