@@ -65,8 +65,6 @@ def pretty(status, direction_filter):
 def main():
     options = _parse_args()
 
-    print(options)
-
     changed = False
 
     statusfile = os.path.expanduser("~/.local/share/backup-scripts/backup-status.js")
