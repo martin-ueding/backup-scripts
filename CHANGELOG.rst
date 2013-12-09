@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.10.1
+    - Perform MySQL dump first
+
 v1.10
     - Change the usage of ``backup-status``
 
