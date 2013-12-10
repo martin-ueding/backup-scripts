@@ -4,8 +4,11 @@
 Changelog
 #########
 
+v1.11
+    - *android-sync*: Sync stuff to read
+
 v1.10.1
-    - Perform MySQL dump first
+    - *backup-webserver*: Perform MySQL dump first
 
 v1.10
     - Change the usage of ``backup-status``
