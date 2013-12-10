@@ -631,6 +631,8 @@ sync-device() {
 	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
 	fix-permissions "$dropfolder"
 
+	myrsync -p "$port" -- --delete "/home/mu/Leseliste/" "$target/Leseliste"
+
 	case "$hostname" in
 		"Nexus 10")
 			copy-pdffiles -p "$port" -t "$target" "${studiumpdfdirs[@]}"
