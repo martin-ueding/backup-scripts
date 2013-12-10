@@ -4,6 +4,7 @@
 # Copies files onto Android devices using SSH. The devices should run the
 # “SSHelper” program that provides an SSH server for Android.
 
+set -e
 set -u
 
 shopt -s nullglob
@@ -156,7 +157,7 @@ copy-bins() {
 		print-heading "move $bin to computer"
 
 		myrsync -p "$port" -- "$target/$bin/" "$dropfolder"
-		ssh -p "$port" "$ip" "rm -frv /sdcard/$bin/* /sdcard/$bin/.??*"
+		ssh -p "$port" "$ip" "rm /sdcard/$bin/* /sdcard/$bin/.??*"
 	done
 }
 
