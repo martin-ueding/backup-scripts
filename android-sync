@@ -4,7 +4,6 @@
 # Copies files onto Android devices using SSH. The devices should run the
 # “SSHelper” program that provides an SSH server for Android.
 
-set -e
 set -u
 
 shopt -s nullglob
@@ -72,8 +71,8 @@ dotfiles=(
 # Positional arguments:
 #   DROPFOLDER      bins to empty
 cleanup() {
-	# Delete the dropfolder, if it is empty.
-	rmdir --ignore-fail-on-non-empty "$1"
+    # Delete the dropfolder, if it is empty.
+    rmdir --ignore-fail-on-non-empty "$1"
 }
 
 # Copies backup folders onto the device.
@@ -85,35 +84,35 @@ cleanup() {
 # Positional arguments:
 #   BACKUPDIR ...   directory with PDF files
 copy-backupdirs() {
-	local from
-	local frombase
-	local opt
-	local port
-	local target
-	local targetfolder
+    local from
+    local frombase
+    local opt
+    local port
+    local target
+    local targetfolder
 
-	OPTIND=1
-	while getopts "p:t:" opt
-	do
-		case "$opt" in
-			p)
-				port="$OPTARG"
-				;;
-			t)
-				target="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "p:t:" opt
+    do
+        case "$opt" in
+            p)
+                port="$OPTARG"
+                ;;
+            t)
+                target="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	print-heading "copying backup files to device"
+    print-heading "copying backup files to device"
 
-	for from
-	do
-		frombase="${from#/home/*/}"
-		targetfolder="$target/${frombase%/*}"
-		myrsync -p "$port" -- --delete "$from" "$targetfolder/"
-	done
+    for from
+    do
+        frombase="${from#/home/*/}"
+        targetfolder="$target/${frombase%/*}"
+        myrsync -p "$port" -- --delete "$from" "$targetfolder/"
+    done
 }
 
 # Copies the contents of the bins.
@@ -126,39 +125,39 @@ copy-backupdirs() {
 # Positional arguments:
 #   BIN ...         bins to empty
 copy-bins() {
-	local bin
-	local dropfolder
-	local folder
-	local opt
-	local port
-	local target
+    local bin
+    local dropfolder
+    local folder
+    local opt
+    local port
+    local target
 
-	OPTIND=1
-	while getopts "d:p:t:" opt
-	do
-		case "$opt" in
-			d)
-				dropfolder="$OPTARG"
-				;;
-			p)
-				port="$OPTARG"
-				;;
-			t)
-				target="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "d:p:t:" opt
+    do
+        case "$opt" in
+            d)
+                dropfolder="$OPTARG"
+                ;;
+            p)
+                port="$OPTARG"
+                ;;
+            t)
+                target="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	folder="$1"
+    folder="$1"
 
-	for bin
-	do
-		print-heading "move $bin to computer"
+    for bin
+    do
+        print-heading "move $bin to computer"
 
-		myrsync -p "$port" -- "$target/$bin/" "$dropfolder"
-		ssh -p "$port" "$ip" "rm /sdcard/$bin/* /sdcard/$bin/.??*"
-	done
+        myrsync -p "$port" -- "$target/$bin/" "$dropfolder"
+        ssh -p "$port" "$ip" "rm /sdcard/$bin/* /sdcard/$bin/.??*"
+    done
 }
 
 # Copies dotfiles to the remote device.
@@ -170,27 +169,27 @@ copy-bins() {
 # Positional arguments:
 #   DOTFILE ...     dotfiles to copy
 copy-dotfiles() {
-	local opt
-	local port
-	local target
+    local opt
+    local port
+    local target
 
-	OPTIND=1
-	while getopts "p:t:" opt
-	do
-		case "$opt" in
-			p)
-				port="$OPTARG"
-				;;
-			t)
-				target="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "p:t:" opt
+    do
+        case "$opt" in
+            p)
+                port="$OPTARG"
+                ;;
+            t)
+                target="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	print-heading "Copying dotfiles files to device"
+    print-heading "Copying dotfiles files to device"
 
-	myrsync -p "$port" -- "$@" "$target/"
+    myrsync -p "$port" -- "$@" "$target/"
 }
 
 # Copies all the music to the device.
@@ -201,60 +200,60 @@ copy-dotfiles() {
 # Positional arguments:
 #   TARGET          target folder
 copy-latex-documentation() {
-	local headerfile="$HOME/Vorlagen/header.tex"
-	local opt
-	local package
-	local pdffile
-	local pdffiles=()
-	local port
-	local target
-	local usepackage_regex='\usepackage.*\{(.*)\}'
+    local headerfile="$HOME/Vorlagen/header.tex"
+    local opt
+    local package
+    local pdffile
+    local pdffiles=()
+    local port
+    local target
+    local usepackage_regex='\usepackage.*\{(.*)\}'
 
-	OPTIND=1
-	while getopts "p:" opt
-	do
-		case "$opt" in
-			p)
-				port="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "p:" opt
+    do
+        case "$opt" in
+            p)
+                port="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	target="$1"
+    target="$1"
 
-	print-heading "Copying LaTeX documentation to device"
+    print-heading "Copying LaTeX documentation to device"
 
-	if ! [[ -f "$headerfile" ]]
-	then
-		echo "$headerfile does not exist."
-		return 0
-	fi
+    if ! [[ -f "$headerfile" ]]
+    then
+        echo "$headerfile does not exist."
+        return 0
+    fi
 
-	# Go through the include statements in the header file.
-	while read line
-	do
-		if [[ "$line" =~ $usepackage_regex ]]
-		then
-			package="${BASH_REMATCH[1]}"
-			echo "Looking for $package.pdf …"
+    # Go through the include statements in the header file.
+    while read line
+    do
+        if [[ "$line" =~ $usepackage_regex ]]
+        then
+            package="${BASH_REMATCH[1]}"
+            echo "Looking for $package.pdf …"
 
-			pdffile="$(locate --limit 1 "*/$package.pdf")"
-			if [[ -n "$pdffile" ]]
-			then
-				if [[ -z "${pdffiles[@]-}" ]]
-				then
-					pdffiles=("$pdffile")
-				else
-					pdffiles=("${pdffiles[@]}" "$pdffile")
-				fi
-			fi
-		fi
-	done < "$headerfile"
+            pdffile="$(locate --limit 1 "*/$package.pdf")"
+            if [[ -n "$pdffile" ]]
+            then
+                if [[ -z "${pdffiles[@]-}" ]]
+                then
+                    pdffiles=("$pdffile")
+                else
+                    pdffiles=("${pdffiles[@]}" "$pdffile")
+                fi
+            fi
+        fi
+    done < "$headerfile"
 
-	echo "${pdffiles[@]}"
+    echo "${pdffiles[@]}"
 
-	myrsync -p "$port" -- --delete "${pdffiles[@]}" "$target/"
+    myrsync -p "$port" -- --delete "${pdffiles[@]}" "$target/"
 }
 
 # Copies all the music to the device.
@@ -265,30 +264,30 @@ copy-latex-documentation() {
 # Positional arguments:
 #   TARGET          target folder
 copy-music() {
-	local opt
-	local port
-	local target_music
+    local opt
+    local port
+    local target_music
 
-	OPTIND=1
-	while getopts "p:" opt
-	do
-		case "$opt" in
-			p)
-				port="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "p:" opt
+    do
+        case "$opt" in
+            p)
+                port="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	target_music="$1"
+    target_music="$1"
 
-	print-heading "Copying MP3 files to device"
+    print-heading "Copying MP3 files to device"
 
-	myrsync -p "$port" -- --size-only --delete \
-		--force --exclude-from "/home/mu/.config/backup-scripts/handy_musik.txt" \
-		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" \
-		"/home/mu/.cache/mp3_packer/128/home/mu/Musik/Podcasts/" \
-		"$target_music/"
+    myrsync -p "$port" -- --size-only --delete \
+        --force --exclude-from "/home/mu/.config/backup-scripts/handy_musik.txt" \
+        "/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" \
+        "/home/mu/.cache/mp3_packer/128/home/mu/Musik/Podcasts/" \
+        "$target_music/"
 }
 
 # Copies PDF files to the device using ``copy-single-pdf-folder``.
@@ -300,31 +299,31 @@ copy-music() {
 # Positional arguments:
 #   PDFDIR ...      directory with PDF files
 copy-pdffiles() {
-	local opt
-	local pdfdir
-	local port
-	local target
+    local opt
+    local pdfdir
+    local port
+    local target
 
-	OPTIND=1
-	while getopts "p:t:" opt
-	do
-		case "$opt" in
-			p)
-				port="$OPTARG"
-				;;
-			t)
-				target="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "p:t:" opt
+    do
+        case "$opt" in
+            p)
+                port="$OPTARG"
+                ;;
+            t)
+                target="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	print-heading "copying PDF files to device"
+    print-heading "copying PDF files to device"
 
-	for pdfdir
-	do
-		copy-single-pdf-folder -p "$port" -t "$target" "$pdfdir"
-	done
+    for pdfdir
+    do
+        copy-single-pdf-folder -p "$port" -t "$target" "$pdfdir"
+    done
 }
 
 # Copies a folder with PDFs to the device.
@@ -337,39 +336,39 @@ copy-pdffiles() {
 # Positional arguments:
 #   FROM            folder on the computer
 copy-single-pdf-folder() {
-	local from
-	local frombase
-	local opt
-	local target
+    local from
+    local frombase
+    local opt
+    local target
 
-	OPTIND=1
-	while getopts "b:p:t:" opt
-	do
-		case "$opt" in
-			b)
-				frombase="$OPTARG"
-				;;
-			p)
-				port="$OPTARG"
-				;;
-			t)
-				target="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "b:p:t:" opt
+    do
+        case "$opt" in
+            b)
+                frombase="$OPTARG"
+                ;;
+            p)
+                port="$OPTARG"
+                ;;
+            t)
+                target="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	from="$1"
-	frombase="${from#/home/*/}"
-	target="$target_pdf/${frombase%/*}"
+    from="$1"
+    frombase="${from#/home/*/}"
+    target="$target_pdf/${frombase%/*}"
 
-	echo "${cyan}Folder $from to $target${reset}"
+    echo "${cyan}Folder $from to $target${reset}"
 
-	ssh -p "$port" "$ip" "mkdir -p \"${target#*:}\""
-	myrsync -p "$port" -- --delete --include='*.pdf' --include='*/' \
-		--exclude='*' "$from" "$target/"
+    ssh -p "$port" "$ip" "mkdir -p \"${target#*:}\""
+    myrsync -p "$port" -- --delete --include='*.pdf' --include='*/' \
+        --exclude='*' "$from" "$target/"
 
-	echo
+    echo
 }
 
 # Gives the user access rights to all the files in the dropfolder.
@@ -381,11 +380,11 @@ copy-single-pdf-folder() {
 # Positional arguments:
 #   DROPFOLDER      folder on computer
 fix-permissions() {
-	local dropfolder="$1"
+    local dropfolder="$1"
 
-	print-heading "Fix permissions in $dropfolder"
-	find "$dropfolder" -type d -exec chmod u+rwx '{}' \;
-	find "$dropfolder" -type f -exec chmod u+rw '{}' \;
+    print-heading "Fix permissions in $dropfolder"
+    find "$dropfolder" -type d -exec chmod u+rwx '{}' \;
+    find "$dropfolder" -type f -exec chmod u+rw '{}' \;
 }
 
 # Gathers colorcodes.
@@ -394,34 +393,34 @@ fix-permissions() {
 #
 #     black, blue, cyan, green, orange, purple, red, white and bold, reset
 gather-colorcodes() {
-	if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
-	then
-		bold="$(tput bold)"
+    if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null
+    then
+        bold="$(tput bold)"
 
-		black="$(tput setaf 0)"
-		blue="$(tput setaf 4)"
-		cyan="$(tput setaf 6)"
-		green="$(tput setaf 2)"
-		orange="$(tput setaf 3)"
-		purple="$(tput setaf 5)"
-		red="$(tput setaf 1)"
-		white="$(tput setaf 7)"
+        black="$(tput setaf 0)"
+        blue="$(tput setaf 4)"
+        cyan="$(tput setaf 6)"
+        green="$(tput setaf 2)"
+        orange="$(tput setaf 3)"
+        purple="$(tput setaf 5)"
+        red="$(tput setaf 1)"
+        white="$(tput setaf 7)"
 
-		reset="$(tput sgr0)"
-	else
-		bold=
+        reset="$(tput sgr0)"
+    else
+        bold=
 
-		black=
-		blue=
-		cyan=
-		green=
-		orange=
-		purple=
-		red=
-		white=
+        black=
+        blue=
+        cyan=
+        green=
+        orange=
+        purple=
+        red=
+        white=
 
-		reset=
-	fi
+        reset=
+    fi
 }
 
 # Retrives the hostname from the device.
@@ -430,56 +429,56 @@ gather-colorcodes() {
 #   -p PORT         SSH port to use
 #   -t TARGET       target folder
 get-hostname() {
-	local port
-	local target
-	local tempfile="$(mktemp)"
+    local port
+    local target
+    local tempfile="$(mktemp)"
 
-	OPTIND=1
-	while getopts "p:t:" opt
-	do
-		case "$opt" in
-			p)
-				port="$OPTARG"
-				;;
-			t)
-				target="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "p:t:" opt
+    do
+        case "$opt" in
+            p)
+                port="$OPTARG"
+                ;;
+            t)
+                target="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	myrsync -p "$port" -- "$target/hostname.txt" "$tempfile" &> /dev/null
-	cat "$tempfile"
-	rm -f "$tempfile"
+    myrsync -p "$port" -- "$target/hostname.txt" "$tempfile" &> /dev/null
+    cat "$tempfile"
+    rm -f "$tempfile"
 }
 
 # Main function of this script.
 main() {
-	local full_ip_regex='^ *([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}) *$'
-	local ip
-	local own_ip="$(hostname -I)"
-	local partial_ip_regex='^([[:digit:]]{1,3})$'
-	local subnet
+    local full_ip_regex='^ *([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}) *$'
+    local ip
+    local own_ip="$(hostname -I)"
+    local partial_ip_regex='^([[:digit:]]{1,3})$'
+    local subnet
 
-	gather-colorcodes
+    gather-colorcodes
 
-	if [[ "$own_ip" =~ $full_ip_regex ]]
-	then
-		subnet="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}"
-	fi
+    if [[ "$own_ip" =~ $full_ip_regex ]]
+    then
+        subnet="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}"
+    fi
 
-	if [[ "${1:-}" =~ $full_ip_regex ]]
-	then
-		ip="$1"
-		sync-device "$ip"
-	elif [[ "${1:-}" =~ $partial_ip_regex ]]
-	then
-		ip="$subnet.$1"
-		sync-device "$ip"
-	else
-		echo "usage: $0 IP"
-		exit 2
-	fi
+    if [[ "${1:-}" =~ $full_ip_regex ]]
+    then
+        ip="$1"
+        sync-device "$ip"
+    elif [[ "${1:-}" =~ $partial_ip_regex ]]
+    then
+        ip="$subnet.$1"
+        sync-device "$ip"
+    else
+        echo "usage: $0 IP"
+        exit 2
+    fi
 }
 
 # Wrapper for rsync with all the options.
@@ -490,22 +489,22 @@ main() {
 # Positional arguments:
 #   OPTIONS         other rsync options and arguments
 myrsync() {
-	local opt
-	local port
+    local opt
+    local port
 
-	OPTIND=1
-	while getopts "p:" opt
-	do
-		case "$opt" in
-			p)
-				port="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "p:" opt
+    do
+        case "$opt" in
+            p)
+                port="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors \
-		--exclude=.thumbnails --copy-links "$@"
+    rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors \
+        --exclude=.thumbnails --copy-links "$@"
 }
 
 # Checks whether the given host is reachable.
@@ -516,7 +515,7 @@ myrsync() {
 # Exit status:
 #   the exit status of ping
 ping-test() {
-	ping -c 1 -w 2 "$1" &> /dev/null
+    ping -c 1 -w 2 "$1" &> /dev/null
 }
 
 # Prints a colored heading.
@@ -524,17 +523,17 @@ ping-test() {
 # Positional arguments
 #   TEXT            text to print
 print-heading() {
-	echo
-	echo "${green}$1${reset}"
-	echo
+    echo
+    echo "${green}$1${reset}"
+    echo
 }
 
 # Prints a colored “NEXUS” banner.
 print-nexus() {
-	echo "│╲   │  ┌──  ${blue}╲  ${red}╱${reset}  │   │  ╱──"
-	echo "│ ╲  │  │__   ${blue}╲${red}╱${reset}   │   │  ╲__"
-	echo "│  ╲ │  │     ${orange}╱${green}╲${reset}   │   │     ╲"
-	echo "│   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱"
+    echo "│╲   │  ┌──  ${blue}╲  ${red}╱${reset}  │   │  ╱──"
+    echo "│ ╲  │  │__   ${blue}╲${red}╱${reset}   │   │  ╲__"
+    echo "│  ╲ │  │     ${orange}╱${green}╲${reset}   │   │     ╲"
+    echo "│   ╲│  └── ${orange} ╱  ${green}╲${reset}  └───┘   __╱"
 }
 
 # Shows the disk usage on the device.
@@ -543,27 +542,27 @@ print-nexus() {
 #   -i IP           IP address of the device
 #   -p PORT         port for SSH
 show-disk-usage() {
-	local ip
-	local port
+    local ip
+    local port
 
-	OPTIND=1
-	while getopts "p:i:" opt
-	do
-		case "$opt" in
-			p)
-				port="$OPTARG"
-				;;
-			i)
-				ip="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "p:i:" opt
+    do
+        case "$opt" in
+            p)
+                port="$OPTARG"
+                ;;
+            i)
+                ip="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	result="$(ssh -p "$port" "$ip" df -h /sdcard | grep /sdcard | awk '{print $4}')"
+    result="$(ssh -p "$port" "$ip" df -h /sdcard | grep /sdcard | awk '{print $4}')"
 
-	echo
-	echo "$result of /sdcard used"
+    echo
+    echo "$result of /sdcard used"
 }
 
 # Stashes the GPX files into the target directory.
@@ -571,22 +570,22 @@ show-disk-usage() {
 # Positional arguments
 #   DROPFOLDER      Source folder
 stash-gpx-files() {
-	local dropfolder="$1"
-	local gpxfile
+    local dropfolder="$1"
+    local gpxfile
 
-	print-heading "Move GPX files into target folder"
+    print-heading "Move GPX files into target folder"
 
-	shopt -s nullglob
+    shopt -s nullglob
 
-	for gpxfile in "$dropfolder"/*.gpx
-	do
-		mv -v "$gpxfile" "$HOME/Dokumente/GPS/"
-	done
+    for gpxfile in "$dropfolder"/*.gpx
+    do
+        mv -v "$gpxfile" "$HOME/Dokumente/GPS/"
+    done
 
-	(
-	cd "$HOME/Dokumente/GPS"
-	rename 's/(\d{4})-(\d{2})-(\d{2})_\d{2}-\d{2}-\d{2}[-_](.+\.gpx)/$1$2$3-$4/' *.gpx
-	)
+    (
+    cd "$HOME/Dokumente/GPS"
+    rename 's/(\d{4})-(\d{2})-(\d{2})_\d{2}-\d{2}-\d{2}[-_](.+\.gpx)/$1$2$3-$4/' *.gpx
+    )
 }
 
 # Performs the syncing. This functions pretty much calls all other functions.
@@ -594,65 +593,65 @@ stash-gpx-files() {
 # Positional arguments
 #   IP              IP address of the device
 sync-device() {
-	local dropfolder
-	local hostname
-	local ip="$1"
-	local port
-	local target
-	local target_music
-	local target_pdf
+    local dropfolder
+    local hostname
+    local ip="$1"
+    local port
+    local target
+    local target_music
+    local target_pdf
 
-	if ! ping-test "$ip"
-	then
-		echo "${red}Device is not reachable. Aborting.${reset}"
-		exit 1
-	fi
+    if ! ping-test "$ip"
+    then
+        echo "${red}Device is not reachable. Aborting.${reset}"
+        exit 1
+    fi
 
-	port="2222"
-	target="$ip:/sdcard"
-	target_music="$target/Music"
-	target_pdf="$target/PDF"
+    port="2222"
+    target="$ip:/sdcard"
+    target_music="$target/Music"
+    target_pdf="$target/PDF"
 
-	dropfolder="$(mktemp -d "$HOME/TODO/android-sync-$(date +%Y%m%dT%H%M%S%z)-XXX")"
+    dropfolder="$(mktemp -d "$HOME/TODO/android-sync-$(date +%Y%m%dT%H%M%S%z)-XXX")"
 
-	trap "cleanup '$dropfolder'" EXIT
+    trap "cleanup '$dropfolder'" EXIT
 
-	hostname="$(get-hostname -p "$port" -t "$target")"
+    hostname="$(get-hostname -p "$port" -t "$target")"
 
-	echo "${bold}Syncing $hostname @ $ip${reset}"
+    echo "${bold}Syncing $hostname @ $ip${reset}"
 
-	case "$hostname" in
-		"Nexus 10")
-			print-nexus
-			;;
-	esac
+    case "$hostname" in
+        "Nexus 10")
+            print-nexus
+            ;;
+    esac
 
-	show-disk-usage -i "$ip" -p "$port"
+    show-disk-usage -i "$ip" -p "$port"
 
-	copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
-	fix-permissions "$dropfolder"
+    copy-bins -d "$dropfolder" -p "$port" -t "$target" "${bins[@]}"
+    fix-permissions "$dropfolder"
 
-	myrsync -p "$port" -- --delete "/home/mu/Leseliste/" "$target/Leseliste"
+    myrsync -p "$port" -- --delete "/home/mu/Leseliste/" "$target/Leseliste"
 
-	case "$hostname" in
-		"Nexus 10")
-			copy-pdffiles -p "$port" -t "$target" "${studiumpdfdirs[@]}"
-			;;
-		"Xperia Mini Pro")
-			copy-backupdirs -p "$port" -t "$target" "${backupdirs[@]}"
-			copy-music -p "$port" "$target_music"
-			;;
-	esac
+    case "$hostname" in
+        "Nexus 10")
+            copy-pdffiles -p "$port" -t "$target" "${studiumpdfdirs[@]}"
+            ;;
+        "Xperia Mini Pro")
+            copy-backupdirs -p "$port" -t "$target" "${backupdirs[@]}"
+            copy-music -p "$port" "$target_music"
+            ;;
+    esac
 
-	copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
-	copy-latex-documentation -p "$port" "$target/PDF/LaTeX"
-	copy-pdffiles -p "$port" -t "$target" "${pdfdirs[@]}"
-	stash-gpx-files "$dropfolder"
-	sync-locus-maps -p "$port" -t "$target"
+    copy-dotfiles -p "$port" -t "$target" "${dotfiles[@]}"
+    copy-latex-documentation -p "$port" "$target/PDF/LaTeX"
+    copy-pdffiles -p "$port" -t "$target" "${pdfdirs[@]}"
+    stash-gpx-files "$dropfolder"
+    sync-locus-maps -p "$port" -t "$target"
 
-	show-disk-usage -i "$ip" -p "$port"
+    show-disk-usage -i "$ip" -p "$port"
 
-	backup-status --update "$hostname"
+    backup-status --update "$hostname"
 }
 
 # Syncs the Locus maps from and to the device.
@@ -664,28 +663,28 @@ sync-device() {
 #   -p PORT         SSH port to use
 #   -t TARGET       target folder
 sync-locus-maps() {
-	local cachefolder="$HOME/.cache/backup-scripts/locus-maps"
-	local port
-	local target
+    local cachefolder="$HOME/.cache/backup-scripts/locus-maps"
+    local port
+    local target
 
-	OPTIND=1
-	while getopts "p:t:" opt
-	do
-		case "$opt" in
-			p)
-				port="$OPTARG"
-				;;
-			t)
-				target="$OPTARG"
-				;;
-		esac
-	done
-	shift $((OPTIND-1))
+    OPTIND=1
+    while getopts "p:t:" opt
+    do
+        case "$opt" in
+            p)
+                port="$OPTARG"
+                ;;
+            t)
+                target="$OPTARG"
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
 
-	mkdir -p "$cachefolder"
+    mkdir -p "$cachefolder"
 
-	myrsync -p "$port" -- "$target/Locus/maps/" "$cachefolder"
-	myrsync -p "$port" -- "$cachefolder/"* "$target/Locus/maps/"
+    myrsync -p "$port" -- "$target/Locus/maps/" "$cachefolder"
+    myrsync -p "$port" -- "$cachefolder/"* "$target/Locus/maps/"
 }
 
 main "$@"
