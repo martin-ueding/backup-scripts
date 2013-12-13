@@ -160,6 +160,13 @@ copy-music() {
         "$target_music/"
 }
 
+# Taken from http://android.stackexchange.com/a/58165.
+find-sshelper() {
+    avahi-browse --terminate --resolve --parsable _ssh._tcp \
+        | grep "SSHelper.*;local;" \
+        | sed -E 's/.*SSHelp.*;local;(.*.local);.*/\1/g'
+}
+
 # Gives the user access rights to all the files in the dropfolder.
 #
 # Apparently, the files that are copied from the device have their permissions
@@ -256,15 +263,21 @@ main() {
     if [[ "${1:-}" =~ $full_ip_regex ]]
     then
         ip="$1"
-        sync-device "$ip"
     elif [[ "${1:-}" =~ $partial_ip_regex ]]
     then
         ip="$subnet.$1"
-        sync-device "$ip"
+    elif ips="$(find-sshelper)"
+    then
+        for ip in ips
+        do
+            sync-device "$ip"
+        done
     else
-        echo "usage: $0 IP"
+        echo $"Usage: $0 IP"
         exit 2
     fi
+
+    sync-device "$ip"
 }
 
 # Wrapper for rsync with all the options.
