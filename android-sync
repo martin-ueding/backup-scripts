@@ -268,7 +268,8 @@ main() {
         ip="$subnet.$1"
     elif ips="$(find-sshelper)"
     then
-        for ip in ips
+        echo "avahi: $ips"
+        for ip in $ips
         do
             sync-device "$ip"
         done
@@ -297,7 +298,7 @@ myrsync() {
 # Exit status:
 #   the exit status of ping
 ping-test() {
-    ping -c 1 -w 2 "$1" &> /dev/null
+    ping -c 1 -w 5 "$1" &> /dev/null
 }
 
 # Prints a colored heading.
