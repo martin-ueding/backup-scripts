@@ -4,6 +4,10 @@
 Changelog
 #########
 
+v1.12
+    - *android-sync*: Simplify script
+    - *android-sync*: Discover devices with zeroconf
+
 v1.11
     - *android-sync*: Sync stuff to read
 
