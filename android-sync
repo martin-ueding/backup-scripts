@@ -138,7 +138,7 @@ copy-bins() {
         print-heading "move $bin to computer"
 
         myrsync "$target/$bin/" "$dropfolder"
-        ssh -p "$port" "$ip" "rm -f /sdcard/$bin/* /sdcard/$bin/.??*"
+        ssh -p "$port" "$ip" "rm -rf /sdcard/$bin/* /sdcard/$bin/.??*"
     done
 }
 
@@ -156,7 +156,6 @@ copy-music() {
     myrsync --size-only --delete \
         --force --exclude-from "/home/mu/.config/backup-scripts/handy_musik.txt" \
         "/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" \
-        "/home/mu/.cache/mp3_packer/128/home/mu/Musik/Podcasts/" \
         "$target_music/"
 }
 
