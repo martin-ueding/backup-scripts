@@ -1,8 +1,11 @@
-.. Copyright © 2013 Martin Ueding <dev@martin-ueding.de>
+.. Copyright © 2013-2014 Martin Ueding <dev@martin-ueding.de>
 
 #########
 Changelog
 #########
+
+v1.12.1
+    - *android-sync*: Fix some errors that caused the script to exit early
 
 v1.12
     - *android-sync*: Simplify script
