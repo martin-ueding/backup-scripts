@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.13
+    - *android-sync*: Sync ``Pictures/Skitch`` as well
+
 v1.12.1
     - *android-sync*: Fix some errors that caused the script to exit early
 
