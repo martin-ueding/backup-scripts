@@ -54,6 +54,7 @@ bins=(
 "Download"
 "Locus/export"
 "Pictures/Screenshots"
+"Pictures/Skitch"
 "TODO"
 
 )
