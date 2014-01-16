@@ -278,7 +278,12 @@ main() {
         exit 2
     fi
 
-    sync-device "$ip"
+    if [[ -n "$ip" ]]
+    then
+        sync-device "$ip"
+    else
+        echo "No IP address found"
+    fi
 }
 
 # Wrapper for rsync with all the options.
@@ -369,7 +374,8 @@ sync-device() {
     fix-permissions "$dropfolder"
 
     print-heading $"Copying reading list items onto device"
-    myrsync --delete --max-size=1G "/home/mu/Leseliste/" "$target/Leseliste"
+    myrsync --delete --max-size=1G "$HOME/Leseliste/" "$target/Leseliste"
+    myrsync --delete --max-size=1G "/home/mu/Dokumente/Wohnung_Monschauer_Strasse" "$target/Dokumente/"
 
     case "$hostname" in
         "Nexus 10")
