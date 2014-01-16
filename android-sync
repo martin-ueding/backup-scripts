@@ -155,8 +155,8 @@ copy-music() {
     print-heading "Copying MP3 files to device"
 
     myrsync --size-only --delete \
-        --force --exclude-from "/home/mu/.config/backup-scripts/handy_musik.txt" \
-        "/home/mu/.cache/mp3_packer/128/home/mu/Musik/Musik/" \
+        --force --exclude-from "$HOME/.config/backup-scripts/handy_musik.txt" \
+        "$HOME/.cache/mp3_packer/128$HOME/Musik/Musik/" \
         "$target_music/"
 }
 
@@ -375,7 +375,7 @@ sync-device() {
 
     print-heading $"Copying reading list items onto device"
     myrsync --delete --max-size=1G "$HOME/Leseliste/" "$target/Leseliste"
-    myrsync --delete --max-size=1G "/home/mu/Dokumente/Wohnung_Monschauer_Strasse" "$target/Dokumente/"
+    myrsync --delete --max-size=1G "$HOME/Dokumente/Wohnung_Monschauer_Strasse" "$target/Dokumente/"
 
     case "$hostname" in
         "Nexus 10")
