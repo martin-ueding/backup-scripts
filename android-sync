@@ -51,6 +51,7 @@ backupdirs=(
 bins=(
 
 "DCIM/100ANDRO"
+"DCIM/Camera"
 "Download"
 "Locus/export"
 "Pictures/Screenshots"
