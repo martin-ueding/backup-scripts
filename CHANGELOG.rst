@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.13.2
+    - *android-sync*: Empty ``DCIM/Camera``
+
 v1.13.1
     - *android-sync*: Sync documents for flat as well
 
