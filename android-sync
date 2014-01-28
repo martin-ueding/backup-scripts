@@ -5,7 +5,7 @@
 # “SSHelper” program that provides an SSH server for Android.
 
 set -e
-set -u
+#set -u
 
 shopt -s nullglob
 shopt -s extglob
@@ -139,8 +139,10 @@ copy-bins() {
     do
         print-heading "move $bin to computer"
 
-        myrsync "$target/$bin/" "$dropfolder"
-        ssh -p "$port" "$ip" "rm -rf /sdcard/$bin/* /sdcard/$bin/.??*"
+        if myrsync "$target/$bin/" "$dropfolder"
+        then
+            ssh -p "$port" "root@$ip" "rm -rf /sdcard/$bin/* /sdcard/$bin/.??*"
+        fi
     done
 }
 
@@ -358,8 +360,8 @@ sync-device() {
         exit 1
     fi
 
-    port="2222"
-    target="$ip:/sdcard"
+    port="22"
+    target="root@$ip:/sdcard"
     target_music="$target/Music"
     target_pdf="$target/PDF"
 
@@ -412,8 +414,10 @@ sync-locus-maps() {
 
     mkdir -p "$cachefolder"
 
-    myrsync "$target/Locus/maps/" "$cachefolder"
-    myrsync "$cachefolder/"* "$target/Locus/maps/"
+    if myrsync "$target/Locus/maps/" "$cachefolder"
+    then
+        myrsync "$cachefolder/"* "$target/Locus/maps/"
+    fi
 }
 
 main "$@"
