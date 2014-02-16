@@ -76,6 +76,8 @@ def backup_info(name):
     if not os.path.isdir(target):
         return
 
+    termcolor.cprint("Info {}".format(name), attrs=['bold'])
+
     command = ["rsync", "-avhE", "--delete", "--"] + infofiles + [target]
 
     try:
