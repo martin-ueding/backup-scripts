@@ -50,9 +50,7 @@ bins=(
 "DCIM/100ANDRO"
 "DCIM/Camera"
 "Download"
-"Locus/export"
 "Pictures/Screenshots"
-"Pictures/Skitch"
 "TODO"
 
 )
