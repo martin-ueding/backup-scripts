@@ -28,9 +28,6 @@ pdfdirs=(
 studiumpdfdirs=(
 
 "Dokumente/Studium/EBooks"
-"Dokumente/Studium/math140"
-"Dokumente/Studium/math240"
-"Dokumente/Studium/math340"
 "Dokumente/Studium/Modulhandbücher"
 "Dokumente/Studium/physics606"
 "Dokumente/Studium/physik321"
@@ -141,7 +138,7 @@ copy-bins() {
 
         if myrsync "$target/$bin/" "$dropfolder"
         then
-            ssh -p "$port" "root@$ip" "rm -rf /sdcard/$bin/* /sdcard/$bin/.??*"
+            ssh "root@$ip" "rm -rf /sdcard/$bin/* /sdcard/$bin/.??*"
         fi
     done
 }
@@ -294,7 +291,7 @@ main() {
 # Positional arguments:
 #   OPTIONS         other rsync options and arguments
 myrsync() {
-    rsync --rsh="ssh -p $port" --progress -hlmrv --size-only --ignore-errors \
+    rsync --progress -hlmrv --size-only --ignore-errors \
         --exclude=.thumbnails --copy-links "$@"
 }
 
@@ -360,7 +357,6 @@ sync-device() {
         exit 1
     fi
 
-    port="22"
     target="root@$ip:/sdcard"
     target_music="$target/Music"
     target_pdf="$target/PDF"
