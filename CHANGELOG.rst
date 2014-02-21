@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.15
+    - *android-sync*: Rewrite in Python 3
+
 v1.14
     - *backup-external*: Use ``termcolor`` instead of my own ``colorcodes``
       module. Make the headings nicer.
