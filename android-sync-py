@@ -126,6 +126,23 @@ def copy_reading_list(target):
     source = os.path.expanduser("~/Leseliste/")
     rsync([source], target.path_to('Leseliste/'), ['--delete', '--max-size=1G'])
 
+def copy_wohnungsunterlagen(target):
+    termcolor.cprint('Copy Wohnungsunterlagen', 'cyan')
+    source = os.path.expanduser("~/Dokumente/Wohnung_Monschauer_Strasse")
+    rsync([source], target.path_to('Dokumente/'), ['--delete', '--max-size=1G'])
+
+def copy_studium_pdf_dirs(target):
+    termcolor.cprint('Copy Studium PDF dirs', 'cyan')
+
+    with tempfile.NamedTemporaryFile() as tmp:
+        sourcefiles = subprocess.check_output(['find'] + studium_pdf_dirs + ['-type', 'f', '-name', '*.pdf'])
+        logging.debug('Sourcefiles: %s', sourcefiles.decode())
+        tmp.write(sourcefiles)
+        tmp.flush()
+
+        rsync([os.path.expanduser('~')], target.path_to('') + '/', ['--files-from='+tmp.name])
+
+
 def sync_device(target):
     now = datetime.datetime.now()
     prefix = 'android-sync-python_{year:d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}-{second:02d}-'.format(
@@ -142,6 +159,8 @@ def sync_device(target):
         copy_bins(bins, tempdir, target)
         if target.backup:
             copy_backupdirs(backupdirs, target)
+        else:
+            copy_studium_pdf_dirs(target)
         if target.music:
             copy_music(target)
 
@@ -159,12 +178,13 @@ def sync_device(target):
 def main():
     options = _parse_args()
 
+    os.chdir(os.path.expanduser('~'))
+
     target_testing = Target(os.path.expanduser('~/android-sync-testing'))
     target_manta = Target('/sdcard', ip='192.168.0.11', backup=False, music=False)
     target_mango = Target('/media/mu/9016-4EF8')
 
-    sync_device(target_mango)
-    #sync_device(target_manta)
+    sync_device(target_manta)
 
 
 def _parse_args():

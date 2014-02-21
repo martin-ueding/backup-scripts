@@ -83,10 +83,6 @@ stash-gpx-files() {
 # Positional arguments
 #   IP              IP address of the device
 sync-device() {
-    print-heading $"Copying reading list items onto device"
-    myrsync --delete --max-size=1G "$HOME/Leseliste/" "$target/Leseliste"
-    myrsync --delete --max-size=1G "$HOME/Dokumente/Wohnung_Monschauer_Strasse" "$target/Dokumente/"
-
     case "$hostname" in
         "Nexus 10")
             print-heading $"Copy university PDF files to device"
