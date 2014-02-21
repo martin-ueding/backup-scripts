@@ -84,6 +84,11 @@ class Target(object):
                 logging.debug('Deleting %s', path)
                 os.remove(path)
 
+    def get_hostname(self):
+        tmp = tempfile.mkstemp()[1]
+        rsync([self.path_to('hostname.txt')], tmp)
+        with open(tmp) as f:
+            return f.read()
 
 def copy_backupdirs(backupdirs, target):
     termcolor.cprint('Copy Backupdirs', 'cyan')
