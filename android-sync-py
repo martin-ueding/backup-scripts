@@ -1,0 +1,92 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# Copyright © 2014 Martin Ueding <dev@martin-ueding.de>
+
+import argparse
+import logging
+
+# Directories with PDF files that should be copied onto the device.
+pdfdirs = [
+    "Dokumente/2012-LaTeX_Kurs",
+    "Dokumente/2013-LaTeX_Kurs_VWL/Kursunterlagen",
+    "Dokumente/Anleitungen",
+    "Dokumente/Aufsaetze/Brandon_Patrick_In_Space",
+    "Dokumente/Informationen",
+    "Dokumente/Nachhilfe",
+    "Dokumente/Physik_Dokumente",
+    "Dokumente/Schule/Abizeitung/Abizeitung-300.pdf",
+    "Dokumente/Spektrum",
+]
+
+studium_pdf_dirs = [
+    "Dokumente/Studium/EBooks",
+    "Dokumente/Studium/Modulhandbücher",
+    "Dokumente/Studium/physics606",
+    "Dokumente/Studium/physik321",
+    "Dokumente/Studium/physik412",
+    "Dokumente/Studium/physik421",
+    "Dokumente/Studium/physik511",
+    "Dokumente/Studium/physik521",
+]
+
+backupdirs=[
+    "Dokumente/Studium",
+]
+
+# Folders where data will build up on the device.
+bins=[
+    "DCIM/100ANDRO",
+    "DCIM/Camera",
+    "Download",
+    "Pictures/Screenshots",
+    "TODO",
+]
+
+__docformat__ = "restructuredtext en"
+
+def copy_backupdirs(backupdirs, target):
+    for backupdir in backupdirs:
+        from_base = re.sub(r'^/home/\w+/', '', backupdir)
+        targetfolder = os.path.dirname(from_base)
+
+        rsync(backupdir, targetfolder, ('--delete'))
+
+
+
+def main():
+    options = _parse_args()
+
+    try:
+
+    except:
+        # cleanup
+
+def _parse_args():
+    """
+    Parses the command line arguments.
+
+    If the logging module is imported, set the level according to the number of
+    ``-v`` given on the command line.
+
+    :return: Namespace with arguments.
+    :rtype: Namespace
+    """
+    parser = argparse.ArgumentParser(description="")
+    #parser.add_argument("args", metavar="N", type=str, nargs="*", help="Positional arguments.")
+    #parser.add_argument("", dest="", type="", default=, help=)
+    #parser.add_argument("--version", action="version", version="<the version>")
+    parser.add_argument("-v", dest='verbose', action="count", help='Enable verbose output. Can be supplied multiple times for even more verbosity.')
+
+    options = parser.parse_args()
+
+    # Try to set the logging level in case the logging module is imported.
+    if options.verbose == 1:
+        logging.basicConfig(level=logging.INFO)
+    elif options.verbose == 2:
+        logging.basicConfig(level=logging.DEBUG)
+
+    return options
+
+if __name__ == "__main__":
+    main()
