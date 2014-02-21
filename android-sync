@@ -1,12 +1,2 @@
 #!/bin/bash
 # Copyright © 2013-2014 Martin Ueding <dev@martin-ueding.de>
-
-# Performs the syncing. This functions pretty much calls all other functions.
-#
-# Positional arguments
-#   IP              IP address of the device
-sync-device() {
-    print-heading $"Copy PDF files to device"
-    stash-gpx-files "$dropfolder"
-    backup-status --update "$hostname"
-}

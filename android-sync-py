@@ -163,7 +163,8 @@ def sync_device(target):
     )
     tempdir = tempfile.mkdtemp(prefix=prefix, dir=os.path.expanduser('~/TODO'))
 
-    termcolor.cprint('Syncing {}'.format(target.get_hostname()), 'white', attrs=['bold'])
+    hostname = target.get_hostname()
+    termcolor.cprint('Syncing {}'.format(hostname), 'white', attrs=['bold'])
 
     try:
         copy_bins(bins, tempdir, target)
@@ -176,6 +177,8 @@ def sync_device(target):
         copy_other_pdf_dirs(target)
 
         copy_reading_list(target)
+
+        subprocess.check_call(['backup-status', '--update', hostname])
 
     except:
         raise
