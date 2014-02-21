@@ -4,6 +4,10 @@
 Changelog
 #########
 
+v1.14
+    - *backup-external*: Use ``termcolor`` instead of my own ``colorcodes``
+      module. Make the headings nicer.
+
 v1.13.2
     - *android-sync*: Empty ``DCIM/Camera``
 
