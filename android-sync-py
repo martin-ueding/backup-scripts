@@ -4,13 +4,14 @@
 # Copyright © 2014 Martin Ueding <dev@martin-ueding.de>
 
 import argparse
-import os.path
-import os
-import subprocess
+import datetime
 import logging
+import os
+import os.path
+import re
+import subprocess
 import tempfile
 import termcolor
-import re
 
 # Directories with PDF files that should be copied onto the device.
 pdfdirs = [
@@ -52,13 +53,15 @@ bins=[
 __docformat__ = "restructuredtext en"
 
 class Target(object):
-    def __init__(self, basepath, **kwargs):
+    def __init__(self, basepath, ip=None, backup=True, music=True):
         self.basepath = basepath
         self.ssh = False
+        self.backup = backup
+        self.music = music
 
-        if "ip" in kwargs:
-            self.ip = kwargs['ip']
-            self.user = root
+        if ip is not None:
+            self.ip = ip
+            self.user = 'root'
             self.ssh = True
 
     def path_to(self, suffix):
@@ -79,18 +82,19 @@ class Target(object):
             for file in contents:
                 path = os.path.join(bin_path, file)
                 logging.debug('Deleting %s', path)
-                shutil.rmtree(path)
+                os.remove(path)
 
 
 def copy_backupdirs(backupdirs, target):
+    termcolor.cprint('Copy Backupdirs', 'cyan')
     for backupdir in backupdirs:
-        from_base = re.sub(r'^/home/\w+/', '', backupdir)
-        target_folder = os.path.dirname(from_base)
+        target_folder = os.path.dirname(backupdir)
         target_path = target.path_to(target_folder) + '/'
 
-        rsync([backupdir], target_path, ['--delete'])
+        rsync([os.path.join(os.path.expanduser('~'), backupdir)], target_path, ['--delete'])
 
 def copy_bins(bins, dropfolder, target):
+    termcolor.cprint('Copy Bins', 'cyan')
     for bin in bins:
         try:
             logging.info('Copying bin %s to computer', bin)
@@ -101,6 +105,7 @@ def copy_bins(bins, dropfolder, target):
 
 
 def copy_music(target):
+    termcolor.cprint('Copy Music', 'cyan')
     source = os.path.expanduser("~/.cache/mp3_packer/128") + os.path.expanduser('~/Musik/Musik/')
     flags = ['--exclude-from', os.path.expanduser("~/.config/backup-scripts/handy_musik.txt")]
     rsync([source], target.path_to('Music'), flags)
@@ -109,25 +114,29 @@ def rsync(sources, target_path, additional_flags=[]):
     flags = ['--progress', '-h', '-l', '-m', '-r', '-v', '--size-only', '--ignore-errors', '--exclude=.thumbnails', '--copy-links'] + additional_flags
     command = ['rsync'] + flags + sources + [target_path]
     logging.info('rsync command: %s', ' '.join(command))
-    #subprocess.check_call(command)
+    subprocess.check_call(command)
 
 def copy_reading_list(target):
     pass
 
-def main():
-    options = _parse_args()
-
-    tempdir = tempfile.mkdtemp(prefix='android-sync-python', dir=os.path.expanduser('~/TODO'))
-
-    target = Target(os.path.expanduser('~/android-sync-testing'))
+def sync_device(target):
+    now = datetime.datetime.now()
+    prefix = 'android-sync-python_{year:d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}-{second:02d}-'.format(
+        year=now.year,
+        month=now.month,
+        day=now.day,
+        hour=now.hour,
+        minute=now.minute,
+        second=now.second,
+    )
+    tempdir = tempfile.mkdtemp(prefix=prefix, dir=os.path.expanduser('~/TODO'))
 
     try:
-        termcolor.cprint('Copy Bins', 'cyan')
         copy_bins(bins, tempdir, target)
-        termcolor.cprint('Copy Backupdirs', 'cyan')
-        copy_backupdirs(backupdirs, target)
-        termcolor.cprint('Copy Music', 'cyan')
-        copy_music(target)
+        if target.backup:
+            copy_backupdirs(backupdirs, target)
+        if target.music:
+            copy_music(target)
 
     except:
         raise
@@ -137,6 +146,17 @@ def main():
         if len(tempdir_contents) == 0:
             logging.info('Deleting temporary directory')
             os.rmdir(tempdir)
+
+def main():
+    options = _parse_args()
+
+    target_testing = Target(os.path.expanduser('~/android-sync-testing'))
+    target_manta = Target('/sdcard', ip='192.168.0.11', backup=False, music=False)
+    target_mango = Target('/media/mu/9016-4EF8')
+
+    sync_device(target_mango)
+    #sync_device(target_manta)
+
 
 def _parse_args():
     """
