@@ -5,8 +5,10 @@
 
 import argparse
 import os.path
+import os
 import subprocess
 import logging
+import tempfile
 import re
 
 # Directories with PDF files that should be copied onto the device.
@@ -74,7 +76,16 @@ def main():
 
     target = 'test'
 
+    tempdir = tempfile.mkdtemp(prefix='android-sync-python', dir=os.path.expanduser('~/TODO'))
+
     copy_music(target)
+
+    tempdir_contents = os.listdir(tempdir)
+    logging.debug('Contents of temporary directory: %s', tempdir_contents)
+
+    if len(tempdir_contents) == 0:
+        logging.info('Deleting temporary directory')
+        os.rmdir(tempdir)
 
 def _parse_args():
     """
