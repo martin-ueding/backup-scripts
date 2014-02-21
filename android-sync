@@ -83,17 +83,6 @@ stash-gpx-files() {
 # Positional arguments
 #   IP              IP address of the device
 sync-device() {
-    case "$hostname" in
-        "Nexus 10")
-            print-heading $"Copy university PDF files to device"
-            myrsync --files-from=<(find "${studiumpdfdirs[@]}" -type f -name '*.pdf') "$HOME" "$target/"
-            ;;
-        "Xperia Mini Pro")
-            copy-backupdirs -t "$target" "${backupdirs[@]}"
-            copy-music "$target_music"
-            ;;
-    esac
-
     print-heading $"Copy PDF files to device"
     myrsync --files-from=<(find "${pdfdirs[@]}" -type f -name '*.pdf') "$HOME" "$target/"
 

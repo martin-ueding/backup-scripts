@@ -14,16 +14,14 @@ import tempfile
 import termcolor
 
 # Directories with PDF files that should be copied onto the device.
-pdfdirs = [
-    "Dokumente/2012-LaTeX_Kurs",
-    "Dokumente/2013-LaTeX_Kurs_VWL/Kursunterlagen",
+other_pdf_dirs = [
     "Dokumente/Anleitungen",
     "Dokumente/Aufsaetze/Brandon_Patrick_In_Space",
     "Dokumente/Informationen",
+    "Dokumente/LaTeX_Kurs",
     "Dokumente/Nachhilfe",
     "Dokumente/Physik_Dokumente",
     "Dokumente/Schule/Abizeitung/Abizeitung-300.pdf",
-    "Dokumente/Spektrum",
 ]
 
 studium_pdf_dirs = [
@@ -37,12 +35,12 @@ studium_pdf_dirs = [
     "Dokumente/Studium/physik521",
 ]
 
-backupdirs=[
+backupdirs = [
     "Dokumente/Studium",
 ]
 
 # Folders where data will build up on the device.
-bins=[
+bins = [
     "DCIM/100ANDRO",
     "DCIM/Camera",
     "Download",
@@ -133,9 +131,16 @@ def copy_wohnungsunterlagen(target):
 
 def copy_studium_pdf_dirs(target):
     termcolor.cprint('Copy Studium PDF dirs', 'cyan')
+    copy_pdf_dirs(studium_pdf_dirs, target)
 
+def copy_other_pdf_dirs(target):
+    termcolor.cprint('Copy other PDF dirs', 'cyan')
+    copy_pdf_dirs(other_pdf_dirs, target)
+
+
+def copy_pdf_dirs(pdf_dirs, target):
     with tempfile.NamedTemporaryFile() as tmp:
-        sourcefiles = subprocess.check_output(['find'] + studium_pdf_dirs + ['-type', 'f', '-name', '*.pdf'])
+        sourcefiles = subprocess.check_output(['find'] + pdf_dirs + ['-type', 'f', '-name', '*.pdf'])
         logging.debug('Sourcefiles: %s', sourcefiles.decode())
         tmp.write(sourcefiles)
         tmp.flush()
@@ -163,6 +168,7 @@ def sync_device(target):
             copy_studium_pdf_dirs(target)
         if target.music:
             copy_music(target)
+        copy_other_pdf_dirs(target)
 
         copy_reading_list(target)
 
