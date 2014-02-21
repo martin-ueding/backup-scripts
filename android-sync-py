@@ -193,6 +193,7 @@ def main():
     target_mango = Target('/media/mu/9016-4EF8')
 
     sync_device(target_manta)
+    sync_device(target_mango)
 
 
 def _parse_args():
