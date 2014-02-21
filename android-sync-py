@@ -160,6 +160,8 @@ def sync_device(target):
     )
     tempdir = tempfile.mkdtemp(prefix=prefix, dir=os.path.expanduser('~/TODO'))
 
+    termcolor.cprint('Syncing {}'.format(target.get_hostname()), 'white', attrs=['bold'])
+
     try:
         copy_bins(bins, tempdir, target)
         if target.backup:
