@@ -85,9 +85,10 @@ class Target(object):
 def copy_backupdirs(backupdirs, target):
     for backupdir in backupdirs:
         from_base = re.sub(r'^/home/\w+/', '', backupdir)
-        targetfolder = os.path.dirname(from_base)
+        target_folder = os.path.dirname(from_base)
+        target_path = target.path_to(target_folder) + '/'
 
-        rsync([backupdir], targetfolder, ['--delete'])
+        rsync([backupdir], target_path, ['--delete'])
 
 def copy_bins(bins, dropfolder, target):
     for bin in bins:
@@ -115,10 +116,14 @@ def main():
 
     tempdir = tempfile.mkdtemp(prefix='android-sync-python', dir=os.path.expanduser('~/TODO'))
 
-    target = Target('/tmp')
+    target = Target(os.path.expanduser('~/android-sync-testing'))
 
     try:
+        termcolor.cprint('Copy Bins', 'cyan')
         copy_bins(bins, tempdir, target)
+        termcolor.cprint('Copy Backupdirs', 'cyan')
+        copy_backupdirs(backupdirs, target)
+        termcolor.cprint('Copy Music', 'cyan')
         copy_music(target)
     except:
         raise
