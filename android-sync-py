@@ -9,6 +9,7 @@ import os
 import subprocess
 import logging
 import tempfile
+import termcolor
 import re
 
 # Directories with PDF files that should be copied onto the device.
@@ -50,6 +51,37 @@ bins=[
 
 __docformat__ = "restructuredtext en"
 
+class Target(object):
+    def __init__(self, basepath, **kwargs):
+        self.basepath = basepath
+        self.ssh = False
+
+        if "ip" in kwargs:
+            self.ip = kwargs['ip']
+            self.user = root
+            self.ssh = True
+
+    def path_to(self, suffix):
+        if self.ssh:
+            return os.path.join('{user}@{ip}:{basepath}'.format(user=self.user, ip=self.ip, basepath=self.basepath), suffix)
+        else:
+            return os.path.join(self.basepath, suffix)
+
+    def delete_bin_contents(self, bin):
+        if self.ssh:
+            command = ['ssh', '{}@{}'.format(self.user, self.ip), 'rm -rf /sdcard/{bin}/* /sdcard/{bin}/.??*'.format(bin=bin)]
+            logging.debug('Deletion command: %s', command)
+            subprocess.check_call(command)
+        else:
+            bin_path = self.path_to(bin)
+            logging.debug('Path to bin: %s', bin_path)
+            contents = os.listdir(bin_path)
+            for file in contents:
+                path = os.path.join(bin_path, file)
+                logging.debug('Deleting %s', path)
+                shutil.rmtree(path)
+
+
 def copy_backupdirs(backupdirs, target):
     for backupdir in backupdirs:
         from_base = re.sub(r'^/home/\w+/', '', backupdir)
@@ -57,28 +89,36 @@ def copy_backupdirs(backupdirs, target):
 
         rsync([backupdir], targetfolder, ['--delete'])
 
-def copy_bins(dropfolder, target):
-    pass
+def copy_bins(bins, dropfolder, target):
+    for bin in bins:
+        try:
+            logging.info('Copying bin %s to computer', bin)
+            rsync([target.path_to(bin)], dropfolder)
+            target.delete_bin_contents(bin)
+        except FileNotFoundError:
+            logging.error('Bin “%s” does not exist.', bin)
+
 
 def copy_music(target):
     source = os.path.expanduser("~/.cache/mp3_packer/128") + os.path.expanduser('~/Musik/Musik/')
     flags = ['--exclude-from', os.path.expanduser("~/.config/backup-scripts/handy_musik.txt")]
-    rsync([source], target, flags)
+    rsync([source], target.path_to('Music'), flags)
 
-def rsync(sources, target, additional_flags):
+def rsync(sources, target_path, additional_flags=[]):
     flags = ['--progress', '-h', '-l', '-m', '-r', '-v', '--size-only', '--ignore-errors', '--exclude=.thumbnails', '--copy-links'] + additional_flags
-    command = ['rsync'] + flags + sources + [target]
+    command = ['rsync'] + flags + sources + [target_path]
     logging.info('rsync command: %s', ' '.join(command))
     #subprocess.check_call(command)
 
 def main():
     options = _parse_args()
 
-    target = 'test'
-
     tempdir = tempfile.mkdtemp(prefix='android-sync-python', dir=os.path.expanduser('~/TODO'))
 
+    target = Target('/tmp')
+
     try:
+        copy_bins(bins, tempdir, target)
         copy_music(target)
     except:
         raise
