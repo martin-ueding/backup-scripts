@@ -45,6 +45,7 @@ bins = [
     "DCIM/Camera",
     "Download",
     "Pictures/Screenshots",
+    'osmand/tracks',
     "TODO",
 ]
 
@@ -104,6 +105,8 @@ def copy_bins(bins, dropfolder, target):
             rsync([target.path_to(bin)], dropfolder)
             target.delete_bin_contents(bin)
         except FileNotFoundError:
+            logging.error('Bin “%s” does not exist.', bin)
+        except subprocess.CalledProcessError:
             logging.error('Bin “%s” does not exist.', bin)
 
 
