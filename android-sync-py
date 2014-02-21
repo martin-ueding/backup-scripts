@@ -4,7 +4,10 @@
 # Copyright © 2014 Martin Ueding <dev@martin-ueding.de>
 
 import argparse
+import os.path
+import subprocess
 import logging
+import re
 
 # Directories with PDF files that should be copied onto the device.
 pdfdirs = [
@@ -50,17 +53,28 @@ def copy_backupdirs(backupdirs, target):
         from_base = re.sub(r'^/home/\w+/', '', backupdir)
         targetfolder = os.path.dirname(from_base)
 
-        rsync(backupdir, targetfolder, ('--delete'))
+        rsync([backupdir], targetfolder, ['--delete'])
 
+def copy_bins(dropfolder, target):
+    pass
 
+def copy_music(target):
+    source = os.path.expanduser("~/.cache/mp3_packer/128") + os.path.expanduser('~/Musik/Musik/')
+    flags = ['--exclude-from', os.path.expanduser("~/.config/backup-scripts/handy_musik.txt")]
+    rsync([source], target, flags)
+
+def rsync(sources, target, additional_flags):
+    flags = ['--progress', '-h', '-l', '-m', '-r', '-v', '--size-only', '--ignore-errors', '--exclude=.thumbnails', '--copy-links'] + additional_flags
+    command = ['rsync'] + flags + sources + [target]
+    logging.info('rsync command: %s', ' '.join(command))
+    #subprocess.check_call(command)
 
 def main():
     options = _parse_args()
 
-    try:
+    target = 'test'
 
-    except:
-        # cleanup
+    copy_music(target)
 
 def _parse_args():
     """
