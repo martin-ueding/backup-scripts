@@ -122,7 +122,9 @@ def rsync(sources, target_path, additional_flags=[]):
     subprocess.check_call(command)
 
 def copy_reading_list(target):
-    pass
+    termcolor.cprint('Copy Reading List', 'cyan')
+    source = os.path.expanduser("~/Leseliste/")
+    rsync([source], target.path_to('Leseliste/'), ['--delete', '--max-size=1G'])
 
 def sync_device(target):
     now = datetime.datetime.now()
@@ -142,6 +144,8 @@ def sync_device(target):
             copy_backupdirs(backupdirs, target)
         if target.music:
             copy_music(target)
+
+        copy_reading_list(target)
 
     except:
         raise
