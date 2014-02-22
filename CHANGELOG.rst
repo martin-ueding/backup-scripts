@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.16
+    - *android-sync*: Accept command line arguments for the devices
+
 v1.15.1
     - Install via makefile only
 
