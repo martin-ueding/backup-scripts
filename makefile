@@ -1,11 +1,17 @@
-# Copyright © 2012-2013 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2012-2014 Martin Ueding <dev@martin-ueding.de>
 
 pythonfiles := backup-external backup-status
 
 all:
 
 install:
-	./setup.py install --install-layout deb --root "$(DESTDIR)"
+	install -d "$(DESTDIR)/usr/bin"
+	install android-sync -t "$(DESTDIR)/usr/bin"
+	install backup-chaos -t "$(DESTDIR)/usr/bin"
+	install backup-external -t "$(DESTDIR)/usr/bin"
+	install backup-status -t "$(DESTDIR)/usr/bin"
+	install backup-webserver -t "$(DESTDIR)/usr/bin"
+	install backup-webservers -t "$(DESTDIR)/usr/bin"
 
 html: $(pythonfiles)
 	epydoc -v $^
