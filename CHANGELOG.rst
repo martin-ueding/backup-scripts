@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.15.1
+    - Install via makefile only
+
 v1.15
     - *android-sync*: Rewrite in Python 3
 
