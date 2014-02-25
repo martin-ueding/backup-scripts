@@ -9,6 +9,7 @@ import logging
 import os
 import os.path
 import re
+import abc
 import subprocess
 import tempfile
 import termcolor
@@ -51,43 +52,55 @@ bins = [
 
 __docformat__ = "restructuredtext en"
 
-class Target(object):
+class Target(object, metaclass=abc.ABCMeta):
     def __init__(self, basepath, ip=None, backup=True, music=True):
         self.basepath = basepath
-        self.ssh = False
         self.backup = backup
         self.music = music
 
-        if ip is not None:
-            self.ip = ip
-            self.user = 'root'
-            self.ssh = True
+    @abc.abstractmethod
+    def path_to(self, suffix): pass
 
-    def path_to(self, suffix):
-        if self.ssh:
-            return os.path.join('{user}@{ip}:{basepath}'.format(user=self.user, ip=self.ip, basepath=self.basepath), suffix)
-        else:
-            return os.path.join(self.basepath, suffix)
-
-    def delete_bin_contents(self, bin):
-        if self.ssh:
-            command = ['ssh', '{}@{}'.format(self.user, self.ip), 'rm -rf /sdcard/{bin}/* /sdcard/{bin}/.??*'.format(bin=bin)]
-            logging.debug('Deletion command: %s', command)
-            subprocess.check_call(command)
-        else:
-            bin_path = self.path_to(bin)
-            logging.debug('Path to bin: %s', bin_path)
-            contents = os.listdir(bin_path)
-            for file in contents:
-                path = os.path.join(bin_path, file)
-                logging.debug('Deleting %s', path)
-                os.remove(path)
+    @abc.abstractmethod
+    def delete_bin_contents(self, bin): pass
 
     def get_hostname(self):
         tmp = tempfile.mkstemp()[1]
         rsync([self.path_to('hostname.txt')], tmp)
         with open(tmp) as f:
             return f.read()
+
+class SSHTarget(Target):
+    def __init__(self, basepath, ip, backup=True, music=True):
+        super().__init__(basepath, backup, music)
+
+        self.ip = ip
+        self.user = 'root'
+
+    def path_to(self, suffix):
+        return os.path.join('{user}@{ip}:{basepath}'.format(user=self.user, ip=self.ip, basepath=self.basepath), suffix)
+
+    def delete_bin_contents(self, bin):
+        command = ['ssh', '{}@{}'.format(self.user, self.ip), 'rm -rf /sdcard/{bin}/* /sdcard/{bin}/.??*'.format(bin=bin)]
+        logging.debug('Deletion command: %s', command)
+        subprocess.check_call(command)
+
+class USBTarget(Target):
+    def __init__(self, basepath, backup=True, music=True):
+        super().__init__(basepath, backup, music)
+
+    def path_to(self, suffix):
+        return os.path.join(self.basepath, suffix)
+
+    def delete_bin_contents(self, bin):
+        bin_path = self.path_to(bin)
+        logging.debug('Path to bin: %s', bin_path)
+        contents = os.listdir(bin_path)
+        for file in contents:
+            path = os.path.join(bin_path, file)
+            logging.debug('Deleting %s', path)
+            os.remove(path)
+
 
 def copy_backupdirs(backupdirs, target):
     termcolor.cprint('Copy Backupdirs', 'cyan')
@@ -194,9 +207,8 @@ def main():
 
     os.chdir(os.path.expanduser('~'))
 
-    target_testing = Target(os.path.expanduser('~/android-sync-testing'))
-    target_manta = Target('/sdcard', ip=options.ip, backup=False, music=False)
-    target_mango = Target('/media/mu/9016-4EF8')
+    target_manta = SSHTarget('/sdcard', options.ip, backup=False, music=False)
+    target_mango = USBTarget('/media/mu/9016-4EF8')
 
     for device in options.devices:
         if device == 'manta':
