@@ -163,6 +163,22 @@ def copy_pdf_dirs(pdf_dirs, target):
 
         rsync([os.path.expanduser('~')], target.path_to('') + '/', ['--files-from='+tmp.name])
 
+def import_todo_items(tempdir):
+    termcolor.cprint('Importing TODO items', 'cyan')
+    todofile = os.path.join(tempdir, 'TODO', 'todo.txt')
+
+    if not os.path.isfile(todofile):
+        return
+
+    try:
+        with open(todofile) as h:
+            for line in h:
+                words = line.split()
+                subprocess.check_call(['task', 'add'] + words)
+        os.remove(todofile)
+    except subprocess.CalledProcessError as e:
+        termcolor.cprint('Error adding “{}”:'.format(line), 'red')
+        print(e)
 
 def sync_device(target):
     now = datetime.datetime.now()
@@ -188,8 +204,8 @@ def sync_device(target):
         if target.music:
             copy_music(target)
         copy_other_pdf_dirs(target)
-
         copy_reading_list(target)
+        import_todo_items(tempdir)
 
         subprocess.check_call(['backup-status', '--update', hostname])
 
