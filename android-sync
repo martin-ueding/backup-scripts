@@ -53,7 +53,7 @@ bins = [
 __docformat__ = "restructuredtext en"
 
 class Target(object, metaclass=abc.ABCMeta):
-    def __init__(self, basepath, ip=None, backup=True, music=True):
+    def __init__(self, basepath, backup=True, music=True):
         self.basepath = basepath
         self.backup = backup
         self.music = music
