@@ -4,6 +4,10 @@
 Changelog
 #########
 
+v1.17
+    - *android-sync*: Import TODO items
+    - *android-sync*: Fix arguments in constructor
+
 v1.16
     - *android-sync*: Accept command line arguments for the devices
 
