@@ -14,12 +14,13 @@ import subprocess
 __docformat__ = "restructuredtext en"
 
 data_partitions = [
-    "Gamma",
+    "Gamma-data",
     "Sigma-data",
     "MU-3-466G-data",
 ]
 
 info_partitions = [
+    "Gamma-info",
     "Sigma-info",
     "MU-3-466G-info",
 ]
@@ -88,11 +89,11 @@ def backup_info(name):
         subprocess.call(["backup-status", "--update", "{}".format(name), '--direction', 'to'])
 
 def main():
-    for name in data_partitions:
-        backup_data(name)
-
     for name in info_partitions:
         backup_info(name)
+
+    for name in data_partitions:
+        backup_data(name)
 
 if __name__ == "__main__":
 	main()
