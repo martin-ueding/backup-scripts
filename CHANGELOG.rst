@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.17.1
+    - *backup-external*: Change Gamma partition names
+
 v1.17
     - *android-sync*: Import TODO items
     - *android-sync*: Fix arguments in constructor
