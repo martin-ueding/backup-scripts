@@ -5,6 +5,7 @@
 
 import abc
 import argparse
+import configparser
 import datetime
 import logging
 import os
@@ -223,14 +224,26 @@ def main():
 
     os.chdir(os.path.expanduser('~'))
 
-    target_manta = SSHTarget('/sdcard', options.ip, backup=False, music=False)
-    target_mango = USBTarget('/media/mu/9016-4EF8')
+    config = configparser.ConfigParser()
+    config.read(os.path.expanduser('~/.config/backup-scripts/android-devices.ini'))
+
+    devices = {}
+
+    for device in config.sections():
+        backup = config[device].getboolean('backup')
+        music = config[device].getboolean('music')
+        path = config[device]['path']
+
+        if 'host' in config[device]:
+            host = config[device]['host']
+            devices[device] = SSHTarget(path, host, backup, music)
+        else:
+            devices[device] = USBTarget(path, backup, music)
+
+    print(devices)
 
     for device in options.devices:
-        if device == 'manta':
-            sync_device(target_manta)
-        elif device == 'mango':
-            sync_device(target_mango)
+        sync_device(devices[device])
 
 
 def _parse_args():
