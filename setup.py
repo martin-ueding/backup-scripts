@@ -35,5 +35,5 @@ setup(
     ],
     url = "https://github.com/martin-ueding/backup-scripts",
     download_url="http://martin-ueding.de/download/backup-scripts/",
-    version = "1.17.1",
+    version = "1.18",
 )
