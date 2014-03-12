@@ -5,3 +5,4 @@ backup-webserversc
 build
 dist
 html
+backup_scripts.egg-info/
