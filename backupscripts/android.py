@@ -104,7 +104,6 @@ class USBTarget(Target):
             logging.debug('Deleting %s', path)
             os.remove(path)
 
-
 def copy_backupdirs(backupdirs, target):
     termcolor.cprint('Copy Backupdirs', 'cyan')
     for backupdir in backupdirs:
@@ -124,7 +123,6 @@ def copy_bins(bins, dropfolder, target):
             logging.error('Bin “%s” does not exist.', bin)
         except subprocess.CalledProcessError:
             logging.error('Bin “%s” does not exist.', bin)
-
 
 def copy_music(target):
     termcolor.cprint('Copy Music', 'cyan')
@@ -156,7 +154,6 @@ def copy_other_pdf_dirs(target):
     termcolor.cprint('Copy other PDF dirs', 'cyan')
     copy_pdf_dirs(other_pdf_dirs, target)
 
-
 def copy_pdf_dirs(pdf_dirs, target):
     with tempfile.NamedTemporaryFile() as tmp:
         sourcefiles = subprocess.check_output(['find'] + pdf_dirs + ['-type', 'f', '-name', '*.pdf'])
@@ -179,6 +176,8 @@ def import_todo_items(tempdir):
                 words = line.split()
                 subprocess.check_call(['task', 'add'] + words)
         os.remove(todofile)
+        if len(os.listdir(os.path.dirname(todofile))) == 0:
+            os.rmdir(os.path.dirname(todofile))
     except subprocess.CalledProcessError as e:
         termcolor.cprint('Error adding “{}”:'.format(line), 'red')
         print(e)
@@ -246,7 +245,6 @@ def main():
 
     for device in options.devices:
         sync_device(devices[device])
-
 
 def _parse_args():
     """
