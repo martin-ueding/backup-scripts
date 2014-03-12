@@ -7,9 +7,12 @@
 Traverses through the external drives and updates the backup on them.
 """
 
-import termcolor
 import os
 import subprocess
+
+import termcolor
+
+import backupscripts.status
 
 __docformat__ = "restructuredtext en"
 
@@ -69,7 +72,7 @@ def backup_data(name):
     except subprocess.CalledProcessError as e:
         print(e)
     else:
-        subprocess.call(["backup-status", "--update", "{}".format(name), '--direction', 'to'])
+        backupscripts.status.update(name, 'to')
 
 def backup_info(name):
     target = "/media/mu/{}/info/".format(name)
@@ -86,7 +89,7 @@ def backup_info(name):
     except subprocess.CalledProcessError as e:
         print(e)
     else:
-        subprocess.call(["backup-status", "--update", "{}".format(name), '--direction', 'to'])
+        backupscripts.status.update(name, 'to')
 
 def main():
     for name in info_partitions:
