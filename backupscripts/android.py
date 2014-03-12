@@ -15,6 +15,8 @@ import tempfile
 
 import termcolor
 
+import backupscripts.status
+
 # Directories with PDF files that should be copied onto the device.
 other_pdf_dirs = [
     'Dokumente/Anleitungen',
@@ -208,7 +210,7 @@ def sync_device(target):
         copy_reading_list(target)
         import_todo_items(tempdir)
 
-        subprocess.check_call(['backup-status', '--update', hostname])
+        backupscripts.status.update(hostname, 'to')
 
     except:
         raise
