@@ -241,8 +241,6 @@ def main():
         else:
             devices[device] = USBTarget(path, backup, music)
 
-    print(devices)
-
     for device in options.devices:
         sync_device(devices[device])
 
