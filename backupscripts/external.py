@@ -65,7 +65,6 @@ def backup_data(name):
         os.makedirs(destdir)
 
     command = ["rsync", "-avhE", "--delete", "--delete-excluded"] + exclude_arg + ["--", source, destdir]
-    print(command)
 
     try:
         subprocess.check_call(command)
