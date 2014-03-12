@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2011-2013 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2011-2014 Martin Ueding <dev@martin-ueding.de>
 
 """
 Gives a status summary for the backups.
@@ -14,8 +14,9 @@ import dateutil.parser
 import json
 import os
 
-
 __docformat__ = "restructuredtext en"
+
+STATUSFILE = os.path.expanduser("~/.local/share/backup-scripts/backup-status.js")
 
 def pretty(status, direction_filter):
     """
@@ -61,45 +62,45 @@ def pretty(status, direction_filter):
         t.align["Difference"] = "r"
         print(t)
 
-
 def main():
     options = _parse_args()
 
-    changed = False
+    if options.update is not None:
+        update(options.update, options.direction)
+    else:
+        pretty(load_data(), options.direction)
 
-    statusfile = os.path.expanduser("~/.local/share/backup-scripts/backup-status.js")
-
+def load_data():
     # Open the already existing file
-    if os.path.exists(statusfile):
-        with open(statusfile, "r") as f:
+    if os.path.exists(STATUSFILE):
+        with open(STATUSFILE, "r") as f:
             status = json.loads(f.read())
     else:
         status = []
 
+    return status
 
-    if options.update is not None:
-        backup = options.update
+def save_data(status):
+    with open(STATUSFILE, "w") as f:
+        f.write(json.dumps(status, sort_keys=True, indent=4))
 
-        if not backup in [x["name"] for x in status]:
-            status.append({"name": backup})
+def update(backup, direction):
+    status = load_data()
 
-        for s in status:
-            if not s["name"] == backup:
-                continue
+    if not backup in [x["name"] for x in status]:
+        status.append({"name": backup})
 
-            s["last"] = str(datetime.datetime.now())
-            changed = True
-            
-            if options.direction is not None:
-                s["type"] = options.direction
+    for status_row in status:
+        # XXX Should have used a dict for this in first place.
+        if not status_row["name"] == backup:
+            continue
 
-    else:
-        pretty(status, options.direction)
+        status_row["last"] = str(datetime.datetime.now())
+        
+        if direction is not None:
+            status_row["type"] = direction
 
-
-    if changed:
-        with open(statusfile, "w") as f:
-            f.write(json.dumps(status, sort_keys=True, indent=4))
+    save_data(status)
 
 def _parse_args():
     """
@@ -114,8 +115,6 @@ def _parse_args():
     #parser.add_argument("--version", action="version", version="<the version>")
 
     return parser.parse_args()
-
-
 
 if __name__ == "__main__":
 	main()
