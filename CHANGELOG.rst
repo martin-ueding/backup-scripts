@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v1.18
+    - Make this a Python 3 package which calls its methods directly, not via
+      the shell
+    - Use INI style config file for *android-sync*
+
 v1.17.1
     - *backup-external*: Change Gamma partition names
 
