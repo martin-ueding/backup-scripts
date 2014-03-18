@@ -31,12 +31,10 @@ other_pdf_dirs = [
 studium_pdf_dirs = [
     'Dokumente/Studium/EBooks',
     'Dokumente/Studium/Modulhandbücher',
-    'Dokumente/Studium/physics606',
-    'Dokumente/Studium/physik321',
-    'Dokumente/Studium/physik412',
-    'Dokumente/Studium/physik421',
-    'Dokumente/Studium/physik511',
-    'Dokumente/Studium/physik521',
+    'Dokumente/Studium/physics754',
+    'Dokumente/Studium/physics760',
+    'Dokumente/Studium/physik512',
+    'Dokumente/Studium/physik590',
 ]
 
 backupdirs = [
