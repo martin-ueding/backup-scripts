@@ -14,46 +14,14 @@ import subprocess
 import tempfile
 
 import termcolor
+import yaml
 
 import backupscripts.status
 
-# Directories with PDF files that should be copied onto the device.
-other_pdf_dirs = [
-    'Dokumente/Anleitungen',
-    'Dokumente/Aufsaetze/Brandon_Patrick_In_Space',
-    'Dokumente/Informationen',
-    'Dokumente/LaTeX_Kurs',
-    'Dokumente/Nachhilfe',
-    'Dokumente/Physik_Dokumente',
-    'Dokumente/Schule/Abizeitung/Abizeitung-300.pdf',
-]
+FOLDERFILE = os.path.expanduser('~/.config/backup-scripts/android-folders.yaml')
 
-studium_pdf_dirs = [
-    'Dokumente/Studium/EBooks',
-    'Dokumente/Studium/Modulhandbücher',
-    'Dokumente/Studium/physics754',
-    'Dokumente/Studium/physics760',
-    'Dokumente/Studium/physik512',
-    'Dokumente/Studium/physik590',
-]
-
-backupdirs = [
-    'Dokumente/Studium',
-]
-
-# Folders where data will build up on the device.
-bins = [
-    'DCIM/100ANDRO',
-    'DCIM/Camera',
-    'Download',
-    'Pictures/Screenshots',
-    'osmand/tracks',
-    'TODO',
-]
-
-__docformat__ = "restructuredtext en"
-
-class Target(object, metaclass=abc.ABCMeta):
+class Target(object):
+    __metaclass__ = abc.ABCMeta
     def __init__(self, basepath, backup=True, music=True):
         self.basepath = basepath
         self.backup = backup
@@ -144,11 +112,11 @@ def copy_wohnungsunterlagen(target):
     source = os.path.expanduser("~/Dokumente/Wohnung_Monschauer_Strasse")
     rsync([source], target.path_to('Dokumente/'), ['--delete', '--max-size=1G'])
 
-def copy_studium_pdf_dirs(target):
+def copy_studium_pdf_dirs(target, studium_pdf_dirs):
     termcolor.cprint('Copy Studium PDF dirs', 'cyan')
     copy_pdf_dirs(studium_pdf_dirs, target)
 
-def copy_other_pdf_dirs(target):
+def copy_other_pdf_dirs(target, other_pdf_dirs):
     termcolor.cprint('Copy other PDF dirs', 'cyan')
     copy_pdf_dirs(other_pdf_dirs, target)
 
@@ -180,7 +148,7 @@ def import_todo_items(tempdir):
         termcolor.cprint('Error adding “{}”:'.format(line), 'red')
         print(e)
 
-def sync_device(target):
+def sync_device(target, folders):
     now = datetime.datetime.now()
     prefix = 'android-sync-python_{year:d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}-{second:02d}-'.format(
         year=now.year,
@@ -196,14 +164,14 @@ def sync_device(target):
         hostname = target.get_hostname()
         termcolor.cprint('Syncing {}'.format(hostname), 'white', attrs=['bold'])
 
-        copy_bins(bins, tempdir, target)
+        copy_bins(folders['bins'], tempdir, target)
         if target.backup:
-            copy_backupdirs(backupdirs, target)
+            copy_backupdirs(folders['backupdirs'], target)
         else:
-            copy_studium_pdf_dirs(target)
+            copy_studium_pdf_dirs(target, folders['studium_pdf_dirs'])
         if target.music:
             copy_music(target)
-        copy_other_pdf_dirs(target)
+        copy_other_pdf_dirs(target, folders['other_pdf_dirs'])
         copy_reading_list(target)
         import_todo_items(tempdir)
 
@@ -220,6 +188,9 @@ def sync_device(target):
 
 def main():
     options = _parse_args()
+
+    with open(FOLDERFILE) as f:
+        folders = yaml.load(f.read())
 
     os.chdir(os.path.expanduser('~'))
 
@@ -240,7 +211,7 @@ def main():
             devices[device] = USBTarget(path, backup, music)
 
     for device in options.devices:
-        sync_device(devices[device])
+        sync_device(devices[device], folders)
 
 def _parse_args():
     """
