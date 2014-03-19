@@ -22,7 +22,7 @@ setup(
     entry_points = {
         'console_scripts': [
             'android-sync = backupscripts.android:main',
-            'backup-externel = backupscripts.external:main',
+            'backup-external = backupscripts.external:main',
             'backup-status = backupscripts.status:main',
         ],
     },
