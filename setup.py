@@ -16,7 +16,6 @@ setup(
         "Environment :: Console",
         "License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
         "Programming Language :: Python",
-
     ],
     name = "backup-scripts",
     packages = find_packages(),
@@ -29,11 +28,12 @@ setup(
     },
     install_requires=[
         'termcolor',
+        'yaml',
     ],
     scripts=[
         'backup-chaos',
     ],
     url = "https://github.com/martin-ueding/backup-scripts",
     download_url="http://martin-ueding.de/download/backup-scripts/",
-    version = "1.18",
+    version = "1.19",
 )

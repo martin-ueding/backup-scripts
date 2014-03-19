@@ -4,6 +4,9 @@
 Changelog
 #########
 
+v1.19
+    - *android-sync*: Put the folders into a config file
+
 v1.18
     - Make this a Python 3 package which calls its methods directly, not via
       the shell
