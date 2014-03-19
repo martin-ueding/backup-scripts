@@ -4,7 +4,14 @@
 Changelog
 #########
 
+v1.19.1
+    Released: 2014-03-19
+
+    - Fix name of *backup-external* script
+
 v1.19
+    Released: 2014-03-19
+
     - *android-sync*: Put the folders into a config file
 
 v1.18
