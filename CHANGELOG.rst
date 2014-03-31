@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v1.19.2
+    Released: 2014-03-31
+
+    - Use JSON instead of YAML to cut external dependencies
+
 v1.19.1
     Released: 2014-03-19
 
