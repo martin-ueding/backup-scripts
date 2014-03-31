@@ -28,7 +28,6 @@ setup(
     },
     install_requires=[
         'termcolor',
-        'yaml',
     ],
     scripts=[
         'backup-chaos',

@@ -7,6 +7,7 @@ import abc
 import argparse
 import configparser
 import datetime
+import json
 import logging
 import os
 import os.path
@@ -14,11 +15,10 @@ import subprocess
 import tempfile
 
 import termcolor
-import yaml
 
 import backupscripts.status
 
-FOLDERFILE = os.path.expanduser('~/.config/backup-scripts/android-folders.yaml')
+FOLDERFILE = os.path.expanduser('~/.config/backup-scripts/android-folders.js')
 
 class Target(object):
     __metaclass__ = abc.ABCMeta
@@ -28,10 +28,12 @@ class Target(object):
         self.music = music
 
     @abc.abstractmethod
-    def path_to(self, suffix): pass
+    def path_to(self, suffix):
+        pass
 
     @abc.abstractmethod
-    def delete_bin_contents(self, bin): pass
+    def delete_bin_contents(self, bin):
+        pass
 
     def get_hostname(self):
         tmp = tempfile.mkstemp()[1]
@@ -190,7 +192,7 @@ def main():
     options = _parse_args()
 
     with open(FOLDERFILE) as f:
-        folders = yaml.load(f.read())
+        folders = json.load(f)
 
     os.chdir(os.path.expanduser('~'))
 
