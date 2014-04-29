@@ -4,6 +4,12 @@
 Changelog
 #########
 
+v1.19.3
+    Released: 2014-04-29
+
+    - *android-sync*: Import TODO items right away. In case of an error later
+      on, this will make sure that they got imported.
+
 v1.19.2
     Released: 2014-03-31
 
