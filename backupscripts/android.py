@@ -167,6 +167,7 @@ def sync_device(target, folders):
         termcolor.cprint('Syncing {}'.format(hostname), 'white', attrs=['bold'])
 
         copy_bins(folders['bins'], tempdir, target)
+        import_todo_items(tempdir)
         if target.backup:
             copy_backupdirs(folders['backupdirs'], target)
         else:
@@ -175,7 +176,6 @@ def sync_device(target, folders):
             copy_music(target)
         copy_other_pdf_dirs(target, folders['other_pdf_dirs'])
         copy_reading_list(target)
-        import_todo_items(tempdir)
 
         backupscripts.status.update(hostname, 'to')
 
