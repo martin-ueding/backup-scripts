@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v1.19.4
+    Released: 2014-05-26
+
+    - *backup-chaos*: Ignore all files that are larger than 200 MB.
+
 v1.19.3
     Released: 2014-04-29
 
