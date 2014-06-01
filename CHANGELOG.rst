@@ -4,6 +4,12 @@
 Changelog
 #########
 
+v1.20
+    Released: 2014-06-01
+
+    - Add script for another computer.
+    - Change maximum sizes for Android.
+
 v1.19.4
     Released: 2014-05-26
 
