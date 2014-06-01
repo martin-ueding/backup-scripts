@@ -17,9 +17,10 @@ import backupscripts.status
 __docformat__ = "restructuredtext en"
 
 data_partitions = [
-    "Gamma-data",
-    "Sigma-data",
-    "MU-3-466G-data",
+    "/media/mu/Gamma-data/home/mu/",
+    "/media/mu/Sigma-data/home/mu/",
+    "/media/mu/MU-3-466G-data/home/mu/",
+    "Martin-Aspire-X3200.local:",
 ]
 
 info_partitions = [
@@ -45,24 +46,18 @@ def backup_data(name):
     """
     excludesfile = os.path.expanduser("~/.config/backup-scripts/full.exclude.txt")
 
-    source = os.path.expanduser("~")
+    source = os.path.expanduser("~/")
 
-    target = os.path.join("/media/mu", '{}'.format(name))
-
-    if not os.path.isdir(target):
-        return
+    target = name
 
     termcolor.cprint("Backup {}".format(name), attrs=['bold'])
 
-    destdir = "{}/home/".format(target)
+    destdir = target
 
     if os.path.exists(excludesfile):
         exclude_arg = ["--exclude-from", excludesfile]
     else:
         exclude_arg = []
-
-    if not os.path.isdir(destdir):
-        os.makedirs(destdir)
 
     command = ["rsync", "-avhE", "--delete", "--delete-excluded"] + exclude_arg + ["--", source, destdir]
 
