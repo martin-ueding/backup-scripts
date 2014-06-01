@@ -78,7 +78,7 @@ def copy_backupdirs(backupdirs, target):
         target_folder = os.path.dirname(backupdir)
         target_path = target.path_to(target_folder) + '/'
 
-        rsync([os.path.join(os.path.expanduser('~'), backupdir)], target_path, ['--delete'])
+        rsync([os.path.join(os.path.expanduser('~'), backupdir)], target_path, ['--delete', '--max-size=500M'])
 
 def copy_bins(bins, dropfolder, target):
     termcolor.cprint('Copy Bins', 'cyan')
@@ -107,7 +107,7 @@ def rsync(sources, target_path, additional_flags=[]):
 def copy_reading_list(target):
     termcolor.cprint('Copy Reading List', 'cyan')
     source = os.path.expanduser("~/Leseliste/")
-    rsync([source], target.path_to('Leseliste/'), ['--delete', '--max-size=1G'])
+    rsync([source], target.path_to('Leseliste/'), ['--delete', '--max-size=2G'])
 
 def copy_wohnungsunterlagen(target):
     termcolor.cprint('Copy Wohnungsunterlagen', 'cyan')
