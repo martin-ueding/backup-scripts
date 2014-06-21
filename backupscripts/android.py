@@ -129,7 +129,7 @@ def copy_pdf_dirs(pdf_dirs, target):
         tmp.write(sourcefiles)
         tmp.flush()
 
-        rsync([os.path.expanduser('~')], target.path_to('') + '/', ['--files-from='+tmp.name])
+        rsync([os.path.expanduser('~')], target.path_to('') + '/', ['--files-from='+tmp.name, '--delete'])
 
 def import_todo_items(tempdir):
     termcolor.cprint('Importing TODO items', 'cyan')
