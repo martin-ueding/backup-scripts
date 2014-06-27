@@ -123,13 +123,10 @@ def copy_other_pdf_dirs(target, other_pdf_dirs):
     copy_pdf_dirs(other_pdf_dirs, target)
 
 def copy_pdf_dirs(pdf_dirs, target):
-    with tempfile.NamedTemporaryFile() as tmp:
-        sourcefiles = subprocess.check_output(['find'] + pdf_dirs + ['-type', 'f', '-name', '*.pdf'])
-        logging.debug('Sourcefiles: %s', sourcefiles.decode())
-        tmp.write(sourcefiles)
-        tmp.flush()
-
-        rsync([os.path.expanduser('~')], target.path_to('') + '/', ['--files-from='+tmp.name, '--delete'])
+    for pdf_dir in pdf_dirs:
+        rsync(pdf_dirs, target.path_to(os.path.dirname(pdf_dir)) + '/',
+              ['--include=*/', '--include=*.pdf', '--exclude=*', '--delete']
+             )
 
 def import_todo_items(tempdir):
     termcolor.cprint('Importing TODO items', 'cyan')
