@@ -4,6 +4,12 @@
 Changelog
 #########
 
+v1.21
+    Released: 2014-06-27
+
+    - *android-sync*: Delete files on device that are not present on the host
+      any more
+
 v1.20
     Released: 2014-06-01
 
