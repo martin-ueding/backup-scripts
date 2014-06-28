@@ -78,7 +78,7 @@ def copy_backupdirs(backupdirs, target):
         target_folder = os.path.dirname(backupdir)
         target_path = target.path_to(target_folder) + '/'
 
-        rsync([os.path.join(os.path.expanduser('~'), backupdir)], target_path, ['--delete', '--max-size=500M'])
+        rsync([os.path.join(os.path.expanduser('~'), backupdir)], target_path, ['--delete', '--max-size=500M', '--exclude=*.bin', '--delete-excluded'])
 
 def copy_bins(bins, dropfolder, target):
     termcolor.cprint('Copy Bins', 'cyan')
