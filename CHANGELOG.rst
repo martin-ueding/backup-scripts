@@ -4,6 +4,12 @@
 Changelog
 #########
 
+v1.22
+    Released: 2014-06-28
+
+    - *android-sync*: Create an empty ``todo.txt`` on the device. That makes it
+      easier to start taking notes.
+
 v1.21
     Released: 2014-06-27
 
