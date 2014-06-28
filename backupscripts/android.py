@@ -139,7 +139,8 @@ def import_todo_items(tempdir):
         with open(todofile) as h:
             for line in h:
                 words = line.split()
-                subprocess.check_call(['task', 'add'] + words)
+                if len(words) > 0:
+                    subprocess.check_call(['task', 'add'] + words)
         os.remove(todofile)
         if len(os.listdir(os.path.dirname(todofile))) == 0:
             os.rmdir(os.path.dirname(todofile))
