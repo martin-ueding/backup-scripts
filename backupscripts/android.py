@@ -35,6 +35,10 @@ class Target(object):
     def delete_bin_contents(self, bin):
         pass
 
+    @abc.abstractmethod
+    def touch_file(self, path):
+        pass
+
     def get_hostname(self):
         tmp = tempfile.mkstemp()[1]
         rsync([self.path_to('hostname.txt')], tmp)
@@ -56,6 +60,10 @@ class SSHTarget(Target):
         logging.debug('Deletion command: %s', command)
         subprocess.check_call(command)
 
+    def touch_file(self, path):
+        command = ['ssh', '{}@{}'.format(self.user, self.ip), 'touch', '/sdcard/'+path]
+        subprocess.check_call(command)
+
 class USBTarget(Target):
     def __init__(self, basepath, backup=True, music=True):
         super().__init__(basepath, backup, music)
@@ -71,6 +79,10 @@ class USBTarget(Target):
             path = os.path.join(bin_path, file)
             logging.debug('Deleting %s', path)
             os.remove(path)
+
+    def touch_file(self, path):
+        command = ['touch', self.path_to(path)]
+        subprocess.check_call(command)
 
 def copy_backupdirs(backupdirs, target):
     termcolor.cprint('Copy Backupdirs', 'cyan')
@@ -166,6 +178,8 @@ def sync_device(target, folders):
 
         copy_bins(folders['bins'], tempdir, target)
         import_todo_items(tempdir)
+        termcolor.cprint('Creating new todo.txt', 'cyan')
+        target.touch_file('TODO/todo.txt')
         if target.backup:
             copy_backupdirs(folders['backupdirs'], target)
         else:
