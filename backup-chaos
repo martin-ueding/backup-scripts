@@ -8,7 +8,7 @@ shopt -s extglob
 
 cd "$HOME"
 
-rsync="rsync -aEhv --delete --max-size=200M"
+rsync="rsync -aEhv --delete --max-size=40M"
 target="chaos"
 
 $rsync .vim "$target:"
