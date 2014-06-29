@@ -4,6 +4,12 @@
 Changelog
 #########
 
+v1.22.1
+    Released: 2014-06-29
+
+    - *backup-chaos*: Limit transfer size to 40 MB.
+
+
 v1.22
     Released: 2014-06-28
 
