@@ -7,7 +7,9 @@
 Traverses through the external drives and updates the backup on them.
 """
 
+import configparser
 import os
+import re
 import subprocess
 
 import termcolor
@@ -16,50 +18,33 @@ import backupscripts.status
 
 __docformat__ = "restructuredtext en"
 
-data_partitions = [
-    "/media/mu/Gamma-data/home/mu/",
-    "/media/mu/Sigma-data/home/mu/",
-    "/media/mu/MU-3-466G-data/home/mu/",
-    "Martin-Aspire-X3200.local:",
-]
-
-info_partitions = [
-    "Gamma-info",
-    "Sigma-info",
-    "MU-3-466G-info",
-]
-
-infofiles = [
-    os.path.expanduser("~/Dokumente/Listen/Hauptliste.kdb"),
-    os.path.expanduser("~/Installer/Sicherheit/KeePass-1.15-Setup.exe"),
-    os.path.expanduser("~/Installer/Sicherheit/KeePassX-0.4.0.dmg"),
-]
-
-def backup_data(name):
+def backup_data(key, name, config):
     """
     Creates a backup to ``target``.
-
-    :param name: Name of this backup.
-    :type name: str
-    :param target: Target directory.
-    :type target: str
     """
-    excludesfile = os.path.expanduser("~/.config/backup-scripts/full.exclude.txt")
+    excludes = []
+    for exclude in config[key]['exclude'].split():
+        excludes += config['exclude'][exclude].split(':')
 
     source = os.path.expanduser("~/")
 
-    target = name
-
     termcolor.cprint("Backup {}".format(name), attrs=['bold'])
 
-    destdir = target
+    exclude_arg = []
+    for exclude in excludes:
+        exclude_arg.append('--exclude='+exclude)
 
-    if os.path.exists(excludesfile):
-        exclude_arg = ["--exclude-from", excludesfile]
+
+    if 'host' in config[key]:
+        dest = config[key]['host'] + ':' + config[key]['path']
+        # TODO
+        return
     else:
-        exclude_arg = []
+        dest = config[key]['path']
+        if not os.path.isdir(dest):
+            return
 
-    command = ["rsync", "-avhE", "--delete", "--delete-excluded"] + exclude_arg + ["--", source, destdir]
+    command = ["rsync", "-avhE", "--delete", "--delete-excluded"] + exclude_arg + ["--", source, dest]
 
     try:
         subprocess.check_call(command)
@@ -68,13 +53,15 @@ def backup_data(name):
     else:
         backupscripts.status.update(name, 'to')
 
-def backup_info(name):
-    target = "/media/mu/{}/info/".format(name)
+def backup_info(key, name, config):
+    target = config[key]['path']
+
+    termcolor.cprint("Info {}".format(name), attrs=['bold'])
 
     if not os.path.isdir(target):
         return
 
-    termcolor.cprint("Info {}".format(name), attrs=['bold'])
+    infofiles = [os.path.expanduser(path) for path in config['infofiles']['paths']]
 
     command = ["rsync", "-avhE", "--delete", "--"] + infofiles + [target]
 
@@ -86,11 +73,23 @@ def backup_info(name):
         backupscripts.status.update(name, 'to')
 
 def main():
-    for name in info_partitions:
-        backup_info(name)
+    config = configparser.ConfigParser()
+    config.read(os.path.expanduser('~/.config/backup-scripts/backup-external.ini'))
 
-    for name in data_partitions:
-        backup_data(name)
+    targets = [key.split()[-1] for key in config.sections() if key.startswith('Target')]
+    infos = [key.split()[-1] for key in config.sections() if key.startswith('Info')]
+
+    info_pattern = re.compile(r'Info (.*)')
+    data_pattern = re.compile(r'Target (.*)')
+
+    for key in config.sections():
+        info_matcher = info_pattern.match(key)
+        if info_matcher:
+            backup_info(key, info_matcher.group(1), config)
+
+        data_matcher = data_pattern.match(key)
+        if data_matcher:
+            backup_data(key, data_matcher.group(1), config)
 
 if __name__ == "__main__":
-	main()
+    main()
