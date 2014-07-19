@@ -64,6 +64,9 @@ def backup_data(key, name, config, dry):
         command = ["rsync", "-avhE", "--delete", "--delete-excluded"]
         if dry:
             command.append('-n')
+        if 'max-size' in config[key]:
+            command.append('--max-size')
+            command.append(config[key]['max-size'])
         command += exclude_arg + ["--", source, dest]
 
         print(command)
