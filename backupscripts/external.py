@@ -19,13 +19,20 @@ import backupscripts.status
 
 __docformat__ = "restructuredtext en"
 
+CONFIG_DIR = os.path.expanduser('~/.config/backup-scripts')
+
 def backup_data(key, name, config, dry):
     """
     Creates a backup to ``target``.
     """
     excludes = []
     for exclude in config[key]['exclude'].split():
-        excludes += config['exclude'][exclude].split(':')
+        filename = os.path.join(CONFIG_DIR, 'exclude', exclude + '.txt')
+        with open(filename) as f:
+            for line in f:
+                path = line.strip()
+                if len(path) > 0:
+                    excludes.append(path)
 
     exclude_arg = []
     for exclude in excludes:
@@ -33,7 +40,12 @@ def backup_data(key, name, config, dry):
 
     sources = []
     for include in config[key]['include'].split():
-        sources += config['include'][include].split(':')
+        filename = os.path.join(CONFIG_DIR, 'include', include + '.txt')
+        with open(filename) as f:
+            for line in f:
+                path = line.strip()
+                if len(path) > 0:
+                    sources.append(path)
 
     termcolor.cprint("Backup {}".format(name), attrs=['bold'])
 
@@ -95,7 +107,7 @@ def main():
     os.chdir(os.path.expanduser('~'))
 
     config = configparser.ConfigParser()
-    config.read(os.path.expanduser('~/.config/backup-scripts/backup-external.ini'))
+    config.read(os.path.join(CONFIG_DIR, 'backup-external.ini'))
 
     targets = [key.split()[-1] for key in config.sections() if key.startswith('Target')]
     infos = [key.split()[-1] for key in config.sections() if key.startswith('Info')]
