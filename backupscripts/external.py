@@ -38,7 +38,7 @@ def backup_data(key, name, config, dry):
     termcolor.cprint("Backup {}".format(name), attrs=['bold'])
 
     for source in sources:
-        termcolor.cprint('Handling', 'cyan')
+        termcolor.cprint('Handling {}'.format(source), 'cyan')
         rel_dest = os.path.dirname(source)
         abs_dest_path = os.path.join(config[key]['path'], rel_dest)
 
