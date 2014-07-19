@@ -37,8 +37,6 @@ def backup_data(key, name, config):
 
     if 'host' in config[key]:
         dest = config[key]['host'] + ':' + config[key]['path']
-        # TODO
-        return
     else:
         dest = config[key]['path']
         if not os.path.isdir(dest):
