@@ -6,3 +6,5 @@ build
 dist
 html
 backup_scripts.egg-info/
+doc/Makefile
+doc/_build/
