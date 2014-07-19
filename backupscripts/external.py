@@ -74,7 +74,8 @@ def backup_data(key, name, config, dry):
             print(e)
             return
 
-    backupscripts.status.update(name, 'to')
+    if not dry:
+        backupscripts.status.update(name, 'to')
 
 def backup_info(key, name, config, dry):
     target = config[key]['path']
@@ -96,7 +97,8 @@ def backup_info(key, name, config, dry):
     except subprocess.CalledProcessError as e:
         print(e)
     else:
-        backupscripts.status.update(name, 'to')
+        if not dry:
+            backupscripts.status.update(name, 'to')
 
 def main():
     parser = argparse.ArgumentParser()
