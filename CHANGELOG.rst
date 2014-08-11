@@ -4,6 +4,12 @@
 Changelog
 #########
 
+v2.0
+    Released: 2014-08-11
+
+    - Better configuration. This breaks all your existing configuration. And it
+      is not documented yet, sorry :-/.
+
 v1.22.1
     Released: 2014-06-29
 
