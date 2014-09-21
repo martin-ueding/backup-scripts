@@ -13,6 +13,9 @@ Exit codes
 
 11:
     Given device is blacklisted.
+
+12:
+    Given device is mounted.
 '''
 
 import argparse
@@ -35,8 +38,11 @@ def wrap_command(command, options):
     if options.english:
         command = ['env', 'LC_ALL=C'] + command
 
-    termcolor.cprint('Command to be executed:', 'yellow')
-    termcolor.cprint(' '.join(command), 'yellow')
+    print()
+    print('----------------------------------')
+    termcolor.cprint(' '.join(command), 'yellow', attrs=['bold'])
+    print('----------------------------------')
+    print()
 
     return command
 
@@ -55,27 +61,33 @@ def main():
         print('Given device ({}) is blacklisted. Exiting.'.format(options.device))
         sys.exit(11)
 
+    # Check mounts.
+    output = subprocess.check_output(['mount'])
+    if options.device.encode() in output:
+        print('Given device ({}) is mounted. Exiting.'.format(options.device))
+        sys.exit(12)
+
 
     command = wrap_command(['gdisk', options.device], options)
 
     gdisk_keys = [
-        'p', # Print partition table.
-        'o', # Create a new GPT partition table.
-        'Y', # YES.
-        'p', # Print partition table.
-        'n', # Create a new partition.
-        '1', # Make it the first.
-        '', # Default start sector.
+        'p',     # Print partition table.
+        'o',     # Create a new GPT partition table.
+        'Y',     # YES.
+        'p',     # Print partition table.
+        'n',     # Create a new partition.
+        '1',     # Make it the first.
+        '',      # Default start sector.
         '+100M', # End at 100 MB.
-        '', # Default file system.
-        'n', # Create a new partition.
-        '2', # Make it the second.
-        '', # Default start.
-        '', # Default end.
-        '', # Default file system.
-        'p', # Print partition table.
-        'w', # Write to disk.
-        'Y', # YES.
+        '',      # Default file system.
+        'n',     # Create a new partition.
+        '2',     # Make it the second.
+        '',      # Default start.
+        '',      # Default end.
+        '',      # Default file system.
+        'p',     # Print partition table.
+        'w',     # Write to disk.
+        'Y',     # YES.
     ]
 
     with tempfile.TemporaryFile('w+') as fdisk_input:
@@ -89,20 +101,37 @@ def main():
     info_device = options.device+'1'
     data_device = options.device+'2'
 
-    run_command(['mkfs.ext4', '-L', '{}-info'.format(options.label), info_device], options)
-    run_command(['mkfs.ext4', '-L', '{}-data'.format(options.label), data_device], options)
+    if options.fs == 'btrfs':
+        run_command(['mkfs.btrfs', '-f', '--mixed', '-L', '{}-info'.format(options.label), info_device], options)
+        run_command(['mkfs.btrfs', '-f', '-L', '{}-data'.format(options.label), data_device], options)
 
-    #run_command(['mkfs.btrfs', '-f', '-L', '{}-info'.format(options.label), options.device+'1'], options)
-    #run_command(['mkfs.btrfs', '-f', '-L', '{}-data'.format(options.label), options.device+'2'], options)
+        run_command(['btrfsck', info_device], options)
+        run_command(['btrfsck', data_device], options)
+    else:
+        run_command(['mkfs.ext4', '-L', '{}-info'.format(options.label), info_device], options)
+        run_command(['mkfs.ext4', '-L', '{}-data'.format(options.label), data_device], options)
 
-    run_command(['mount', info_device, '/mnt'], options)
-    run_command(['mkdir', '/mnt/info'.format(options.label)], options)
-    run_command(['chown', 'mu:mu', '/mnt/info'.format(options.label)], options)
+        run_command(['fsck.ext4', info_device], options)
+        run_command(['fsck.ext4', data_device], options)
+
+    run_command(['mount', '-t', options.fs, info_device, '/mnt'], options)
+    run_command(['mkdir', '/mnt/info'], options)
+    run_command(['chown', 'mu:mu', '/mnt/info'], options)
+    run_command(['ls', '-l', '/mnt/'], options)
     run_command(['umount', '/mnt'], options)
 
-    run_command(['mount', data_device, '/mnt'], options)
-    run_command(['mkdir', '/mnt/backup'.format(options.label)], options)
-    run_command(['chown', 'mu:mu', '/mnt/backup'.format(options.label)], options)
+    run_command(['mount', '-t', options.fs, info_device, '/mnt'], options)
+    run_command(['ls', '-l', '/mnt/'], options)
+    run_command(['umount', '/mnt'], options)
+
+    run_command(['mount', '-t', options.fs, data_device, '/mnt'], options)
+    run_command(['mkdir', '/mnt/backup'], options)
+    run_command(['chown', 'mu:mu', '/mnt/backup'], options)
+    run_command(['ls', '-l', '/mnt/'], options)
+    run_command(['umount', '/mnt'], options)
+
+    run_command(['mount', '-t', options.fs, data_device, '/mnt'], options)
+    run_command(['ls', '-l', '/mnt/'], options)
     run_command(['umount', '/mnt'], options)
 
 
@@ -120,6 +149,7 @@ def _parse_args():
     parser.add_argument('label', help='Name for this disk')
     parser.add_argument('--sudo', action='store_true', help='Use sudo')
     parser.add_argument('--english', action='store_true', help='English output')
+    parser.add_argument('--fs', default='btrfs')
     options = parser.parse_args()
 
     return options
