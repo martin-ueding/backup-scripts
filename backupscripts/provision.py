@@ -40,6 +40,10 @@ def wrap_command(command, options):
 
     return command
 
+def run_command(command, options):
+    command = wrap_command(command, options)
+    subprocess.check_call(command)
+
 def main():
     options = _parse_args()
 
@@ -52,29 +56,54 @@ def main():
         sys.exit(11)
 
 
-    command = wrap_command(['fdisk', options.device], options)
+    command = wrap_command(['gdisk', options.device], options)
+
+    gdisk_keys = [
+        'p', # Print partition table.
+        'o', # Create a new GPT partition table.
+        'Y', # YES.
+        'p', # Print partition table.
+        'n', # Create a new partition.
+        '1', # Make it the first.
+        '', # Default start sector.
+        '+100M', # End at 100 MB.
+        '', # Default file system.
+        'n', # Create a new partition.
+        '2', # Make it the second.
+        '', # Default start.
+        '', # Default end.
+        '', # Default file system.
+        'p', # Print partition table.
+        'w', # Write to disk.
+        'Y', # YES.
+    ]
 
     with tempfile.TemporaryFile('w+') as fdisk_input:
-        fdisk_input.write('''
-                          p
-                          o
-                          p
-                          n
-
-
-
-                          +100M
-                          n
-
-
-
-
-                          p
-                          w
-                          ''')
+        for key in gdisk_keys:
+            fdisk_input.write(key)
+            fdisk_input.write('\n')
         fdisk_input.seek(0)
 
         subprocess.check_call(command, stdin=fdisk_input)
+
+    info_device = options.device+'1'
+    data_device = options.device+'2'
+
+    run_command(['mkfs.ext4', '-L', '{}-info'.format(options.label), info_device], options)
+    run_command(['mkfs.ext4', '-L', '{}-data'.format(options.label), data_device], options)
+
+    #run_command(['mkfs.btrfs', '-f', '-L', '{}-info'.format(options.label), options.device+'1'], options)
+    #run_command(['mkfs.btrfs', '-f', '-L', '{}-data'.format(options.label), options.device+'2'], options)
+
+    run_command(['mount', info_device, '/mnt'], options)
+    run_command(['mkdir', '/mnt/info'.format(options.label)], options)
+    run_command(['chown', 'mu:mu', '/mnt/info'.format(options.label)], options)
+    run_command(['umount', '/mnt'], options)
+
+    run_command(['mount', data_device, '/mnt'], options)
+    run_command(['mkdir', '/mnt/backup'.format(options.label)], options)
+    run_command(['chown', 'mu:mu', '/mnt/backup'.format(options.label)], options)
+    run_command(['umount', '/mnt'], options)
 
 
 
