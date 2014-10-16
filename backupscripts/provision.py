@@ -49,24 +49,7 @@ def run_command(command, options):
     command = wrap_command(command, options)
     subprocess.check_call(command)
 
-def main():
-    options = _parse_args()
-
-    if not os.path.exists(options.device):
-        print('Given device ({}) does not exist. Exiting.'.format(options.device))
-        sys.exit(10)
-
-    if options.device in blacklist:
-        print('Given device ({}) is blacklisted. Exiting.'.format(options.device))
-        sys.exit(11)
-
-    # Check mounts.
-    output = subprocess.check_output(['mount'])
-    if options.device.encode() in output:
-        print('Given device ({}) is mounted. Exiting.'.format(options.device))
-        sys.exit(12)
-
-
+def partition_with_gdisk(options):
     command = wrap_command(['gdisk', options.device], options)
 
     gdisk_keys = [
@@ -97,6 +80,7 @@ def main():
 
         subprocess.check_call(command, stdin=fdisk_input)
 
+def format_partitions(options):
     info_device = options.device+'1'
     data_device = options.device+'2'
 
@@ -112,6 +96,10 @@ def main():
 
         run_command(['fsck.ext4', info_device], options)
         run_command(['fsck.ext4', data_device], options)
+
+def create_folders(options):
+    info_device = options.device+'1'
+    data_device = options.device+'2'
 
     run_command(['mount', '-t', options.fs, info_device, '/mnt'], options)
     run_command(['mkdir', '/mnt/info'], options)
@@ -132,9 +120,23 @@ def main():
     run_command(['mount', '-t', options.fs, data_device, '/mnt'], options)
     run_command(['ls', '-l', '/mnt/'], options)
     run_command(['umount', '/mnt'], options)
+    
+def main():
+    options = _parse_args()
 
+    if not os.path.exists(options.device):
+        print('Given device ({}) does not exist. Exiting.'.format(options.device))
+        sys.exit(10)
 
+    if options.device in blacklist:
+        print('Given device ({}) is blacklisted. Exiting.'.format(options.device))
+        sys.exit(11)
 
+    # Check mounts.
+    output = subprocess.check_output(['mount'])
+    if options.device.encode() in output:
+        print('Given device ({}) is mounted. Exiting.'.format(options.device))
+        sys.exit(12)
 
 def _parse_args():
     """
