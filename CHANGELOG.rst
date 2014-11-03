@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v2.1.1
+    Released: 2014-11-03
+
+    - Delete excluded PDF files automatically.
+
 v2.1
     Released: 2014-11-03
 
