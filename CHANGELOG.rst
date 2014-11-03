@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v2.1
+    Released: 2014-11-03
+
+    - Copy MP4 files to reading device as well.
+
 v2.0
     Released: 2014-08-11
 
