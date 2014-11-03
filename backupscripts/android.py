@@ -138,7 +138,7 @@ def copy_pdf_dirs(pdf_dirs, target):
     for pdf_dir in pdf_dirs:
         rsync(pdf_dirs, target.path_to(os.path.dirname(pdf_dir)) + '/',
               ['--include=*/', '--include=*.pdf', '--include=*.mp4',
-               '--exclude=*', '--delete']
+               '--exclude=*', '--delete', '--delete-excluded']
              )
 
 def import_todo_items(tempdir):
