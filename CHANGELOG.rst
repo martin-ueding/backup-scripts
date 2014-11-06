@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v2.2
+    Released: 2014-11-06
+
+    - Add progress option for config.
+
 v2.1.1
     Released: 2014-11-03
 
