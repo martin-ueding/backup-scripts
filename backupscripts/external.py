@@ -67,6 +67,8 @@ def backup_data(key, name, config, dry):
         if 'max-size' in config[key]:
             command.append('--max-size')
             command.append(config[key]['max-size'])
+        if 'progress' in config[key]:
+            command.append('--progress')
         command += exclude_arg + ["--", source, dest]
 
         print(command)
