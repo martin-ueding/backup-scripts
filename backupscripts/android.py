@@ -148,18 +148,22 @@ def import_todo_items(tempdir):
     if not os.path.isfile(todofile):
         return
 
-    try:
-        with open(todofile) as h:
-            for line in h:
+    error = False
+    with open(todofile) as h:
+        for line in h:
+            try:
                 words = line.split()
                 if len(words) > 0:
                     subprocess.check_call(['task', 'add'] + words)
+            except subprocess.CalledProcessError as e:
+                termcolor.cprint('Error adding “{}”:'.format(line), 'red')
+                print(e)
+                error = True
+
+    if not error:
         os.remove(todofile)
         if len(os.listdir(os.path.dirname(todofile))) == 0:
             os.rmdir(os.path.dirname(todofile))
-    except subprocess.CalledProcessError as e:
-        termcolor.cprint('Error adding “{}”:'.format(line), 'red')
-        print(e)
 
 def sync_device(target, folders):
     now = datetime.datetime.now()
