@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v2.2.1
+    Released: 2014-11-07
+
+    - Catch error for each line in the ``todo.txt`` file individually.
+
 v2.2
     Released: 2014-11-06
 
