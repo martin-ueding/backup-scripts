@@ -4,6 +4,12 @@
 Changelog
 #########
 
+v2.3
+    Released: 2014-11-27
+
+    - Allow for different ssh user in the configuration file
+    - Remove ``hostname.txt``, use command line specified name
+
 v2.2.1
     Released: 2014-11-07
 
