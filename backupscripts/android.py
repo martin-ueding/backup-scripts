@@ -22,10 +22,11 @@ FOLDERFILE = os.path.expanduser('~/.config/backup-scripts/android-folders.js')
 
 class Target(object):
     __metaclass__ = abc.ABCMeta
-    def __init__(self, basepath, backup=True, music=True):
+    def __init__(self, hostname, basepath, backup=True, music=True):
         self.basepath = basepath
         self.backup = backup
         self.music = music
+        self.hostname = hostname
 
     @abc.abstractmethod
     def path_to(self, suffix):
@@ -39,18 +40,16 @@ class Target(object):
     def touch_file(self, path):
         pass
 
-    def get_hostname(self):
-        tmp = tempfile.mkstemp()[1]
-        rsync([self.path_to('hostname.txt')], tmp)
-        with open(tmp) as f:
-            return f.read()
+    @abc.abstractmethod
+    def mkdir(self, path):
+        pass
 
 class SSHTarget(Target):
-    def __init__(self, basepath, ip, backup=True, music=True):
-        super().__init__(basepath, backup, music)
+    def __init__(self, hostname, basepath, ip, backup=True, music=True, user='shell'):
+        super().__init__(hostname, basepath, backup, music)
 
         self.ip = ip
-        self.user = 'root'
+        self.user = user
 
     def path_to(self, suffix):
         return os.path.join('{user}@{ip}:{basepath}'.format(user=self.user, ip=self.ip, basepath=self.basepath), suffix)
@@ -64,9 +63,14 @@ class SSHTarget(Target):
         command = ['ssh', '{}@{}'.format(self.user, self.ip), 'touch', '/sdcard/'+path]
         subprocess.check_call(command)
 
+    def mkdir(self, path):
+        command = ['ssh', '{}@{}'.format(self.user, self.ip), 'mkdir', '-p', '/sdcard/'+path]
+        subprocess.check_call(command)
+
+
 class USBTarget(Target):
-    def __init__(self, basepath, backup=True, music=True):
-        super().__init__(basepath, backup, music)
+    def __init__(self, hostname, basepath, backup=True, music=True):
+        super().__init__(hostname, basepath, backup, music)
 
     def path_to(self, suffix):
         return os.path.join(self.basepath, suffix)
@@ -83,6 +87,11 @@ class USBTarget(Target):
     def touch_file(self, path):
         command = ['touch', self.path_to(path)]
         subprocess.check_call(command)
+
+    def mkdir(self, path):
+        command = ['mkdir', '-p', '/sdcard/'+self.path_to(path)]
+        subprocess.check_call(command)
+
 
 def copy_backupdirs(backupdirs, target):
     termcolor.cprint('Copy Backupdirs', 'cyan')
@@ -119,6 +128,7 @@ def rsync(sources, target_path, additional_flags=[]):
 def copy_reading_list(target):
     termcolor.cprint('Copy Reading List', 'cyan')
     source = os.path.expanduser("~/Leseliste/")
+    target.mkdir('Leseliste')
     rsync([source], target.path_to('Leseliste/'), ['--delete', '--max-size=2G'])
 
 def copy_wohnungsunterlagen(target):
@@ -136,8 +146,9 @@ def copy_other_pdf_dirs(target, other_pdf_dirs):
 
 def copy_pdf_dirs(pdf_dirs, target):
     for pdf_dir in pdf_dirs:
+        target.mkdir(pdf_dir)
         rsync(pdf_dirs, target.path_to(os.path.dirname(pdf_dir)) + '/',
-              ['--include=*/', '--include=*.pdf', '--include=*.mp4',
+              ['--include=*/', '--include=*.pdf',
                '--exclude=*', '--delete', '--delete-excluded']
              )
 
@@ -178,8 +189,7 @@ def sync_device(target, folders):
     tempdir = tempfile.mkdtemp(prefix=prefix, dir=os.path.expanduser('~/TODO'))
 
     try:
-        hostname = target.get_hostname()
-        termcolor.cprint('Syncing {}'.format(hostname), 'white', attrs=['bold'])
+        termcolor.cprint('Syncing {}'.format(target.hostname), 'white', attrs=['bold'])
 
         copy_bins(folders['bins'], tempdir, target)
         import_todo_items(tempdir)
@@ -194,7 +204,7 @@ def sync_device(target, folders):
         copy_other_pdf_dirs(target, folders['other_pdf_dirs'])
         copy_reading_list(target)
 
-        backupscripts.status.update(hostname, 'to')
+        backupscripts.status.update(target.hostname, 'to')
 
     except:
         raise
@@ -225,9 +235,10 @@ def main():
 
         if 'host' in config[device]:
             host = config[device]['host']
-            devices[device] = SSHTarget(path, host, backup, music)
+            user = config[device]['user']
+            devices[device] = SSHTarget(device, path, host, backup, music, user=user)
         else:
-            devices[device] = USBTarget(path, backup, music)
+            devices[device] = USBTarget(device, path, backup, music)
 
     for device in options.devices:
         sync_device(devices[device], folders)
