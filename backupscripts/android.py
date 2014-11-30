@@ -16,6 +16,7 @@ import tempfile
 
 import termcolor
 
+import backupscripts.readinglist
 import backupscripts.status
 
 FOLDERFILE = os.path.expanduser('~/.config/backup-scripts/android-folders.js')
@@ -89,7 +90,7 @@ class USBTarget(Target):
         subprocess.check_call(command)
 
     def mkdir(self, path):
-        command = ['mkdir', '-p', '/sdcard/'+self.path_to(path)]
+        command = ['mkdir', '-p', self.path_to(path)]
         subprocess.check_call(command)
 
 
@@ -216,6 +217,8 @@ def sync_device(target, folders):
             os.rmdir(tempdir)
 
 def main():
+    backupscripts.readinglist.main()
+
     options = _parse_args()
 
     with open(FOLDERFILE) as f:
