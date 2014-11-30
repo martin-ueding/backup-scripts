@@ -4,6 +4,13 @@
 Changelog
 #########
 
+v2.4
+    Released: 2014-11-30
+
+    - Compile ``.desktop`` files from the reading list folder into a single
+      HTML page to use on the device.
+    - Fix folder creation error when using USB.
+
 v2.3
     Released: 2014-11-27
 
