@@ -24,6 +24,7 @@ setup(
             'android-sync=backupscripts.android:main',
             'backup-external=backupscripts.external:main',
             'backup-status=backupscripts.status:main',
+            'provision-backup-drive=backupscripts.provision:main',
         ],
     },
     install_requires=[
