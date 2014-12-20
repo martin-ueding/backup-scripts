@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v2.5.0
+    Released: 2014-12-20
+
+    - Adding experimental provisioning script
+
 v2.4
     Released: 2014-11-30
 
