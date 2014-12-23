@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v2.6.1
+    Released: 2014-12-23
+
+    - Attemt to create leading directories on local paths
+
 v2.6.0
     Released: 2014-12-23
 
