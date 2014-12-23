@@ -4,6 +4,12 @@
 Changelog
 #########
 
+v2.6.0
+    Released: 2014-12-23
+
+    - Add simple provisioning script that only creates a single encrypted disk
+      on an already partitioned disk
+
 v2.5.0
     Released: 2014-12-20
 
