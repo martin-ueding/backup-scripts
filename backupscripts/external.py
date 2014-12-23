@@ -64,7 +64,7 @@ def backup_data(key, name, config, dry):
                     os.makedirs(dest, exist_ok=True)
                 except PermissionError as e:
                     termcolor.cprint(str(e), 'yellow')
-                    continue
+                    return
 
         command = ["rsync", "-avhE", "--delete", "--delete-excluded"]
         if dry:
