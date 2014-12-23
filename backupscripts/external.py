@@ -59,7 +59,12 @@ def backup_data(key, name, config, dry):
         else:
             dest = abs_dest_path
             if not os.path.isdir(dest):
-                return
+                print('This directory does not exist. Trying to create it …')
+                try:
+                    os.makedirs(dest, exist_ok=True)
+                except PermissionError as e:
+                    termcolor.cprint(str(e), 'yellow')
+                    continue
 
         command = ["rsync", "-avhE", "--delete", "--delete-excluded"]
         if dry:
