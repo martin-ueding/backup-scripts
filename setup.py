@@ -30,6 +30,9 @@ setup(
     install_requires=[
         'termcolor',
     ],
+    scripts=[
+        'provision-simple',
+    ],
     url="https://github.com/martin-ueding/backup-scripts",
     download_url="http://martin-ueding.de/download/backup-scripts/",
     version="2.0",
