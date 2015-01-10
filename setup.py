@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2014 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2014-2015 Martin Ueding <dev@martin-ueding.de>
 
 from setuptools import setup, find_packages
 
@@ -28,6 +28,8 @@ setup(
         ],
     },
     install_requires=[
+        'lxml',
+        'requests',
         'termcolor',
     ],
     scripts=[

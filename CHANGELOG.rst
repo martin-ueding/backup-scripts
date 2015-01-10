@@ -1,8 +1,14 @@
-.. Copyright © 2013-2014 Martin Ueding <dev@martin-ueding.de>
+.. Copyright © 2013-2015 Martin Ueding <dev@martin-ueding.de>
 
 #########
 Changelog
 #########
+
+v2.7.0
+    Released: 2015-01-10
+
+    - Automatically rename YouTube URLs in the reading list to give the video
+      title.
 
 v2.6.1
     Released: 2014-12-23
@@ -284,3 +290,5 @@ v1.1
 
 v1.0
     Initial Release
+
+.. vim: spell tw=79
