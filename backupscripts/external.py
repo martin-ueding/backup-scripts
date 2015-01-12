@@ -26,7 +26,7 @@ def read_shards(shard_names, shard_type):
     for shard in shard_names:
         filename = os.path.join(CONFIG_DIR, shard_type, shard + '.txt')
         with open(filename) as f:
-            shards = f.read().strip().split('\n')
+            shards += f.read().strip().split('\n')
 
     return shards
 
@@ -39,20 +39,12 @@ def read_include(include_names):
     return read_shards(include_names, 'include')
 
 
-def convert_excludes_to_rsync_args(excludes):
-    exclude_arg = []
-    for exclude in excludes:
-        exclude_arg.append('--exclude='+exclude)
-
-    return exclude_arg
-
-
 def backup_data(key, name, config, dry):
     """
     Creates a backup to ``target``.
     """
     excludes = read_excludes(config[key]['exclude'].split())
-    exclude_arg = convert_excludes_to_rsync_args(excludes)
+    exclude_arg = ['--exclude='+exclude for exclude in excludes]
 
 
     sources = []
