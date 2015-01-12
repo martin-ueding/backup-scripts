@@ -4,6 +4,12 @@
 Changelog
 #########
 
+v2.8.1
+    Released: 2015-01-12
+
+    - Fix bug that made ``backup-external`` unusable since a variable name was
+      wrong in the program.
+
 v2.8.0
     Released: 2015-01-12
 
