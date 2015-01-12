@@ -35,7 +35,7 @@ def read_excludes(exclude_names):
     return read_shards(exclude_names, 'exclude')
 
 
-def read_include(include_names):
+def read_includes(include_names):
     return read_shards(include_names, 'include')
 
 
@@ -45,15 +45,7 @@ def backup_data(key, name, config, dry):
     """
     excludes = read_excludes(config[key]['exclude'].split())
     exclude_arg = ['--exclude='+exclude for exclude in excludes]
-
-    sources = []
-    for include in config[key]['include'].split():
-        filename = os.path.join(CONFIG_DIR, 'include', include + '.txt')
-        with open(filename) as f:
-            for line in f:
-                path = line.strip()
-                if len(path) > 0:
-                    sources.append(path)
+    sources = read_includes(config[key]['include'].split())
 
     termcolor.cprint("Backup {}".format(name), attrs=['bold'])
 
