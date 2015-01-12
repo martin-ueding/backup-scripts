@@ -111,5 +111,6 @@ def main():
             if len(options.names) == 0 or name in options.names:
                 backup_data(key, name, config, options.dry)
 
+
 if __name__ == "__main__":
     main()
