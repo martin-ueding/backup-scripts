@@ -41,20 +41,6 @@ def read_includes(include_names):
     return read_shards(include_names, 'include')
 
 
-def create_root_directory_if_needed(config_key, path):
-    if 'host' in config_key:
-        dest = config_key['host'] + ':' + path
-    else:
-        dest = path
-        if not os.path.isdir(dest):
-            print('This directory does not exist. Trying to create it …')
-            try:
-                os.makedirs(dest, exist_ok=True)
-            except PermissionError as e:
-                termcolor.cprint(str(e), 'yellow')
-                return
-
-
 def backup_data(key, name, config, dry):
     """
     Creates a backup to ``target``.
@@ -66,8 +52,18 @@ def backup_data(key, name, config, dry):
     termcolor.cprint("Backup {}".format(name), attrs=['bold'])
 
     abs_dest_path = config[key]['path']
+    if 'host' in config[key]:
+        dest = config[key]['host'] + ':' + abs_dest_path
+    else:
+        dest = abs_dest_path
+        if not os.path.isdir(dest):
+            print('This directory does not exist. Trying to create it …')
+            try:
+                os.makedirs(dest, exist_ok=True)
+            except PermissionError as e:
+                termcolor.cprint(str(e), 'yellow')
+                return
 
-    create_root_directory_if_needed(config[key], abs_dest_path)
 
     command = ["rsync", "-avhER", "--delete", "--delete-excluded"]
     if dry:
