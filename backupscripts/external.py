@@ -28,6 +28,8 @@ def read_shards(shard_names, shard_type):
         with open(filename) as f:
             shards += f.read().strip().split('\n')
 
+    shards.sort()
+
     return shards
 
 
@@ -89,10 +91,21 @@ def backup_data(key, name, config, dry):
             backupscripts.status.update(name, 'to')
 
 
+def compute_total_size(key, config):
+    sources = read_includes(config[key]['include'].split())
+    exclude_args = [
+        '--exclude-from='+os.path.join(CONFIG_DIR, 'exclude', f+'.txt')
+        for f in config[key]['exclude'].split()
+    ]
+    subprocess.check_call(['du', '-csh'] + exclude_args + sources)
+
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('names', nargs='*')
     parser.add_argument('-n', dest='dry', action='store_true')
+    parser.add_argument('--size', dest='size', action='store_true')
     options = parser.parse_args()
 
     os.chdir(os.path.expanduser('~'))
@@ -109,7 +122,10 @@ def main():
         if data_matcher:
             name = data_matcher.group(1)
             if len(options.names) == 0 or name in options.names:
-                backup_data(key, name, config, options.dry)
+                if options.size:
+                    compute_total_size(key, config)
+                else:
+                    backup_data(key, name, config, options.dry)
 
 
 if __name__ == "__main__":
