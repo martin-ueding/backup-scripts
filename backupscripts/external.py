@@ -21,22 +21,42 @@ __docformat__ = "restructuredtext en"
 
 CONFIG_DIR = os.path.expanduser('~/.config/backup-scripts')
 
-def backup_data(key, name, config, dry):
-    """
-    Creates a backup to ``target``.
-    """
-    excludes = []
-    for exclude in config[key]['exclude'].split():
-        filename = os.path.join(CONFIG_DIR, 'exclude', exclude + '.txt')
+def read_shards(shard_names, shard_type):
+    shards = []
+    for shard in shard_names:
+        filename = os.path.join(CONFIG_DIR, shard_type, shard + '.txt')
         with open(filename) as f:
             for line in f:
                 path = line.strip()
                 if len(path) > 0:
-                    excludes.append(path)
+                    shards.append(path)
 
+    return shards
+
+
+def read_excludes(exclude_names):
+    return read_shards(exclude_names, 'exclude')
+
+
+def read_include(include_names):
+    return read_shards(include_names, 'include')
+
+
+def convert_excludes_to_rsync_args(excludes):
     exclude_arg = []
     for exclude in excludes:
         exclude_arg.append('--exclude='+exclude)
+
+    return exclude_arg
+
+
+def backup_data(key, name, config, dry):
+    """
+    Creates a backup to ``target``.
+    """
+    excludes = read_excludes(config[key]['exclude'].split())
+    exclude_arg = convert_excludes_to_rsync_args(excludes)
+
 
     sources = []
     for include in config[key]['include'].split():
