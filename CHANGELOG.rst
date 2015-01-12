@@ -4,6 +4,15 @@
 Changelog
 #########
 
+v2.8.0
+    Released: 2015-01-12
+
+    - Use ``-R`` option of ``rsync`` to transfer all files with a single
+      connection and run of ``rsync``.
+
+    - Add a new ``--size`` switch to ``backup-external`` which will use ``du``
+      compute the total size of the backup.
+
 v2.7.0
     Released: 2015-01-10
 
