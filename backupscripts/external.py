@@ -49,40 +49,37 @@ def backup_data(key, name, config, dry):
 
     termcolor.cprint("Backup {}".format(name), attrs=['bold'])
 
-    for source in sources:
-        termcolor.cprint('Handling {}'.format(source), 'cyan')
-        rel_dest = os.path.dirname(source)
-        abs_dest_path = os.path.join(config[key]['path'], rel_dest)
+    abs_dest_path = config[key]['path']
 
-        if 'host' in config[key]:
-            dest = config[key]['host'] + ':' + abs_dest_path
-        else:
-            dest = abs_dest_path
-            if not os.path.isdir(dest):
-                print('This directory does not exist. Trying to create it …')
-                try:
-                    os.makedirs(dest, exist_ok=True)
-                except PermissionError as e:
-                    termcolor.cprint(str(e), 'yellow')
-                    return
+    if 'host' in config[key]:
+        dest = config[key]['host'] + ':' + abs_dest_path
+    else:
+        dest = abs_dest_path
+        if not os.path.isdir(dest):
+            print('This directory does not exist. Trying to create it …')
+            try:
+                os.makedirs(dest, exist_ok=True)
+            except PermissionError as e:
+                termcolor.cprint(str(e), 'yellow')
+                return
 
-        command = ["rsync", "-avhE", "--delete", "--delete-excluded"]
-        if dry:
-            command.append('-n')
-        if 'max-size' in config[key]:
-            command.append('--max-size')
-            command.append(config[key]['max-size'])
-        if 'progress' in config[key]:
-            command.append('--progress')
-        command += exclude_arg + ["--", source, dest]
+    command = ["rsync", "-avhER", "--delete", "--delete-excluded"]
+    if dry:
+        command.append('-n')
+    if 'max-size' in config[key]:
+        command.append('--max-size')
+        command.append(config[key]['max-size'])
+    if 'progress' in config[key]:
+        command.append('--progress')
+    command += exclude_arg + ["--"] + sources + [dest]
 
-        print(command)
+    print(command)
 
-        try:
-            subprocess.check_call(command)
-        except subprocess.CalledProcessError as e:
-            print(e)
-            return
+    try:
+        subprocess.check_call(command)
+    except subprocess.CalledProcessError as e:
+        print(e)
+        return
 
     if not dry:
         backupscripts.status.update(name, 'to')
