@@ -26,10 +26,7 @@ def read_shards(shard_names, shard_type):
     for shard in shard_names:
         filename = os.path.join(CONFIG_DIR, shard_type, shard + '.txt')
         with open(filename) as f:
-            for line in f:
-                path = line.strip()
-                if len(path) > 0:
-                    shards.append(path)
+            shards = f.read().strip().split('\n')
 
     return shards
 
