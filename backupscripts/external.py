@@ -46,7 +46,6 @@ def backup_data(key, name, config, dry):
     excludes = read_excludes(config[key]['exclude'].split())
     exclude_arg = ['--exclude='+exclude for exclude in excludes]
 
-
     sources = []
     for include in config[key]['include'].split():
         filename = os.path.join(CONFIG_DIR, 'include', include + '.txt')
