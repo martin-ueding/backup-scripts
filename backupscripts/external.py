@@ -68,11 +68,8 @@ def backup_data(key, name, config, dry):
     command = ["rsync", "-avhER", "--delete", "--delete-excluded"]
     if dry:
         command.append('-n')
-    if 'max-size' in config[key]:
-        command.append('--max-size')
-        command.append(config[key]['max-size'])
-    if 'progress' in config[key]:
-        command.append('--progress')
+    if 'rsync-options' in config[key]:
+        command += config[key]['rsync-options'].split()
     command += exclude_arg + ["--"] + sources + [dest]
 
     print(command)
