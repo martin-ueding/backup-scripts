@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2014 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2014-2015 Martin Ueding <dev@martin-ueding.de>
 
 import abc
 import argparse
@@ -94,14 +94,6 @@ class USBTarget(Target):
         subprocess.check_call(command)
 
 
-def copy_backupdirs(backupdirs, target):
-    termcolor.cprint('Copy Backupdirs', 'cyan')
-    for backupdir in backupdirs:
-        target_folder = os.path.dirname(backupdir)
-        target_path = target.path_to(target_folder) + '/'
-
-        rsync([os.path.join(os.path.expanduser('~'), backupdir)], target_path, ['--delete', '--max-size=500M', '--exclude=*.bin', '--delete-excluded'])
-
 def copy_bins(bins, dropfolder, target):
     termcolor.cprint('Copy Bins', 'cyan')
     for bin in bins:
@@ -125,33 +117,6 @@ def rsync(sources, target_path, additional_flags=[]):
     command = ['rsync'] + flags + sources + [target_path]
     logging.info('rsync command: %s', ' '.join(command))
     subprocess.check_call(command)
-
-def copy_reading_list(target):
-    termcolor.cprint('Copy Reading List', 'cyan')
-    source = os.path.expanduser("~/Leseliste/")
-    target.mkdir('Leseliste')
-    rsync([source], target.path_to('Leseliste/'), ['--delete', '--max-size=2G'])
-
-def copy_wohnungsunterlagen(target):
-    termcolor.cprint('Copy Wohnungsunterlagen', 'cyan')
-    source = os.path.expanduser("~/Dokumente/Wohnung_Monschauer_Strasse")
-    rsync([source], target.path_to('Dokumente/'), ['--delete', '--max-size=1G'])
-
-def copy_studium_pdf_dirs(target, studium_pdf_dirs):
-    termcolor.cprint('Copy Studium PDF dirs', 'cyan')
-    copy_pdf_dirs(studium_pdf_dirs, target)
-
-def copy_other_pdf_dirs(target, other_pdf_dirs):
-    termcolor.cprint('Copy other PDF dirs', 'cyan')
-    copy_pdf_dirs(other_pdf_dirs, target)
-
-def copy_pdf_dirs(pdf_dirs, target):
-    for pdf_dir in pdf_dirs:
-        target.mkdir(pdf_dir)
-        rsync(pdf_dirs, target.path_to(os.path.dirname(pdf_dir)) + '/',
-              ['--include=*/', '--include=*.pdf',
-               '--exclude=*', '--delete', '--delete-excluded']
-             )
 
 def import_todo_items(tempdir):
     termcolor.cprint('Importing TODO items', 'cyan')
@@ -196,14 +161,8 @@ def sync_device(target, folders):
         import_todo_items(tempdir)
         termcolor.cprint('Creating new todo.txt', 'cyan')
         target.touch_file('TODO/todo.txt')
-        if target.backup:
-            copy_backupdirs(folders['backupdirs'], target)
-        else:
-            copy_studium_pdf_dirs(target, folders['studium_pdf_dirs'])
         if target.music:
             copy_music(target)
-        copy_other_pdf_dirs(target, folders['other_pdf_dirs'])
-        copy_reading_list(target)
 
         backupscripts.status.update(target.hostname, 'to')
 
