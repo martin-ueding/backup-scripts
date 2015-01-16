@@ -4,6 +4,20 @@
 Changelog
 #########
 
+v3.0.0
+    Released: 2015-01-16
+
+    - ``backup-external`` now takes some of the responsibilities of
+      ``android-sync``. This means that you have to change the
+      ``backup-external.ini`` file and add your Android devices there.
+      ``backup-external`` now has two new options, ``rsync-options`` and
+      ``only-formats``. This seems to be a good setting:
+
+      .. code:: ini
+
+          rsync-options = --max-size=1G --size-only --no-times --no-perms --prune-empty-dirs --inplace
+          only-formats = pdf mp4 webm html mp3 ogv png jpg jpeg txt
+
 v2.8.1
     Released: 2015-01-12
 
