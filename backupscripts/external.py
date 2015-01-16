@@ -73,7 +73,8 @@ def backup_data(key, name, config, dry):
     if 'only-formats' in config[key]:
         command.append('--include=*/')
         for suffix in config[key]['only-formats'].split():
-            command.append('--include=*.{}'.format(suffix))
+            command.append('--include=*.{}'.format(suffix.lower()))
+            command.append('--include=*.{}'.format(suffix.upper()))
         command.append('--exclude=*')
     command += exclude_arg + ["--"] + sources + [dest]
 
