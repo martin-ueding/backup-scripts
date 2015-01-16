@@ -70,6 +70,11 @@ def backup_data(key, name, config, dry):
         command.append('-n')
     if 'rsync-options' in config[key]:
         command += config[key]['rsync-options'].split()
+    if 'only-formats' in config[key]:
+        command.append('--include=*/')
+        for suffix in config[key]['only-formats'].split():
+            command.append('--include=*.{}'.format(suffix))
+        command.append('--exclude=*')
     command += exclude_arg + ["--"] + sources + [dest]
 
     print(command)
