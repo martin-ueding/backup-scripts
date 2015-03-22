@@ -4,6 +4,15 @@
 Changelog
 #########
 
+v3.1.0
+    Released: 2015-03-22
+
+    ``android-sync``:
+        - Automatically delete all ``Download/Einkaufsliste*.pdf``
+        - Automatically move all ``Download/*.gpx`` files
+        - Add ``--offline`` such that the reading list is not generated again,
+          which sometimes need an internet connection.
+
 v3.0.0
     Released: 2015-01-16
 
