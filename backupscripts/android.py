@@ -196,9 +196,10 @@ def sync_device(target, folders):
             os.rmdir(tempdir)
 
 def main():
-    backupscripts.readinglist.main()
-
     options = _parse_args()
+
+    if not options.offline:
+        backupscripts.readinglist.main()
 
     with open(FOLDERFILE) as f:
         folders = json.load(f)
@@ -238,6 +239,7 @@ def _parse_args():
     parser = argparse.ArgumentParser(description="")
     parser.add_argument("devices", type=str, nargs="+", help="Devices to sync")
     parser.add_argument("-v", dest='verbose', action="count", help='Enable verbose output. Can be supplied multiple times for even more verbosity.')
+    parser.add_argument("--offline")
 
     options = parser.parse_args()
 
