@@ -158,6 +158,22 @@ def delete_shopping_list_downloads(tempdir):
     if len(os.listdir(temp_download)) == 0:
         os.rmdir(temp_download)
 
+
+def move_gpx_files(tempdir):
+    temp_download = os.path.join(tempdir, 'Download')
+
+    if not os.path.isdir(temp_download):
+        return
+
+    files = glob.glob(os.path.join(temp_download, '*.gpx'))
+
+    for file_ in files:
+        os.rename(file_, os.path.join(os.path.expanduser('~/Dokumente/Karten/Tracks/'), os.path.basename(file_)))
+
+    if len(os.listdir(temp_download)) == 0:
+        os.rmdir(temp_download)
+
+
 def sync_device(target, folders):
     now = datetime.datetime.now()
     prefix = 'android-sync-python_{year:d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}-{second:02d}-'.format(
@@ -180,6 +196,7 @@ def sync_device(target, folders):
         target.touch_file('TODO/todo.txt')
 
         delete_shopping_list_downloads(tempdir)
+        move_gpx_files(tempdir)
 
         if target.music:
             copy_music(target)
