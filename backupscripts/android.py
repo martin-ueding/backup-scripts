@@ -7,6 +7,7 @@ import abc
 import argparse
 import configparser
 import datetime
+import glob
 import json
 import logging
 import os
@@ -142,6 +143,21 @@ def import_todo_items(tempdir):
         if len(os.listdir(os.path.dirname(todofile))) == 0:
             os.rmdir(os.path.dirname(todofile))
 
+
+def delete_shopping_list_downloads(tempdir):
+    temp_download = os.path.join(tempdir, 'Download')
+
+    if not os.path.isdir(temp_download):
+        return
+
+    files = glob.glob(os.path.join(temp_download, 'Einkaufsliste*.pdf'))
+
+    for file_ in files:
+        os.unlink(file_)
+
+    if len(os.listdir(temp_download)) == 0:
+        os.rmdir(temp_download)
+
 def sync_device(target, folders):
     now = datetime.datetime.now()
     prefix = 'android-sync-python_{year:d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}-{second:02d}-'.format(
@@ -158,9 +174,13 @@ def sync_device(target, folders):
         termcolor.cprint('Syncing {}'.format(target.hostname), 'white', attrs=['bold'])
 
         copy_bins(folders['bins'], tempdir, target)
+
         import_todo_items(tempdir)
         termcolor.cprint('Creating new todo.txt', 'cyan')
         target.touch_file('TODO/todo.txt')
+
+        delete_shopping_list_downloads(tempdir)
+
         if target.music:
             copy_music(target)
 
