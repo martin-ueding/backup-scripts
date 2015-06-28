@@ -17,8 +17,9 @@ class SSHfsWrapper(object):
 
     def __enter__(self):
         self.mountpoint = tempfile.TemporaryDirectory()
-        subprocess.call(['sshfs', self.remote, self.mountpoint])
+        subprocess.call(['sshfs', self.remote, self.mountpoint.name])
+        return self.mountpoint.name
 
-    def __exit__(self):
-        subprocess.call(['fusermount', '-u', self.mountpoint])
+    def __exit__(self, exc_type, exc_value, traceback):
+        subprocess.call(['fusermount', '-u', self.mountpoint.name])
         self.mountpoint.cleanup()
