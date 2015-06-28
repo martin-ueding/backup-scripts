@@ -3,6 +3,10 @@
 
 # Copyright © 2015 Martin Ueding <dev@martin-ueding.de>
 
+'''
+Parser that converts ``todo.txt`` style lines into commands for Taskwarrior.
+'''
+
 import re
 
 
