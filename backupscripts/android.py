@@ -31,11 +31,6 @@ with open(FOLDERFILE) as f:
 def delete_bin_contents(self, bin):
     bin_path = self.path_to(bin)
     logging.debug('Path to bin: %s', bin_path)
-    contents = os.listdir(bin_path)
-    for file in contents:
-        path = os.path.join(bin_path, file)
-        logging.debug('Deleting %s', path)
-        os.remove(path)
 
 def touch_file(self, path):
     command = ['touch', self.path_to(path)]
@@ -49,11 +44,21 @@ def mkdir(self, path):
 def copy_bins(bins, dropfolder, target):
     termcolor.cprint('Copy Bins', 'cyan')
     for bin in bins:
+        bin_path = os.path.join(target, bin)
         try:
             logging.info('Copying bin %s to computer', bin)
-            shutil.copytree(os.path.join(target, bin), os.path.join(dropfolder, bin))
-            # TODO
-            #target.delete_bin_contents(bin)
+            shutil.copytree(bin_path, os.path.join(dropfolder, bin))
+
+            contents = os.listdir(bin_path)
+            for file in contents:
+                path = os.path.join(bin_path, file)
+                logging.debug('Deleting %s', path)
+                if os.path.isfile(path):
+                    os.remove(path)
+                elif os.path.isdir(path):
+                    shutil.rmtree(path)
+                else:
+                    logging.error('Cannot delete %s', path)
         except FileNotFoundError:
             logging.error('Bin “%s” does not exist.', bin)
         except subprocess.CalledProcessError:
@@ -62,27 +67,29 @@ def copy_bins(bins, dropfolder, target):
 
 def import_todo_items(tempdir):
     termcolor.cprint('Importing TODO items', 'cyan')
-    todofile = os.path.join(tempdir, 'TODO', 'todo.txt')
+    for todofile in FOLDERS['todofiles']:
+        todopath = os.path.join(tempdir, todofile)
 
-    if not os.path.isfile(todofile):
-        return
+        if not os.path.isfile(todopath):
+            continue
 
-    error = False
-    with open(todofile) as h:
-        for line in h:
-            try:
-                words = line.split()
-                if len(words) > 0:
-                    subprocess.check_call(['task', 'add'] + words)
-            except subprocess.CalledProcessError as e:
-                termcolor.cprint('Error adding “{}”:'.format(line), 'red')
-                print(e)
-                error = True
+        error = False
+        with open(todopath) as h:
+            for line in h:
+                if len(line.strip()):
+                    bits = backupscripts.todo.todo_to_taskwarrior(line)
+                    try:
+                        #subprocess.check_call(['task'] + bits)
+                        print(bits)
+                    except subprocess.CalledProcessError as e:
+                        termcolor.cprint('Error adding “{}”, {}:'.format(line, repr(bits)), 'red')
+                        print(e)
+                        error = True
 
-    if not error:
-        os.remove(todofile)
-        if len(os.listdir(os.path.dirname(todofile))) == 0:
-            os.rmdir(os.path.dirname(todofile))
+        if not error:
+            os.remove(todopath)
+            if len(os.listdir(os.path.dirname(todopath))) == 0:
+                os.rmdir(os.path.dirname(todopath))
 
 
 def delete_shopping_list_downloads(tempdir):
@@ -127,12 +134,14 @@ def sync_device(mountpoint):
     )
     tempdir = tempfile.mkdtemp(prefix=prefix, dir=os.path.expanduser('~/TODO'))
 
+    logging.debug("Files I see: %s", repr(os.listdir(mountpoint)))
+
     try:
         termcolor.cprint('Syncing {}'.format(mountpoint), 'white', attrs=['bold'])
 
         copy_bins(FOLDERS['bins'], tempdir, mountpoint)
 
-        #import_todo_items(tempdir)
+        import_todo_items(tempdir)
         delete_shopping_list_downloads(tempdir)
         move_gpx_files(tempdir)
     except:
