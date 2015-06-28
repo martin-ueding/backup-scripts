@@ -20,7 +20,9 @@ import termcolor
 import backupscripts.readinglist
 import backupscripts.status
 
+
 FOLDERFILE = os.path.expanduser('~/.config/backup-scripts/android-folders.js')
+
 
 class Target(object):
     __metaclass__ = abc.ABCMeta
@@ -45,6 +47,7 @@ class Target(object):
     @abc.abstractmethod
     def mkdir(self, path):
         pass
+
 
 class SSHTarget(Target):
     def __init__(self, hostname, basepath, ip, backup=True, music=True, user='shell'):
@@ -107,17 +110,13 @@ def copy_bins(bins, dropfolder, target):
         except subprocess.CalledProcessError:
             logging.error('Bin “%s” does not exist.', bin)
 
-def copy_music(target):
-    termcolor.cprint('Copy Music', 'cyan')
-    source = os.path.expanduser("~/.cache/mp3_packer/128") + os.path.expanduser('~/Musik/Musik/')
-    flags = ['--exclude-from', os.path.expanduser("~/.config/backup-scripts/handy_musik.txt")]
-    rsync([source], target.path_to('Music'), flags)
 
 def rsync(sources, target_path, additional_flags=[]):
     flags = ['--progress', '-h', '-l', '-m', '-r', '-v', '--size-only', '--ignore-errors', '--exclude=.thumbnails', '--copy-links'] + additional_flags
     command = ['rsync'] + flags + sources + [target_path]
     logging.info('rsync command: %s', ' '.join(command))
     subprocess.check_call(command)
+
 
 def import_todo_items(tempdir):
     termcolor.cprint('Importing TODO items', 'cyan')
@@ -198,11 +197,7 @@ def sync_device(target, folders):
         delete_shopping_list_downloads(tempdir)
         move_gpx_files(tempdir)
 
-        if target.music:
-            copy_music(target)
-
-        backupscripts.status.update(target.hostname, 'to')
-
+        backupscripts.status.update(target.hostname, 'from')
     except:
         raise
     finally:
@@ -229,19 +224,18 @@ def main():
     devices = {}
 
     for device in config.sections():
-        backup = config[device].getboolean('backup')
-        music = config[device].getboolean('music')
         path = config[device]['path']
 
         if 'host' in config[device]:
             host = config[device]['host']
             user = config[device]['user']
-            devices[device] = SSHTarget(device, path, host, backup, music, user=user)
+            devices[device] = SSHTarget(device, path, host, user=user)
         else:
-            devices[device] = USBTarget(device, path, backup, music)
+            devices[device] = USBTarget(device, path)
 
     for device in options.devices:
         sync_device(devices[device], folders)
+
 
 def _parse_args():
     """
@@ -267,6 +261,7 @@ def _parse_args():
         logging.basicConfig(level=logging.DEBUG)
 
     return options
+
 
 if __name__ == "__main__":
     main()
