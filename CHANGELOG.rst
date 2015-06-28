@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v3.2.0
+    Released: 2015-06-28
+
+    - Support for the Jolla stuff.
+
 v3.1.0
     Released: 2015-03-22
 

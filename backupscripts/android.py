@@ -3,7 +3,6 @@
 
 # Copyright © 2014-2015 Martin Ueding <dev@martin-ueding.de>
 
-import abc
 import argparse
 import configparser
 import datetime
@@ -12,136 +11,99 @@ import json
 import logging
 import os
 import os.path
+import shutil
 import subprocess
 import tempfile
 
 import termcolor
 
 import backupscripts.readinglist
+import backupscripts.sshfs
 import backupscripts.status
+import backupscripts.todo
+
 
 FOLDERFILE = os.path.expanduser('~/.config/backup-scripts/android-folders.js')
 
-class Target(object):
-    __metaclass__ = abc.ABCMeta
-    def __init__(self, hostname, basepath, backup=True, music=True):
-        self.basepath = basepath
-        self.backup = backup
-        self.music = music
-        self.hostname = hostname
-
-    @abc.abstractmethod
-    def path_to(self, suffix):
-        pass
-
-    @abc.abstractmethod
-    def delete_bin_contents(self, bin):
-        pass
-
-    @abc.abstractmethod
-    def touch_file(self, path):
-        pass
-
-    @abc.abstractmethod
-    def mkdir(self, path):
-        pass
-
-class SSHTarget(Target):
-    def __init__(self, hostname, basepath, ip, backup=True, music=True, user='shell'):
-        super().__init__(hostname, basepath, backup, music)
-
-        self.ip = ip
-        self.user = user
-
-    def path_to(self, suffix):
-        return os.path.join('{user}@{ip}:{basepath}'.format(user=self.user, ip=self.ip, basepath=self.basepath), suffix)
-
-    def delete_bin_contents(self, bin):
-        command = ['ssh', '{}@{}'.format(self.user, self.ip), 'rm -rf /sdcard/{bin}/* /sdcard/{bin}/.??*'.format(bin=bin)]
-        logging.debug('Deletion command: %s', command)
-        subprocess.check_call(command)
-
-    def touch_file(self, path):
-        command = ['ssh', '{}@{}'.format(self.user, self.ip), 'touch', '/sdcard/'+path]
-        subprocess.check_call(command)
-
-    def mkdir(self, path):
-        command = ['ssh', '{}@{}'.format(self.user, self.ip), 'mkdir', '-p', '/sdcard/'+path]
-        subprocess.check_call(command)
+with open(FOLDERFILE) as f:
+    FOLDERS = json.load(f)
 
 
-class USBTarget(Target):
-    def __init__(self, hostname, basepath, backup=True, music=True):
-        super().__init__(hostname, basepath, backup, music)
+def delete_empty_dirs(path):
+    # Iterate through all the elements in the current path.
+    contents = os.listdir(path)
+    for element in contents:
+        element_path = os.path.join(path, element)
+        if os.path.isdir(element_path):
+            delete_empty_dirs(element_path)
 
-    def path_to(self, suffix):
-        return os.path.join(self.basepath, suffix)
+    # Delete the current directory if it is empty now.
+    if len(os.listdir(path)) == 0:
+        logging.debug('Deleting %s.', path)
+        os.rmdir(path)
 
-    def delete_bin_contents(self, bin):
-        bin_path = self.path_to(bin)
-        logging.debug('Path to bin: %s', bin_path)
-        contents = os.listdir(bin_path)
-        for file in contents:
-            path = os.path.join(bin_path, file)
-            logging.debug('Deleting %s', path)
-            os.remove(path)
 
-    def touch_file(self, path):
-        command = ['touch', self.path_to(path)]
-        subprocess.check_call(command)
+def delete_bin_contents(self, bin):
+    bin_path = self.path_to(bin)
+    logging.debug('Path to bin: %s', bin_path)
 
-    def mkdir(self, path):
-        command = ['mkdir', '-p', self.path_to(path)]
-        subprocess.check_call(command)
+def touch_file(self, path):
+    command = ['touch', self.path_to(path)]
+    subprocess.check_call(command)
+
+def mkdir(self, path):
+    command = ['mkdir', '-p', self.path_to(path)]
+    subprocess.check_call(command)
 
 
 def copy_bins(bins, dropfolder, target):
     termcolor.cprint('Copy Bins', 'cyan')
     for bin in bins:
+        bin_path = os.path.join(target, bin)
         try:
             logging.info('Copying bin %s to computer', bin)
-            rsync([target.path_to(bin)], dropfolder)
-            target.delete_bin_contents(bin)
+            shutil.copytree(bin_path, os.path.join(dropfolder, bin))
+
+            contents = os.listdir(bin_path)
+            for file in contents:
+                path = os.path.join(bin_path, file)
+                logging.debug('Deleting %s', path)
+                if os.path.isfile(path):
+                    os.remove(path)
+                elif os.path.isdir(path):
+                    shutil.rmtree(path)
+                else:
+                    logging.error('Cannot delete %s', path)
         except FileNotFoundError:
             logging.error('Bin “%s” does not exist.', bin)
         except subprocess.CalledProcessError:
             logging.error('Bin “%s” does not exist.', bin)
 
-def copy_music(target):
-    termcolor.cprint('Copy Music', 'cyan')
-    source = os.path.expanduser("~/.cache/mp3_packer/128") + os.path.expanduser('~/Musik/Musik/')
-    flags = ['--exclude-from', os.path.expanduser("~/.config/backup-scripts/handy_musik.txt")]
-    rsync([source], target.path_to('Music'), flags)
 
-def rsync(sources, target_path, additional_flags=[]):
-    flags = ['--progress', '-h', '-l', '-m', '-r', '-v', '--size-only', '--ignore-errors', '--exclude=.thumbnails', '--copy-links'] + additional_flags
-    command = ['rsync'] + flags + sources + [target_path]
-    logging.info('rsync command: %s', ' '.join(command))
-    subprocess.check_call(command)
-
-def import_todo_items(tempdir):
+def import_todo_items(mountpoint):
     termcolor.cprint('Importing TODO items', 'cyan')
-    todofile = os.path.join(tempdir, 'TODO', 'todo.txt')
+    for todofile in FOLDERS['todofiles']:
+        todopath = os.path.join(mountpoint, todofile)
 
-    if not os.path.isfile(todofile):
-        return
+        if not os.path.isfile(todopath):
+            continue
 
-    error = False
-    with open(todofile) as h:
-        for line in h:
-            try:
-                words = line.split()
-                if len(words) > 0:
-                    subprocess.check_call(['task', 'add'] + words)
-            except subprocess.CalledProcessError as e:
-                termcolor.cprint('Error adding “{}”:'.format(line), 'red')
-                print(e)
-                error = True
+        error = False
+        with open(todopath) as h:
+            for line in h:
+                if len(line.strip()):
+                    bits = backupscripts.todo.todo_to_taskwarrior(line)
+                    try:
+                        subprocess.check_call(['task'] + bits)
+                        print(bits)
+                    except subprocess.CalledProcessError as e:
+                        termcolor.cprint('Error adding “{}”, {}:'.format(line, repr(bits)), 'red')
+                        print(e)
+                        error = True
 
-    if not error:
-        os.remove(todofile)
-        if len(os.listdir(os.path.dirname(todofile))) == 0:
-            os.rmdir(os.path.dirname(todofile))
+        if not error:
+            with open(todopath, 'w') as f:
+                pass
 
 
 def delete_shopping_list_downloads(tempdir):
@@ -174,9 +136,9 @@ def move_gpx_files(tempdir):
         os.rmdir(temp_download)
 
 
-def sync_device(target, folders):
+def sync_device(mountpoint):
     now = datetime.datetime.now()
-    prefix = 'android-sync-python_{year:d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}-{second:02d}-'.format(
+    prefix = 'mobile-sync_{year:d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}-{second:02d}-'.format(
         year=now.year,
         month=now.month,
         day=now.day,
@@ -186,31 +148,19 @@ def sync_device(target, folders):
     )
     tempdir = tempfile.mkdtemp(prefix=prefix, dir=os.path.expanduser('~/TODO'))
 
+    logging.debug("Files I see: %s", repr(os.listdir(mountpoint)))
+
     try:
-        termcolor.cprint('Syncing {}'.format(target.hostname), 'white', attrs=['bold'])
-
-        copy_bins(folders['bins'], tempdir, target)
-
-        import_todo_items(tempdir)
-        termcolor.cprint('Creating new todo.txt', 'cyan')
-        target.touch_file('TODO/todo.txt')
-
+        termcolor.cprint('Syncing {}'.format(mountpoint), 'white', attrs=['bold'])
+        import_todo_items(mountpoint)
+        copy_bins(FOLDERS['bins'], tempdir, mountpoint)
         delete_shopping_list_downloads(tempdir)
         move_gpx_files(tempdir)
-
-        if target.music:
-            copy_music(target)
-
-        backupscripts.status.update(target.hostname, 'to')
-
     except:
         raise
     finally:
-        tempdir_contents = os.listdir(tempdir)
-        logging.debug('Contents of temporary directory: %s', tempdir_contents)
-        if len(tempdir_contents) == 0:
-            logging.info('Deleting temporary directory')
-            os.rmdir(tempdir)
+        delete_empty_dirs(tempdir)
+
 
 def main():
     options = _parse_args()
@@ -221,27 +171,24 @@ def main():
     with open(FOLDERFILE) as f:
         folders = json.load(f)
 
-    os.chdir(os.path.expanduser('~'))
-
     config = configparser.ConfigParser()
     config.read(os.path.expanduser('~/.config/backup-scripts/android-devices.ini'))
 
-    devices = {}
-
-    for device in config.sections():
-        backup = config[device].getboolean('backup')
-        music = config[device].getboolean('music')
+    for device in options.devices:
         path = config[device]['path']
 
         if 'host' in config[device]:
             host = config[device]['host']
             user = config[device]['user']
-            devices[device] = SSHTarget(device, path, host, backup, music, user=user)
-        else:
-            devices[device] = USBTarget(device, path, backup, music)
+            remote = '{}@{}:{}'.format(user, host, path)
 
-    for device in options.devices:
-        sync_device(devices[device], folders)
+            with backupscripts.sshfs.SSHfsWrapper(remote) as mountpoint:
+                sync_device(mountpoint)
+        else:
+            sync_device(path)
+
+        backupscripts.status.update(device, 'from')
+
 
 def _parse_args():
     """
@@ -267,6 +214,7 @@ def _parse_args():
         logging.basicConfig(level=logging.DEBUG)
 
     return options
+
 
 if __name__ == "__main__":
     main()
