@@ -18,8 +18,9 @@ import tempfile
 import termcolor
 
 import backupscripts.readinglist
-import backupscripts.status
 import backupscripts.sshfs
+import backupscripts.status
+import backupscripts.todo
 
 
 FOLDERFILE = os.path.expanduser('~/.config/backup-scripts/android-folders.js')
@@ -65,10 +66,10 @@ def copy_bins(bins, dropfolder, target):
             logging.error('Bin “%s” does not exist.', bin)
 
 
-def import_todo_items(tempdir):
+def import_todo_items(mountpoint):
     termcolor.cprint('Importing TODO items', 'cyan')
     for todofile in FOLDERS['todofiles']:
-        todopath = os.path.join(tempdir, todofile)
+        todopath = os.path.join(mountpoint, todofile)
 
         if not os.path.isfile(todopath):
             continue
@@ -79,7 +80,7 @@ def import_todo_items(tempdir):
                 if len(line.strip()):
                     bits = backupscripts.todo.todo_to_taskwarrior(line)
                     try:
-                        #subprocess.check_call(['task'] + bits)
+                        subprocess.check_call(['task'] + bits)
                         print(bits)
                     except subprocess.CalledProcessError as e:
                         termcolor.cprint('Error adding “{}”, {}:'.format(line, repr(bits)), 'red')
@@ -87,9 +88,8 @@ def import_todo_items(tempdir):
                         error = True
 
         if not error:
-            os.remove(todopath)
-            if len(os.listdir(os.path.dirname(todopath))) == 0:
-                os.rmdir(os.path.dirname(todopath))
+            with open(todopath, 'w') as f:
+                pass
 
 
 def delete_shopping_list_downloads(tempdir):
@@ -138,10 +138,8 @@ def sync_device(mountpoint):
 
     try:
         termcolor.cprint('Syncing {}'.format(mountpoint), 'white', attrs=['bold'])
-
+        import_todo_items(mountpoint)
         copy_bins(FOLDERS['bins'], tempdir, mountpoint)
-
-        import_todo_items(tempdir)
         delete_shopping_list_downloads(tempdir)
         move_gpx_files(tempdir)
     except:
