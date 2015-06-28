@@ -29,6 +29,20 @@ with open(FOLDERFILE) as f:
     FOLDERS = json.load(f)
 
 
+def delete_empty_dirs(path):
+    # Iterate through all the elements in the current path.
+    contents = os.listdir(path)
+    for element in contents:
+        element_path = os.path.join(path, element)
+        if os.path.isdir(element_path):
+            delete_empty_dirs(element_path)
+
+    # Delete the current directory if it is empty now.
+    if len(os.listdir(path)) == 0:
+        logging.debug('Deleting %s.', path)
+        os.rmdir(path)
+
+
 def delete_bin_contents(self, bin):
     bin_path = self.path_to(bin)
     logging.debug('Path to bin: %s', bin_path)
@@ -145,11 +159,7 @@ def sync_device(mountpoint):
     except:
         raise
     finally:
-        tempdir_contents = os.listdir(tempdir)
-        logging.debug('Contents of temporary directory: %s', tempdir_contents)
-        if len(tempdir_contents) == 0:
-            logging.info('Deleting temporary directory')
-            os.rmdir(tempdir)
+        delete_empty_dirs(tempdir)
 
 
 def main():
