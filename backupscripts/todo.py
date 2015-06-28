@@ -5,9 +5,11 @@
 
 import re
 
+
 DONE = re.compile(r'^x (\d{4}-\d{2}-\d{2}) (.*)$')
 PRIORITY = re.compile(r'\(([A-Z])\)')
 ENTRY = re.compile(r'(\d{4}-\d{2}-\d{2})')
+
 
 def todo_to_taskwarrior(string):
     '''
