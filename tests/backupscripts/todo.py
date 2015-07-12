@@ -17,6 +17,10 @@ class TodoTests(unittest.TestCase):
         r = todo.todo_to_taskwarrior('x 2015-06-20 (B) 2015-06-07 Test')
         self.assertEqual(r, ['log', 'end:2015-06-20', 'pri:m', 'entry:2015-06-07', 'Test'])
 
+    def test_list(self):
+        r = todo.todo_to_taskwarrior('@project foo bar')
+        self.assertEqual(r, ['add', 'pro:project', 'foo', 'bar'])
+
 
 class SplitDone(unittest.TestCase):
     def test_done(self):

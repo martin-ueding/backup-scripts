@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v3.3.0
+    Released: 2015-07-12
+
+    - Support for ``@list`` entries in the ``todo.txt``.
+
 v3.2.0
     Released: 2015-06-28
 

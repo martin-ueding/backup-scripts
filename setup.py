@@ -38,5 +38,5 @@ setup(
     test_suite='tests',
     url="https://github.com/martin-ueding/backup-scripts",
     download_url="http://martin-ueding.de/download/backup-scripts/",
-    version="2.0",
+    version="3.3.0",
 )
