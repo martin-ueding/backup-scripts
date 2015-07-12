@@ -13,6 +13,7 @@ import re
 DONE = re.compile(r'^x (\d{4}-\d{2}-\d{2}) (.*)$')
 PRIORITY = re.compile(r'\(([A-Z])\)')
 ENTRY = re.compile(r'(\d{4}-\d{2}-\d{2})')
+LIST = re.compile(r'@(\w+)')
 
 
 def todo_to_taskwarrior(string):
@@ -49,6 +50,10 @@ def _parse_bit(bit):
     m = ENTRY.match(bit)
     if m:
         return 'entry:' + m.group(1)
+
+    m = LIST.match(bit)
+    if m:
+        return 'pro:' + m.group(1)
 
     # Nothing special could be determined about this bit, so it must be just a
     # simple word.
