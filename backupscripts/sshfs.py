@@ -17,7 +17,7 @@ class SSHfsWrapper(object):
 
     def __enter__(self):
         self.mountpoint = tempfile.TemporaryDirectory()
-        subprocess.call(['sshfs', self.remote, self.mountpoint.name])
+        subprocess.check_call(['sshfs', self.remote, self.mountpoint.name])
         return self.mountpoint.name
 
     def __exit__(self, exc_type, exc_value, traceback):

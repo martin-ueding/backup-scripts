@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v3.3.1
+    Released: 2015-07-26
+
+    - Fail early when ``sshfs`` fails.
+
 v3.3.0
     Released: 2015-07-12
 
