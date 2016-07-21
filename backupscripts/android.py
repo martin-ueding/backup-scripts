@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2014-2015 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2014-2016 Martin Ueding <dev@martin-ueding.de>
 
 import argparse
 import configparser
@@ -14,8 +14,6 @@ import os.path
 import shutil
 import subprocess
 import tempfile
-
-import termcolor
 
 import backupscripts.readinglist
 import backupscripts.sshfs
@@ -57,7 +55,7 @@ def mkdir(self, path):
 
 
 def copy_bins(bins, dropfolder, target):
-    termcolor.cprint('Copy Bins', 'cyan')
+    print('Copy Bins', 'cyan')
     for bin in bins:
         bin_path = os.path.join(target, bin)
         try:
@@ -81,7 +79,7 @@ def copy_bins(bins, dropfolder, target):
 
 
 def import_todo_items(mountpoint):
-    termcolor.cprint('Importing TODO items', 'cyan')
+    print('Importing TODO items', 'cyan')
     for todofile in FOLDERS['todofiles']:
         todopath = os.path.join(mountpoint, todofile)
 
@@ -97,7 +95,7 @@ def import_todo_items(mountpoint):
                         subprocess.check_call(['task'] + bits)
                         print(bits)
                     except subprocess.CalledProcessError as e:
-                        termcolor.cprint('Error adding “{}”, {}:'.format(line, repr(bits)), 'red')
+                        print('Error adding “{}”, {}:'.format(line, repr(bits)), 'red')
                         print(e)
                         error = True
 
@@ -151,7 +149,7 @@ def sync_device(mountpoint):
     logging.debug("Files I see: %s", repr(os.listdir(mountpoint)))
 
     try:
-        termcolor.cprint('Syncing {}'.format(mountpoint), 'white', attrs=['bold'])
+        print('Syncing {}'.format(mountpoint), 'white', attrs=['bold'])
         import_todo_items(mountpoint)
         copy_bins(FOLDERS['bins'], tempdir, mountpoint)
         delete_shopping_list_downloads(tempdir)

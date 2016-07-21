@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2011-2015 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2011-2016 Martin Ueding <dev@martin-ueding.de>
 
 """
 Traverses through the external drives and updates the backup on them.
@@ -12,8 +12,6 @@ import configparser
 import os
 import re
 import subprocess
-
-import termcolor
 
 import backupscripts.status
 
@@ -49,7 +47,7 @@ def backup_data(key, name, config, dry):
     exclude_arg = ['--exclude='+exclude for exclude in excludes]
     sources = read_includes(config[key]['include'].split())
 
-    termcolor.cprint("Backup {}".format(name), attrs=['bold'])
+    print("Backup {}".format(name), attrs=['bold'])
 
     abs_dest_path = config[key]['path']
     if 'host' in config[key]:
@@ -61,7 +59,7 @@ def backup_data(key, name, config, dry):
             try:
                 os.makedirs(dest, exist_ok=True)
             except PermissionError as e:
-                termcolor.cprint(str(e), 'yellow')
+                print(str(e), 'yellow')
                 return
 
 

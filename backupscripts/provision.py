@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2014 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2014, 2016 Martin Ueding <dev@martin-ueding.de>
 
 '''
 Exit codes
@@ -23,8 +23,6 @@ import os.path
 import subprocess
 import sys
 
-import termcolor
-
 blacklist = [
     '/dev/sda',
     '/dev/sdb',
@@ -39,7 +37,7 @@ def wrap_command(command, options):
 
     print()
     print('----------------------------------')
-    termcolor.cprint(' '.join(command), 'yellow', attrs=['bold'])
+    print(' '.join(command), 'yellow', attrs=['bold'])
     print('----------------------------------')
     print()
 
