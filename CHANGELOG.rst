@@ -1,8 +1,13 @@
-.. Copyright © 2013-2015 Martin Ueding <dev@martin-ueding.de>
+.. Copyright © 2013-2016 Martin Ueding <dev@martin-ueding.de>
 
 #########
 Changelog
 #########
+
+v3.3.2
+    Released: 2016-07-21 13:47:00 +0200
+
+    - Remove ``termcolor`` dependency.
 
 v3.3.1
     Released: 2015-07-26
