@@ -4,6 +4,11 @@
 Changelog
 #########
 
+v3.3.3
+    Released: 2016-07-21 14:03:27 +0200
+
+    - Fix previous fix. Sorry!
+
 v3.3.2
     Released: 2016-07-21 13:47:00 +0200
 

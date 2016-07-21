@@ -47,7 +47,7 @@ def backup_data(key, name, config, dry):
     exclude_arg = ['--exclude='+exclude for exclude in excludes]
     sources = read_includes(config[key]['include'].split())
 
-    print("Backup {}".format(name), attrs=['bold'])
+    print("Backup {}".format(name))
 
     abs_dest_path = config[key]['path']
     if 'host' in config[key]:
@@ -59,7 +59,7 @@ def backup_data(key, name, config, dry):
             try:
                 os.makedirs(dest, exist_ok=True)
             except PermissionError as e:
-                print(str(e), 'yellow')
+                print(str(e))
                 return
 
 

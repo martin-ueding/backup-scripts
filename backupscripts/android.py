@@ -55,7 +55,7 @@ def mkdir(self, path):
 
 
 def copy_bins(bins, dropfolder, target):
-    print('Copy Bins', 'cyan')
+    print('Copy Bins')
     for bin in bins:
         bin_path = os.path.join(target, bin)
         try:
@@ -79,7 +79,7 @@ def copy_bins(bins, dropfolder, target):
 
 
 def import_todo_items(mountpoint):
-    print('Importing TODO items', 'cyan')
+    print('Importing TODO items')
     for todofile in FOLDERS['todofiles']:
         todopath = os.path.join(mountpoint, todofile)
 
@@ -95,7 +95,7 @@ def import_todo_items(mountpoint):
                         subprocess.check_call(['task'] + bits)
                         print(bits)
                     except subprocess.CalledProcessError as e:
-                        print('Error adding “{}”, {}:'.format(line, repr(bits)), 'red')
+                        print('Error adding “{}”, {}:'.format(line, repr(bits)))
                         print(e)
                         error = True
 
@@ -149,7 +149,7 @@ def sync_device(mountpoint):
     logging.debug("Files I see: %s", repr(os.listdir(mountpoint)))
 
     try:
-        print('Syncing {}'.format(mountpoint), 'white', attrs=['bold'])
+        print('Syncing {}'.format(mountpoint))
         import_todo_items(mountpoint)
         copy_bins(FOLDERS['bins'], tempdir, mountpoint)
         delete_shopping_list_downloads(tempdir)
