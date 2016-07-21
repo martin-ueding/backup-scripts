@@ -37,7 +37,7 @@ def wrap_command(command, options):
 
     print()
     print('----------------------------------')
-    print(' '.join(command), 'yellow', attrs=['bold'])
+    print(' '.join(command))
     print('----------------------------------')
     print()
 
