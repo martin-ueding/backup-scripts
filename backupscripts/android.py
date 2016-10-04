@@ -15,13 +15,12 @@ import shutil
 import subprocess
 import tempfile
 
-import backupscripts.readinglist
 import backupscripts.sshfs
 import backupscripts.status
-import backupscripts.todo
 
 
 FOLDERFILE = os.path.expanduser('~/.config/backup-scripts/android-folders.js')
+
 
 with open(FOLDERFILE) as f:
     FOLDERS = json.load(f)
@@ -45,9 +44,11 @@ def delete_bin_contents(self, bin):
     bin_path = self.path_to(bin)
     logging.debug('Path to bin: %s', bin_path)
 
+
 def touch_file(self, path):
     command = ['touch', self.path_to(path)]
     subprocess.check_call(command)
+
 
 def mkdir(self, path):
     command = ['mkdir', '-p', self.path_to(path)]
@@ -76,32 +77,6 @@ def copy_bins(bins, dropfolder, target):
             logging.error('Bin “%s” does not exist.', bin)
         except subprocess.CalledProcessError:
             logging.error('Bin “%s” does not exist.', bin)
-
-
-def import_todo_items(mountpoint):
-    print('Importing TODO items')
-    for todofile in FOLDERS['todofiles']:
-        todopath = os.path.join(mountpoint, todofile)
-
-        if not os.path.isfile(todopath):
-            continue
-
-        error = False
-        with open(todopath) as h:
-            for line in h:
-                if len(line.strip()):
-                    bits = backupscripts.todo.todo_to_taskwarrior(line)
-                    try:
-                        subprocess.check_call(['task'] + bits)
-                        print(bits)
-                    except subprocess.CalledProcessError as e:
-                        print('Error adding “{}”, {}:'.format(line, repr(bits)))
-                        print(e)
-                        error = True
-
-        if not error:
-            with open(todopath, 'w') as f:
-                pass
 
 
 def delete_shopping_list_downloads(tempdir):
@@ -150,7 +125,6 @@ def sync_device(mountpoint):
 
     try:
         print('Syncing {}'.format(mountpoint))
-        import_todo_items(mountpoint)
         copy_bins(FOLDERS['bins'], tempdir, mountpoint)
         delete_shopping_list_downloads(tempdir)
         move_gpx_files(tempdir)
@@ -162,9 +136,6 @@ def sync_device(mountpoint):
 
 def main():
     options = _parse_args()
-
-    if not options.offline:
-        backupscripts.readinglist.main()
 
     with open(FOLDERFILE) as f:
         folders = json.load(f)
