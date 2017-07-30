@@ -1,15 +1,15 @@
-.. Copyright © 2013-2015 Martin Ueding <dev@martin-ueding.de>
+.. Copyright © 2013-2015, 2017 Martin Ueding <dev@martin-ueding.de>
 
 ##############
 backup-scripts
 ##############
 
-Scripts for backup.
-
-http://martin-ueding.de/projects/backup-scripts/
+A collection of backup scripts for my home folder, webservers and Android
+devices.
 
 Dependencies
 ============
 
 - btrfs-tools
+- rsync
 - sshfs
