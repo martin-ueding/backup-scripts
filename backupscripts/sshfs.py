@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2015 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2015, 2018 Martin Ueding <dev@martin-ueding.de>
 
 '''
 Helpers for ``sshfs``.
@@ -17,7 +17,7 @@ class SSHfsWrapper(object):
 
     def __enter__(self):
         self.mountpoint = tempfile.TemporaryDirectory()
-        subprocess.check_call(['sshfs', self.remote, self.mountpoint.name])
+        subprocess.check_call(['sshfs', '-o', 'reconnect', self.remote, self.mountpoint.name])
         return self.mountpoint.name
 
     def __exit__(self, exc_type, exc_value, traceback):
