@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2015, 2018 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2015, 2018 Martin Ueding <martin-ueding.de>
 
 '''
 Helpers for ``sshfs``.

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2011-2016 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2011-2016 Martin Ueding <martin-ueding.de>
 
 """
 Traverses through the external drives and updates the backup on them.

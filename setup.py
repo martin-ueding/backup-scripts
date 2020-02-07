@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2014-2016 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2014-2016 Martin Ueding <martin-ueding.de>
 
 from setuptools import setup, find_packages
 
@@ -9,7 +9,6 @@ __docformat__ = "restructuredtext en"
 
 setup(
     author="Martin Ueding",
-    author_email="dev@martin-ueding.de",
     description="Collection of backup scripts",
     license="GPL2",
     classifiers=[
