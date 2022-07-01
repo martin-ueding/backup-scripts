@@ -1,9 +1,3 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-# Copyright © 2015, 2018 Martin Ueding <martin-ueding.de>
-"""
-Helpers for ``sshfs``.
-"""
 import pathlib
 import subprocess
 import tempfile

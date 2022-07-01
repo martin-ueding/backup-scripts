@@ -1,16 +1,8 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-# Copyright © 2011-2016 Martin Ueding <martin-ueding.de>
-"""
-Traverses through the external drives and updates the backup on them.
-"""
 import argparse
 import configparser
 import os
 import re
 import subprocess
-
-__docformat__ = "restructuredtext en"
 
 CONFIG_DIR = os.path.expanduser("~/.config/backup-scripts")
 
