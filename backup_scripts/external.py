@@ -13,8 +13,6 @@ import os
 import re
 import subprocess
 
-import backupscripts.status
-
 __docformat__ = "restructuredtext en"
 
 CONFIG_DIR = os.path.expanduser('~/.config/backup-scripts')
@@ -85,7 +83,7 @@ def backup_data(key, name, config, dry):
         return
     else:
         if not dry:
-            backupscripts.status.update(name, 'to')
+            backup_scripts.status.update(name, 'to')
 
 
 def compute_total_size(key, config):
