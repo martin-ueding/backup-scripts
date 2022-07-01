@@ -1,7 +1,6 @@
 import datetime
 import glob
 import logging
-import os
 import os.path
 import pathlib
 import shutil
@@ -78,37 +77,37 @@ def delete_empty_dirs(path):
 
     # Delete the current directory if it is empty now.
     if len(os.listdir(path)) == 0:
-        logging.debug('Deleting %s.', path)
+        logging.debug("Deleting %s.", path)
         os.rmdir(path)
 
 
 def copy_bins(bins, dropfolder, target):
-    print('Copy Bins')
+    print("Copy Bins")
     for bin in bins:
         bin_path = os.path.join(target, bin)
         try:
-            logging.info('Copying bin %s to computer', bin)
+            logging.info("Copying bin %s to computer", bin)
             shutil.copytree(bin_path, os.path.join(dropfolder, bin))
 
             contents = os.listdir(bin_path)
             for file in contents:
                 path = os.path.join(bin_path, file)
-                logging.debug('Deleting %s', path)
+                logging.debug("Deleting %s", path)
                 if os.path.isfile(path):
                     os.remove(path)
                 elif os.path.isdir(path):
                     shutil.rmtree(path)
                 else:
-                    logging.error('Cannot delete %s', path)
+                    logging.error("Cannot delete %s", path)
         except FileNotFoundError:
-            logging.error('Bin “%s” does not exist.', bin)
+            logging.error("Bin “%s” does not exist.", bin)
         except subprocess.CalledProcessError:
-            logging.error('Bin “%s” does not exist.', bin)
+            logging.error("Bin “%s” does not exist.", bin)
 
 
 def make_sync_directory() -> pathlib.Path:
     now = datetime.datetime.now()
-    prefix = 'mobile-sync_{year:d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}-{second:02d}-'.format(
+    prefix = "mobile-sync_{year:d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}-{second:02d}-".format(
         year=now.year,
         month=now.month,
         day=now.day,
@@ -116,15 +115,15 @@ def make_sync_directory() -> pathlib.Path:
         minute=now.minute,
         second=now.second,
     )
-    tempdir = tempfile.mkdtemp(prefix=prefix, dir=os.path.expanduser('~/TODO'))
+    tempdir = tempfile.mkdtemp(prefix=prefix, dir=os.path.expanduser("~/TODO"))
     return pathlib.Path(tempdir)
 
 
 @click.command()
 @click.argument("device")
 def main(device: str):
-    config_path = pathlib.Path('~/.config/backup-scripts/android.toml').expanduser()
-    with open(config_path, 'rb') as f:
+    config_path = pathlib.Path("~/.config/backup-scripts/android.toml").expanduser()
+    with open(config_path, "rb") as f:
         config = tomli.load(f)
 
     registry = {
@@ -133,12 +132,12 @@ def main(device: str):
     }
     tasks = [
         registry[task_name](**parameters)
-        for task_name, task_dicts in config['tasks'].items()
+        for task_name, task_dicts in config["tasks"].items()
         for parameters in task_dicts
     ]
 
     host_base = make_sync_directory()
-    remote = '{user}@{host}:{path}'.format(**config['device'][device])
+    remote = "{user}@{host}:{path}".format(**config["device"][device])
     with backup_scripts.sshfs.SSHfsWrapper(remote) as mount_point:
         print(mount_point)
         for task in tasks:
