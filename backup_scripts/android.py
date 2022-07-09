@@ -33,6 +33,7 @@ class CopyToHost(Task):
             target_dir = pathlib.Path(self.destination).expanduser()
         else:
             target_dir = host_base / self.source
+            target_dir.mkdir(parents=True, exist_ok=True)
         for path in device_dir.iterdir():
             print(f"  Moving {path} to {target_dir}")
             shutil.move(path, target_dir)
