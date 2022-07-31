@@ -43,9 +43,10 @@ class CopyToHost(Task):
 
 
 class CopyToDevice(Task):
-    def __init__(self, source: str, destination: str):
+    def __init__(self, source: str, destination: str, delete: bool = False):
         self.source = pathlib.Path(source).expanduser()
-        self.destination = destination
+        self.destination = pathlib.Path(destination)
+        self.delete = delete
 
     def execute(self, device_base: pathlib.Path, host_base: pathlib.Path):
         target_dir = device_base / self.destination
@@ -55,6 +56,12 @@ class CopyToDevice(Task):
         else:
             for path in self.source.iterdir():
                 copy_if_newer(path, self.source, target_dir)
+            if self.delete:
+                for path in target_dir.iterdir():
+                    corresponding_source = self.source / path.name
+                    if not corresponding_source.exists():
+                        print(f"  Deleting {path}")
+                        path.unlink()
 
     def name(self) -> str:
         return f"CopyToDevice: {self.source}"
