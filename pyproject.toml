@@ -8,7 +8,6 @@ license = "MIT"
 [tool.poetry.scripts]
 android-sync = "backup_scripts.android:main"
 backup-external = "backup_scripts.external:main"
-backup-status = "backup_scripts.status:main"
 
 [tool.poetry.dependencies]
 python = "^3.11"

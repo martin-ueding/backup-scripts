@@ -139,7 +139,7 @@ def task_factory(task_dict: Dict) -> Task:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('device')
+    parser.add_argument("device")
     options = parser.parse_args()
 
     config_path = pathlib.Path("~/.config/backup-scripts/android.toml").expanduser()
@@ -151,7 +151,9 @@ def main():
         for task_name, task_dict in config["tasks"].items()
     }
 
-    selected_tasks = [tasks[task_name] for task_name in config["device"][options.device]["tasks"]]
+    selected_tasks = [
+        tasks[task_name] for task_name in config["device"][options.device]["tasks"]
+    ]
 
     host_base = make_sync_directory()
     remote = "{user}@{host}:{path}".format(**config["device"][options.device])
