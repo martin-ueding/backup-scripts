@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import logging
 import os.path
@@ -5,9 +6,8 @@ import pathlib
 import shutil
 import subprocess
 import tempfile
-
-import click
-import tomli
+import tomllib
+from typing import Dict
 
 import backup_scripts.sshfs
 
@@ -126,28 +126,38 @@ def make_sync_directory() -> pathlib.Path:
     return pathlib.Path(tempdir)
 
 
-@click.command()
-@click.argument("device")
-def main(device: str):
-    config_path = pathlib.Path("~/.config/backup-scripts/android.toml").expanduser()
-    with open(config_path, "rb") as f:
-        config = tomli.load(f)
-
+def task_factory(task_dict: Dict) -> Task:
     registry = {
         "CopyToHost": CopyToHost,
         "CopyToDevice": CopyToDevice,
     }
-    tasks = [
-        registry[task_name](**parameters)
-        for task_name, task_dicts in config["tasks"].items()
-        for parameters in task_dicts
-    ]
+    task_name = task_dict["type"]
+    task_type = registry[task_name]
+    other_args = {key: value for key, value in task_dict.items() if key != "type"}
+    return task_type(**other_args)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('device')
+    options = parser.parse_args()
+
+    config_path = pathlib.Path("~/.config/backup-scripts/android.toml").expanduser()
+    with open(config_path, "rb") as f:
+        config = tomllib.load(f)
+
+    tasks = {
+        task_name: task_factory(task_dict)
+        for task_name, task_dict in config["tasks"].items()
+    }
+
+    selected_tasks = [tasks[task_name] for task_name in config["device"][options.device]["tasks"]]
 
     host_base = make_sync_directory()
-    remote = "{user}@{host}:{path}".format(**config["device"][device])
+    remote = "{user}@{host}:{path}".format(**config["device"][options.device])
     with backup_scripts.sshfs.SSHfsWrapper(remote) as mount_point:
-        print(mount_point)
-        for task in tasks:
+        print(f"Mounted at: {mount_point}")
+        for task in selected_tasks:
             print(task.name())
             task.execute(mount_point, host_base)
         delete_empty_dirs(host_base)
