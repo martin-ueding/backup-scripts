@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "backup-scripts"
-version = "0.1.0"
+version = "1.0.0"
 description = ""
 authors = ["Martin Ueding <mu@martin-ueding.de>"]
 license = "MIT"
