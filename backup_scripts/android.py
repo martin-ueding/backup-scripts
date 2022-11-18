@@ -1,13 +1,15 @@
 import argparse
 import datetime
+import itertools
 import logging
 import os.path
 import pathlib
+import re
 import shutil
 import subprocess
 import tempfile
 import tomllib
-from typing import Dict
+from typing import Dict, Optional
 
 import backup_scripts.sshfs
 
@@ -65,6 +67,48 @@ class CopyToDevice(Task):
 
     def name(self) -> str:
         return f"CopyToDevice: {self.source}"
+
+
+class CopyPictures(Task):
+    def __init__(self, source: str, destination: str):
+        self.source = pathlib.Path(source)
+        self.destination = pathlib.Path(destination).expanduser()
+
+    def execute(self, device_base: pathlib.Path, host_base: pathlib.Path):
+        device_dir = device_base / self.source
+        if not device_dir.exists():
+            return
+        for path in device_dir.iterdir():
+            intermediate_target = self.destination / path.name
+            shutil.move(path, intermediate_target)
+            timestamp = self.extract_filename_img(intermediate_target)
+            assert timestamp is not None
+            new_name = self.make_filename(intermediate_target, timestamp)
+            print(f"  Moving {path} to {new_name}")
+            shutil.move(intermediate_target, new_name)
+
+    def name(self) -> str:
+        return f"CopyToDevice: {self.source}"
+
+    @staticmethod
+    def extract_filename_img(path: pathlib.Path) -> Optional[datetime.datetime]:
+        if m := re.match(r"^IMG_(20\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})",
+                         path.name):
+            numbers = [int(g) for g in m.groups()]
+            if numbers[3] == 24:
+                numbers[3] = 0
+            return datetime.datetime(*numbers)
+
+    @staticmethod
+    def make_filename(path: pathlib.Path, timestamp: datetime.datetime):
+        new_stem_base = f"{timestamp.year:04d}-{timestamp.month:02d}-{timestamp.day:02d}_{timestamp.hour:02d}-{timestamp.minute:02d}-{timestamp.second:02d}"
+        for i in itertools.count():
+            new_stem = new_stem_base
+            if i > 0:
+                new_stem += f"-{i}"
+            new_path = path.with_stem(new_stem)
+            if not new_path.exists():
+                return new_path
 
 
 def copy_if_newer(src: pathlib.Path, src_base: pathlib.Path, target_dir: pathlib.Path):
@@ -130,6 +174,7 @@ def task_factory(task_dict: Dict) -> Task:
     registry = {
         "CopyToHost": CopyToHost,
         "CopyToDevice": CopyToDevice,
+        "CopyPictures": CopyPictures,
     }
     task_name = task_dict["type"]
     task_type = registry[task_name]
