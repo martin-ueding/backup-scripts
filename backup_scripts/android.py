@@ -92,12 +92,14 @@ class CopyPictures(Task):
 
     @staticmethod
     def extract_filename_img(path: pathlib.Path) -> Optional[datetime.datetime]:
-        if m := re.match(r"^IMG_(20\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})",
+        if m := re.search(r"(20\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})",
                          path.name):
             numbers = [int(g) for g in m.groups()]
             if numbers[3] == 24:
                 numbers[3] = 0
             return datetime.datetime(*numbers)
+
+        print(f"  Cannot parse {path}")
 
     @staticmethod
     def make_filename(path: pathlib.Path, timestamp: datetime.datetime):
