@@ -11,7 +11,7 @@ import tempfile
 import tomllib
 from typing import Dict, Optional
 
-import backup_scripts.sshfs
+from backup_scripts.sshfs import MTPFSWrapper, SSHfsWrapper
 
 
 class Task:
@@ -37,6 +37,8 @@ class CopyToHost(Task):
             target_dir = host_base / self.source
             target_dir.mkdir(parents=True, exist_ok=True)
         for path in device_dir.iterdir():
+            if path.name in [".thumbnails"]:
+                continue
             print(f"  Moving {path} to {target_dir}")
             shutil.move(path, target_dir)
 
@@ -183,6 +185,7 @@ def task_factory(task_dict: Dict) -> Task:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("device")
+    parser.add_argument("--mtp", action="store_true")
     options = parser.parse_args()
 
     config_path = pathlib.Path("~/.config/backup-scripts/android.toml").expanduser()
@@ -199,8 +202,13 @@ def main():
     ]
 
     host_base = make_sync_directory()
-    remote = "{user}@{host}:{path}".format(**config["device"][options.device])
-    with backup_scripts.sshfs.SSHfsWrapper(remote) as mount_point:
+
+    if options.mtp:
+        fs_wrapper = MTPFSWrapper()
+    else:
+        remote = "{user}@{host}:{path}".format(**config["device"][options.device])
+        fs_wrapper = SSHfsWrapper(remote)
+    with fs_wrapper as mount_point:
         print(f"Mounted at: {mount_point}")
         for task in selected_tasks:
             print(task.name())
