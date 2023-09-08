@@ -56,14 +56,11 @@ class CopyToDevice(Task):
         if self.source.is_file():
             copy_if_newer(self.source, self.source.parent, target_dir)
         else:
-            for path in self.source.iterdir():
-                copy_if_newer(path, self.source, target_dir)
+            command = ["rsync", "-avh"]
             if self.delete:
-                for path in target_dir.iterdir():
-                    corresponding_source = self.source / path.name
-                    if not corresponding_source.exists():
-                        print(f"  Deleting {path}")
-                        path.unlink()
+                command.append("--delete")
+            command.extend(["--", str(self.source), str(target_dir.parent)])
+            subprocess.run(command, check=True)
 
     def name(self) -> str:
         return f"CopyToDevice: {self.source}"
@@ -92,8 +89,7 @@ class CopyPictures(Task):
 
     @staticmethod
     def extract_filename_img(path: pathlib.Path) -> Optional[datetime.datetime]:
-        if m := re.search(r"(20\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})",
-                         path.name):
+        if m := re.search(r"(20\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})", path.name):
             numbers = [int(g) for g in m.groups()]
             if numbers[3] == 24:
                 numbers[3] = 0
