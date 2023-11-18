@@ -9,9 +9,11 @@ import shutil
 import subprocess
 import tempfile
 import tomllib
-from typing import Dict, Optional
+from typing import Dict
+from typing import Optional
 
-from backup_scripts.sshfs import MTPFSWrapper, SSHfsWrapper
+from backup_scripts.sshfs import MTPFSWrapper
+from backup_scripts.sshfs import SSHfsWrapper
 
 
 class Task:
